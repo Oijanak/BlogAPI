@@ -1,10 +1,11 @@
-using System;
+
+using Microsoft.EntityFrameworkCore; 
+
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
 
 namespace BlogApi.Infrastructure.Repository;
-
 public class UserRepository : IUserRepository
 
 {
@@ -47,7 +48,8 @@ public class UserRepository : IUserRepository
     
      public async Task<User?> GetUserByEmailAsync(string email)
     {
-        User user = _context.Users.FirstOrDefault(u => u.Email == email) ?? throw new Exception("User not found");
+         User? user = await _context.Users
+        .FirstOrDefaultAsync(u => u.Email == email) ?? throw new Exception("User not found");
         return user;
     }
 }

@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BlogApi.Application\BlogApi.Application.csproj" />
-    <ProjectReference Include="..\BlogApi.Infrastructure\BlogApi.Infrastructure.csproj" />
+    <ProjectReference Include="..\Blog.Application\Blog.Application.csproj" />
+    <ProjectReference Include="..\Blog.Infrastructure\Blog.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
