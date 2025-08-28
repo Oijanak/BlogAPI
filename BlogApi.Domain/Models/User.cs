@@ -19,7 +19,7 @@ namespace BlogApi.Domain.Models
 
         private string _passwordHash = string.Empty;
 
-        [JsonIgnore]
+        
         [Required]
         public string Password
         {
