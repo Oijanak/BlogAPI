@@ -67,6 +67,16 @@ namespace BlogApi.API.Controllers
             });
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            await _userService.DeleteUserAsync(id);
+            return Ok(new ApiResponse<string>
+            {
+                Message = "User deleted successfully",
+            });
+        }
+
        
     }
 }

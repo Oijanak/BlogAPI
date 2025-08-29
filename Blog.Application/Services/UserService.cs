@@ -21,7 +21,7 @@ public class UserService : IUserService
         User? existingUser = await _userRepository.GetUserByEmailAsync(user.Email);
         if (existingUser is not null)
         {
-            throw new ApiException("Email Already Registered",HttpStatusCode.BadRequest);
+            throw new ApiException("Email Already Registered", HttpStatusCode.BadRequest);
         }
         User newUser = new()
         {
@@ -52,7 +52,7 @@ public class UserService : IUserService
 
     public async Task<UserDTO?> GetUserByIdAsync(int userId)
     {
-        User? user = await _userRepository.GetByIdAsync(userId) ?? throw new ApiException("User not found with id "+userId,HttpStatusCode.NotFound );
+        User? user = await _userRepository.GetByIdAsync(userId) ?? throw new ApiException("User not found with id " + userId, HttpStatusCode.NotFound);
         return new UserDTO
         {
             UserId = user.UserId,
@@ -63,7 +63,7 @@ public class UserService : IUserService
 
     public async Task<ApiResponse<string>> LoginUserAsync(LoginRequest loginRequest)
     {
-        User user =await _userRepository.GetUserByEmailAsync(loginRequest.Email)?? throw new ApiException("Invalid Email or Password", HttpStatusCode.Unauthorized);
+        User user = await _userRepository.GetUserByEmailAsync(loginRequest.Email) ?? throw new ApiException("Invalid Email or Password", HttpStatusCode.Unauthorized);
 
         bool isPasswordValid = user.VerifyPassword(loginRequest.Password);
         if (!isPasswordValid)
@@ -74,16 +74,16 @@ public class UserService : IUserService
         {
             Message = "Login Successful"
         };
-        
+
     }
 
     public async Task<UserDTO> UpdateUserAsync(int userId, UpdateUserRequest updateUser)
     {
         User user = await _userRepository.GetByIdAsync(userId) ?? throw new ApiException("User not found with id " + userId, HttpStatusCode.NotFound);
-        user.Name = updateUser.Name?? user.Name;
-        user.Email = updateUser.Email?? user.Email;
-        if(updateUser.Password is not null)
-        user.Password = updateUser.Password;
+        user.Name = updateUser.Name ?? user.Name;
+        user.Email = updateUser.Email ?? user.Email;
+        if (updateUser.Password is not null)
+            user.Password = updateUser.Password;
         User updatedUser = await _userRepository.Update(user);
         return new UserDTO
         {
@@ -91,7 +91,12 @@ public class UserService : IUserService
             Name = updatedUser.Name,
             Email = updatedUser.Email
         };
-        
+
+    }
+    public async Task DeleteUserAsync(int userId)
+    {
+        User user = await _userRepository.GetByIdAsync(userId) ?? throw new ApiException("User not found with id " + userId, HttpStatusCode.NotFound);
+        _userRepository.Delete(user);
     }
    
 }
