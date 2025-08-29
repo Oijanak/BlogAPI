@@ -1,4 +1,5 @@
 using BlogApi.Application.Interfaces;
+using BlogApi.Domain.DTOs;
 using BlogApi.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,16 +18,35 @@ namespace BlogApi.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RegisterUser([FromBody] User user)
+        public async Task<IActionResult> RegisterUser([FromBody] RegisterRequest user)
         {
-            User createdUser = await _userService.CreateUserAsync(user);
-            return Ok(createdUser);
+            UserDTO createdUser = await _userService.RegisterUserAsync(user);
+            return Ok(new ApiResponse<UserDTO>
+            {
+                Message = "User Registered Successfully",
+                Data = createdUser
+            });
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
-        {   
-            var users= await _userService.GetAllUsersAsync();
-            return Ok(users);
+        {
+            var users = await _userService.GetAllUsersAsync();
+            return Ok(new ApiResponse<IEnumerable<UserDTO>>
+            {
+                Message = "Users fetched successfully",
+                Data = users
+            });
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            UserDTO? user = await _userService.GetUserByIdAsync(id);
+            return Ok(new ApiResponse<UserDTO?>
+            {
+                Message = "User fetched successfully",
+                Data = user
+            });
         }
     }
 }

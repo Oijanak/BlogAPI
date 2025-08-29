@@ -30,13 +30,12 @@ public class UserRepository : IUserRepository
 
     public Task<IEnumerable<User>> GetAllAsync()
     {
-        _context.Users.AsEnumerable();
         return Task.FromResult(_context.Users.AsEnumerable());
     }
 
     public Task<User?> GetByIdAsync(int id)
     {
-        _context.Users.Find(id);
+        
         return Task.FromResult(_context.Users.Find(id));
     }
 
@@ -48,8 +47,8 @@ public class UserRepository : IUserRepository
     
      public async Task<User?> GetUserByEmailAsync(string email)
     {
-         User? user = await _context.Users
-        .FirstOrDefaultAsync(u => u.Email == email) ?? throw new Exception("User not found");
+        User? user = await _context.Users
+       .FirstOrDefaultAsync(u => u.Email == email);
         return user;
     }
 }

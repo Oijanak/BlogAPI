@@ -1,12 +1,13 @@
 using System;
+using BlogApi.Domain.DTOs;
 using BlogApi.Domain.Models;
 
 namespace BlogApi.Application.Interfaces;
 
 public interface IUserService
 {
-    Task<User> CreateUserAsync(User user);
-    Task<IEnumerable<User>> GetAllUsersAsync();
-    Task<User?> GetUserByIdAsync(int userId); 
+    Task<UserDTO> RegisterUserAsync(RegisterRequest user);
+    Task<IEnumerable<UserDTO>> GetAllUsersAsync();
+    Task<UserDTO?> GetUserByIdAsync(int userId);
 
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 
@@ -7,6 +8,7 @@ namespace BlogApi.Domain.Models
     public class User
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserId { get; set; }
 
         [Required]
@@ -15,7 +17,9 @@ namespace BlogApi.Domain.Models
 
         [Required]
         [EmailAddress]
+        
         public string Email { get; set; } = string.Empty;
+        
 
         private string _passwordHash = string.Empty;
 
@@ -29,6 +33,7 @@ namespace BlogApi.Domain.Models
                 if (!string.IsNullOrWhiteSpace(value))
                 {
                     _passwordHash = BCrypt.Net.BCrypt.HashPassword(value);
+                    
                 }
             }
         }
