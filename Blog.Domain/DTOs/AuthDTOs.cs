@@ -19,7 +19,7 @@ namespace BlogApi.Domain.DTOs;
         public DateTime Expiration { get; set; }
     }
 
-    public class RegisterRequest
+    public class UserRequest
     {
         [Required]
         public string Name { get; set; } = string.Empty;
@@ -28,6 +28,5 @@ namespace BlogApi.Domain.DTOs;
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
         [Required]
-        [MaxLength]
         public string Password { get; set; } = string.Empty;
     }

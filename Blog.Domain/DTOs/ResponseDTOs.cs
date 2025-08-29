@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace BlogApi.Domain.DTOs;
 
 public class ApiErrorResponse
@@ -11,6 +13,8 @@ public class ApiErrorResponse
 public class ApiResponse<T>
 {
     public bool Success { get; } = true;
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public T? Data { get; set; }
     public string? Message { get; set; }
 

@@ -19,23 +19,21 @@ namespace BlogApi.Domain.Models
         [EmailAddress]
         
         public string Email { get; set; } = string.Empty;
-        
 
-        private string _passwordHash = string.Empty;
-
-        
         [Required]
+        public string PasswordHash { get; set; }=string.Empty;
+
+        
+        [NotMapped]
         public string Password
         {
-            get => _passwordHash;
-            set
-            {
-                if (!string.IsNullOrWhiteSpace(value))
+            set {
+                 if (!string.IsNullOrWhiteSpace(value))
                 {
-                    _passwordHash = BCrypt.Net.BCrypt.HashPassword(value);
-                    
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(value);
                 }
             }
+    
         }
 
         public ICollection<Blog> Blogs { get; } = new List<Blog>();
@@ -44,7 +42,7 @@ namespace BlogApi.Domain.Models
 
         public bool VerifyPassword(string plainPassword)
         {
-            return BCrypt.Net.BCrypt.Verify(plainPassword, _passwordHash);
+            return BCrypt.Net.BCrypt.Verify(plainPassword, PasswordHash);
         }
 
 

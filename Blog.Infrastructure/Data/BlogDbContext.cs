@@ -22,6 +22,12 @@ public class BlogDbContext : DbContext
             .IsUnique();
 
         modelBuilder.Entity<User>()
+        .ToTable(t => t.HasCheckConstraint(
+            "CK_User_Email_Format",
+            @"Email LIKE '_%@_%._%'"
+        ));
+
+        modelBuilder.Entity<User>()
             .HasMany(u => u.Blogs)
             .WithOne(b => b.User)
             .HasForeignKey(b => b.UserId)

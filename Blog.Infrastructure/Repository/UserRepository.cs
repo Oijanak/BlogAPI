@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
+using BlogApi.Domain.DTOs;
 
 namespace BlogApi.Infrastructure.Repository;
 public class UserRepository : IUserRepository
@@ -39,10 +40,11 @@ public class UserRepository : IUserRepository
         return Task.FromResult(_context.Users.Find(id));
     }
 
-    public void Update(User entity)
+    public Task<User> Update(User entity)
     {
         _context.Users.Update(entity);
         _context.SaveChanges();
+        return Task.FromResult(entity);
     }
     
      public async Task<User?> GetUserByEmailAsync(string email)

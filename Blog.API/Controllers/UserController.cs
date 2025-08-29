@@ -17,8 +17,8 @@ namespace BlogApi.API.Controllers
             _userService = userService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> RegisterUser([FromBody] RegisterRequest user)
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterUser([FromBody] UserRequest user)
         {
             UserDTO createdUser = await _userService.RegisterUserAsync(user);
             return Ok(new ApiResponse<UserDTO>
@@ -48,5 +48,25 @@ namespace BlogApi.API.Controllers
                 Data = user
             });
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        {
+            ApiResponse<string> response = await _userService.LoginUserAsync(loginRequest);
+            return Ok(response);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserRequest updateUser)
+        {
+            UserDTO updatedUser = await _userService.UpdateUserAsync(id, updateUser);
+            return Ok(new ApiResponse<UserDTO>
+            {
+                Message = "User updated successfully",
+                Data = updatedUser
+            });
+        }
+
+       
     }
 }
