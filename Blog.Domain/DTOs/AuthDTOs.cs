@@ -1,10 +1,15 @@
 
 
+using System.ComponentModel.DataAnnotations;
+
 namespace BlogApi.Domain.DTOs;
 
  public class LoginRequest
     {
+        [Required]
+        [EmailAddress]
         public string Email { get; set; } = string.Empty;
+        [Required]  
         public string Password { get; set; } = string.Empty;
     }
 
@@ -16,7 +21,13 @@ namespace BlogApi.Domain.DTOs;
 
     public class RegisterRequest
     {
+        [Required]
         public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
         public string Email { get; set; } = string.Empty;
+        [Required]
+        [MaxLength]
         public string Password { get; set; } = string.Empty;
     }
