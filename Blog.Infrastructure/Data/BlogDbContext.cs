@@ -27,11 +27,44 @@ public class BlogDbContext : DbContext
             @"Email LIKE '_%@_%._%'"
         ));
 
+
+        modelBuilder.Entity<Blog>()
+        .Property(b => b.CreatedAt)
+        .HasDefaultValueSql("GETUTCDATE()");
+
+        modelBuilder.Entity<Blog>()
+       .Property(b => b.UpdatedAt)
+       .HasDefaultValueSql("GETUTCDATE()");
+
         modelBuilder.Entity<User>()
             .HasMany(u => u.Blogs)
             .WithOne(b => b.User)
             .HasForeignKey(b => b.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
+    
+    public override int SaveChanges()
+    {
+        UpdateTimestamps();
+        return base.SaveChanges();
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        UpdateTimestamps();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void UpdateTimestamps()
+    {
+        var entries = ChangeTracker.Entries<Blog>()
+        .Where(e => e.State == EntityState.Modified);
+
+        foreach (var entry in entries)
+        {
+            entry.Property("UpdatedAt").CurrentValue = DateTime.UtcNow;
+        }
+    }
+
 
 }

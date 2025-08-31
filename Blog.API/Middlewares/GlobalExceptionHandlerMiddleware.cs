@@ -9,9 +9,12 @@ public class GlobalExceptionMiddleware
 {
     private readonly RequestDelegate _next;
 
-    public GlobalExceptionMiddleware(RequestDelegate next)
+    private readonly ILogger<GlobalExceptionMiddleware> _logger;
+
+    public GlobalExceptionMiddleware(RequestDelegate next,ILogger<GlobalExceptionMiddleware> logger)
     {
         _next = next;
+        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -39,6 +42,7 @@ public class GlobalExceptionMiddleware
                 break;
 
             default:
+               _logger.LogError(exception, "An unhandled exception occurred.");
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response = new ApiErrorResponse { StatusCode = 500, Message="Internal Server Error" };
                 break;
