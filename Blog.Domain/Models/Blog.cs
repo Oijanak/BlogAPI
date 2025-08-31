@@ -15,9 +15,9 @@ namespace BlogApi.Domain.Models
         [Required]
         public string BlogContent { get; set; } = string.Empty;
 
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt{ get; private set; } = DateTime.UtcNow;
 
-        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public int UserId { get; set; }
 

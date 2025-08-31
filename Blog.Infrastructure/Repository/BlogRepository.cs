@@ -40,10 +40,11 @@ public class BlogRepository : IBlogRepository
         return Task.FromResult(_context.Blogs.Find(id));
     }
 
-    public void Update(Blog entity)
+    public Task<Blog> Update(Blog entity)
     {
         _context.Blogs.Update(entity);
         _context.SaveChanges();
+        return Task.FromResult(entity);
         
     }
 

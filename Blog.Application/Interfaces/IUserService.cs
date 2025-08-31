@@ -10,7 +10,7 @@ public interface IUserService
     Task<IEnumerable<UserDTO>> GetAllUsersAsync();
     Task<UserDTO?> GetUserByIdAsync(int userId);
 
-    Task<ApiResponse<string>> LoginUserAsync(LoginRequest loginRequest);
+    Task<LoginResponse> LoginUserAsync(LoginRequest loginRequest);
 
     Task<UserDTO> UpdateUserAsync(int userId, UpdateUserRequest updateUser);
 

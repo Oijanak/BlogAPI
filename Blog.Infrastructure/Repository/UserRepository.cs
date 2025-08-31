@@ -31,13 +31,15 @@ public class UserRepository : IUserRepository
 
     public Task<IEnumerable<User>> GetAllAsync()
     {
-        return Task.FromResult(_context.Users.AsEnumerable());
+        return Task.FromResult(_context.Users.Include(u=>u.Blogs).AsEnumerable());
     }
 
     public Task<User?> GetByIdAsync(int id)
     {
         
-        return Task.FromResult(_context.Users.Find(id));
+         return _context.Users
+            .Include(u => u.Blogs)
+            .FirstOrDefaultAsync(u => u.UserId == id);
     }
 
     public Task<User> Update(User entity)

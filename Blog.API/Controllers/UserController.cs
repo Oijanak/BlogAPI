@@ -38,10 +38,10 @@ namespace BlogApi.API.Controllers
             });
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetById(int userId)
         {
-            UserDTO? user = await _userService.GetUserByIdAsync(id);
+            UserDTO? user = await _userService.GetUserByIdAsync(userId);
             return Ok(new ApiResponse<UserDTO?>
             {
                 Message = "User fetched successfully",
@@ -52,14 +52,14 @@ namespace BlogApi.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            ApiResponse<string> response = await _userService.LoginUserAsync(loginRequest);
+            LoginResponse response = await _userService.LoginUserAsync(loginRequest);
             return Ok(response);
-        }
+        } 
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserRequest updateUser)
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserRequest updateUser)
         {
-            UserDTO updatedUser = await _userService.UpdateUserAsync(id, updateUser);
+            UserDTO updatedUser = await _userService.UpdateUserAsync(userId, updateUser);
             return Ok(new ApiResponse<UserDTO>
             {
                 Message = "User updated successfully",
@@ -67,10 +67,10 @@ namespace BlogApi.API.Controllers
             });
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> DeleteUser(int userId)
         {
-            await _userService.DeleteUserAsync(id);
+            await _userService.DeleteUserAsync(userId);
             return Ok(new ApiResponse<string>
             {
                 Message = "User deleted successfully",

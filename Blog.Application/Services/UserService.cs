@@ -11,10 +11,14 @@ public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
 
-    public UserService(IUserRepository userRepository)
+    private readonly ITokenService _tokenService;
+
+    public UserService(IUserRepository userRepository, ITokenService tokenService)
     {
         _userRepository = userRepository;
+        _tokenService = tokenService;
     }
+   
     public async Task<UserDTO> RegisterUserAsync(UserRequest user)
     {
 
@@ -46,7 +50,15 @@ public class UserService : IUserService
         {
             UserId = u.UserId,
             Name = u.Name,
-            Email = u.Email
+            Email = u.Email,
+            Blogs = u.Blogs.Select(b => new BlogDTO
+            {
+                BlogId = b.BlogId,
+                BlogTitle = b.BlogTitle,
+                BlogContent = b.BlogContent,
+                CreatedAt = b.CreatedAt,
+                UpdatedAt = b.UpdatedAt,
+            }).ToList()
         });
     }
 
@@ -57,11 +69,18 @@ public class UserService : IUserService
         {
             UserId = user.UserId,
             Name = user.Name,
-            Email = user.Email
+            Email = user.Email,
+            Blogs = user.Blogs.Select(b => new BlogDTO
+            {
+                BlogId = b.BlogId,
+                BlogTitle = b.BlogTitle,
+                BlogContent = b.BlogContent,
+                CreatedAt = b.CreatedAt,
+                UpdatedAt = b.UpdatedAt,
+            }).ToList()
         };
     }
-
-    public async Task<ApiResponse<string>> LoginUserAsync(LoginRequest loginRequest)
+    public async Task<LoginResponse> LoginUserAsync(LoginRequest loginRequest)
     {
         User user = await _userRepository.GetUserByEmailAsync(loginRequest.Email) ?? throw new ApiException("Invalid Email or Password", HttpStatusCode.Unauthorized);
 
@@ -70,9 +89,11 @@ public class UserService : IUserService
         {
             throw new ApiException("Invalid Email or Password", HttpStatusCode.Unauthorized);
         }
-        return new ApiResponse<string>
+        string token = _tokenService.GenerateToken(user.UserId, user.Email);
+        return new LoginResponse
         {
-            Message = "Login Successful"
+            Token = token,
+            Expiration = DateTime.UtcNow.AddHours(1)    
         };
 
     }

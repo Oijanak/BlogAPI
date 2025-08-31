@@ -18,6 +18,6 @@ public interface IBlogRepository
         Task<Blog?> GetByIdAsync(int id);
         Task<IEnumerable<Blog>> GetAllAsync();
         Task<Blog> AddAsync(Blog blog);
-        void Update(Blog blog);
+        Task<Blog> Update(Blog blog);
         void Delete(Blog blog);
 }
