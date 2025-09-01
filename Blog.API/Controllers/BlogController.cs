@@ -1,4 +1,4 @@
-using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Interfaces;
 using BlogApi.Domain.DTOs;
 using BlogApi.Domain.Exceptions;
 using BlogApi.Domain.Models;
@@ -26,7 +26,7 @@ public class BlogController : ControllerBase
         int userId = int.Parse(userIdClaim.Value);
         var createdBlog = await _blogService.CreateBlogAsync(blog, userId);
 
-        return Ok(new ApiResponse<BlogDTO>
+        return Created("",new ApiResponse<BlogDTO>
         {
             Message = "Blog created successfully",
             Data = new BlogDTO

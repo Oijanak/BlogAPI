@@ -1,4 +1,4 @@
-using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Interfaces;
 using BlogApi.Domain.DTOs;
 using BlogApi.Domain.Models;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +21,7 @@ namespace BlogApi.API.Controllers
         public async Task<IActionResult> RegisterUser([FromBody] UserRequest user)
         {
             UserDTO createdUser = await _userService.RegisterUserAsync(user);
-            return Ok(new ApiResponse<UserDTO>
+            return Created("",new ApiResponse<UserDTO>
             {
                 Message = "User Registered Successfully",
                 Data = createdUser
