@@ -50,6 +50,18 @@ namespace BlogApi.API.Controllers
             });
         }
 
+        [HttpGet("{userId}/blogs")]
+        public async Task<IActionResult> GetUserBlogs(int userId)
+        { 
+          
+            var blogs = await _userService.GetBlogsByUserIdAsync(userId);
+            return Ok(new ApiResponse<IEnumerable<BlogDTO>>
+            {
+                Message = "User's blogs fetched successfully",
+                Data = blogs
+            });
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {

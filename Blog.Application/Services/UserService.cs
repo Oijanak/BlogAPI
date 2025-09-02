@@ -119,5 +119,17 @@ public class UserService : IUserService
         User user = await _userRepository.GetByIdAsync(userId) ?? throw new ApiException("User not found with id " + userId, HttpStatusCode.NotFound);
         await _userRepository.Delete(user);
     }
-   
+
+    public async Task<IEnumerable<BlogDTO>> GetBlogsByUserIdAsync(int userId)
+    {
+        User user = await _userRepository.GetByIdAsync(userId) ?? throw new ApiException("User not found with id " + userId, HttpStatusCode.NotFound);
+        return user.Blogs.Select(b => new BlogDTO
+        {
+            BlogId = b.BlogId,
+            BlogTitle = b.BlogTitle,
+            BlogContent = b.BlogContent,
+            CreatedAt = b.CreatedAt,
+            UpdatedAt = b.UpdatedAt,
+        });
+    }
 }

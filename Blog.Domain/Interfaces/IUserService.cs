@@ -16,4 +16,6 @@ public interface IUserService
 
     Task DeleteUserAsync(int userId);
 
+    Task<IEnumerable<BlogDTO>> GetBlogsByUserIdAsync(int userId);
+
 }
