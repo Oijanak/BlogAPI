@@ -2,7 +2,7 @@ using System;
 using BlogApi.Domain.DTOs;
 using BlogApi.Domain.Models;
 
-namespace BlogApi.Application.Interfaces;
+namespace BlogApi.Domain.Interfaces;
 
 public interface IUserService
 {

@@ -1,4 +1,4 @@
-namespace BlogApi.Application.Interfaces
+namespace BlogApi.Domain.Interfaces
 {
     public interface ITokenService
     {

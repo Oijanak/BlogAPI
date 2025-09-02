@@ -1,7 +1,7 @@
 using System;
 using BlogApi.Domain.Models;
 
-namespace BlogApi.Application.Interfaces;
+namespace BlogApi.Domain.Interfaces;
 
 public interface IUserRepository
 {
@@ -9,7 +9,7 @@ public interface IUserRepository
     Task<IEnumerable<User>> GetAllAsync();
     Task<User> AddAsync(User user);
     Task<User> Update(User user);
-    void Delete(User user);
+    Task Delete(User user);
     Task<User?> GetUserByEmailAsync(string email);
 }
 
@@ -19,5 +19,5 @@ public interface IBlogRepository
         Task<IEnumerable<Blog>> GetAllAsync();
         Task<Blog> AddAsync(Blog blog);
         Task<Blog> Update(Blog blog);
-        void Delete(Blog blog);
+        Task Delete(Blog blog);
 }
