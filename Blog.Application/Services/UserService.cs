@@ -19,7 +19,7 @@ public class UserService : IUserService
         _tokenService = tokenService;
     }
    
-    public async Task<UserDTO> RegisterUserAsync(UserRequest user)
+    public async Task<UserDTO> RegisterUserAsync(CreateUserRequest user)
     {
 
         User? existingUser = await _userRepository.GetUserByEmailAsync(user.Email);

@@ -19,7 +19,7 @@ namespace BlogApi.Domain.DTOs;
         public DateTime Expiration { get; set; }
     }
 
-    public class UserRequest
+    public class CreateUserRequest
     {
         [Required]
         public string Name { get; set; } = string.Empty;

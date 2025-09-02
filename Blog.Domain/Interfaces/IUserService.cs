@@ -6,7 +6,7 @@ namespace BlogApi.Domain.Interfaces;
 
 public interface IUserService
 {
-    Task<UserDTO> RegisterUserAsync(UserRequest user);
+    Task<UserDTO> RegisterUserAsync(CreateUserRequest user);
     Task<IEnumerable<UserDTO>> GetAllUsersAsync();
     Task<UserDTO?> GetUserByIdAsync(int userId);
 

@@ -19,7 +19,7 @@ namespace BlogApi.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] UserRequest user)
+        public async Task<IActionResult> RegisterUser([FromBody] CreateUserRequest user)
         {
             UserDTO createdUser = await _userService.RegisterUserAsync(user);
             return Created("",new ApiResponse<UserDTO>
