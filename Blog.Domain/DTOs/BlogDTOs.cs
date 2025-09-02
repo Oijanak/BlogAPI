@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace BlogApi.Domain.DTOs;
 
 public class BlogDTO
@@ -12,7 +14,9 @@ public class BlogDTO
 
 public class CreateBlogRequest
 {
+    [Required]
     public string BlogTitle { get; set; } = string.Empty;
+    [Required]
     public string BlogContent { get; set; } = string.Empty;
 }
 
