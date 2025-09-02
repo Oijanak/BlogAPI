@@ -1,7 +1,7 @@
 
 using Microsoft.EntityFrameworkCore; 
 
-using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Interfaces;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
 using BlogApi.Domain.DTOs;
@@ -23,10 +23,10 @@ public class UserRepository : IUserRepository
         return Task.FromResult(entity);
     }
 
-    public void Delete(User entity)
+    public Task Delete(User entity)
     {
         _context.Users.Remove(entity);
-        _context.SaveChanges();
+        return _context.SaveChangesAsync();
     }
 
     public Task<IEnumerable<User>> GetAllAsync()

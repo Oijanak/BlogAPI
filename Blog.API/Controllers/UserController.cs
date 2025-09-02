@@ -3,6 +3,7 @@ using BlogApi.Domain.DTOs;
 using BlogApi.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BlogApi.API.Controllers
 {
@@ -54,9 +55,10 @@ namespace BlogApi.API.Controllers
         {
             LoginResponse response = await _userService.LoginUserAsync(loginRequest);
             return Ok(response);
-        } 
+        }
 
-        [HttpPut("{userId}")]
+        [HttpPatch("{userId}")]
+        [Authorize]
         public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserRequest updateUser)
         {
             UserDTO updatedUser = await _userService.UpdateUserAsync(userId, updateUser);

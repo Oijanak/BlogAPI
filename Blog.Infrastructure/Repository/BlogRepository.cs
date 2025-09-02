@@ -1,5 +1,5 @@
 using System;
-using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Interfaces;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
 
@@ -24,10 +24,10 @@ public class BlogRepository : IBlogRepository
 
     }
 
-    public void Delete(Blog entity)
+    public  Task Delete(Blog entity)
     {
         _context.Blogs.Remove(entity);
-        _context.SaveChanges();
+        return _context.SaveChangesAsync();
     }
 
     public Task<IEnumerable<Blog>> GetAllAsync()

@@ -79,7 +79,7 @@ public class BlogController : ControllerBase
         });
     }
 
-    [HttpPut("{blogId}")]
+    [HttpPatch("{blogId}")]
     [Authorize]
     public async Task<IActionResult> UpdateBlog(int blogId, [FromBody] UpdateBlogRequest updateBlog)
     {

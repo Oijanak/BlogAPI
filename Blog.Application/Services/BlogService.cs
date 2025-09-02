@@ -1,5 +1,5 @@
 using System;
-using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Interfaces;
 using BlogApi.Domain.DTOs;
 using BlogApi.Domain.Exceptions;
 using BlogApi.Domain.Models;
@@ -37,7 +37,7 @@ public class BlogService : IBlogService
         {
             throw new ApiException("Unauthorized to delete this blog", HttpStatusCode.Unauthorized);
         }   
-        _blogRepository.Delete(existingBlog);
+        await _blogRepository.Delete(existingBlog);
     }
 
     public async Task<IEnumerable<Blog>> GetAllBlogsAsync()

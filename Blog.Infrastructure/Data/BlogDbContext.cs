@@ -36,11 +36,11 @@ public class BlogDbContext : DbContext
        .Property(b => b.UpdatedAt)
        .HasDefaultValueSql("GETUTCDATE()");
 
-        modelBuilder.Entity<User>()
-            .HasMany(u => u.Blogs)
-            .WithOne(b => b.User)
-            .HasForeignKey(b => b.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Blog>()
+        .HasOne(b => b.User)
+        .WithMany(u => u.Blogs)
+        .HasForeignKey(b=>b.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
     }
     
     public override int SaveChanges()

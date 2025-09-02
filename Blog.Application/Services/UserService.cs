@@ -1,6 +1,6 @@
 using System;
 using System.Net;
-using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Interfaces;
 using BlogApi.Domain.DTOs;
 using BlogApi.Domain.Exceptions;
 using BlogApi.Domain.Models;
@@ -31,7 +31,7 @@ public class UserService : IUserService
         {
             Name = user.Name,
             Email = user.Email,
-            Password = user.Password
+            Password = user.Password,
         };
         User createdUser = await _userRepository.AddAsync(newUser);
         return new UserDTO()
@@ -117,7 +117,7 @@ public class UserService : IUserService
     public async Task DeleteUserAsync(int userId)
     {
         User user = await _userRepository.GetByIdAsync(userId) ?? throw new ApiException("User not found with id " + userId, HttpStatusCode.NotFound);
-        _userRepository.Delete(user);
+        await _userRepository.Delete(user);
     }
    
 }

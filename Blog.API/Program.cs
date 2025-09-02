@@ -16,9 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BlogDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c=>
+builder.Services.AddSwaggerGen(options=>
 {
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
@@ -26,7 +26,7 @@ builder.Services.AddSwaggerGen(c=>
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
     });
-    c.OperationFilter<AuthOperationFilter>();
+    options.OperationFilter<AuthOperationFilter>();
 
     
 });
@@ -74,8 +74,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

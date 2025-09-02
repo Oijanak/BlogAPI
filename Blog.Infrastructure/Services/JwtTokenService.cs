@@ -1,4 +1,4 @@
-using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -20,7 +20,7 @@ namespace BlogApi.Infrastructure.Services
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? throw new InvalidOperationException("Jwt Key is not found")) );
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
+            
             var claims = new[]
             {
                 new Claim("userId", userId.ToString()), 
