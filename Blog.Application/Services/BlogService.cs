@@ -1,9 +1,10 @@
 using System;
-using BlogApi.Domain.Interfaces;
-using BlogApi.Domain.DTOs;
-using BlogApi.Domain.Exceptions;
+using BlogApi.Application.DTOs;
+using BlogApi.Application.Exceptions;
 using BlogApi.Domain.Models;
 using System.Net;
+using BlogApi.Application.Interfaces;
+
 
 namespace BlogApi.Application.Services;
 

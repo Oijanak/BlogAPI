@@ -1,5 +1,5 @@
-using BlogApi.Domain.DTOs;
-using BlogApi.Domain.Exceptions;
+using BlogApi.Application.DTOs;
+using BlogApi.Application.Exceptions;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;

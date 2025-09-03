@@ -1,8 +1,8 @@
 using System.Text;
 using BlogApi.API.Controllers.Middlewares;
-using BlogApi.Domain.Interfaces;
+using BlogApi.Application.Interfaces;
 using BlogApi.Application.Services;
-using BlogApi.Domain.DTOs;
+using BlogApi.Application.DTOs;
 using BlogApi.Infrastructure.Data;
 using BlogApi.Infrastructure.Repository;
 using BlogApi.Infrastructure.Services;

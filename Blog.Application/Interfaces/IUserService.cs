@@ -1,8 +1,8 @@
 using System;
-using BlogApi.Domain.DTOs;
-using BlogApi.Domain.Models;
+using BlogApi.Application.DTOs;
 
-namespace BlogApi.Domain.Interfaces;
+
+namespace BlogApi.Application.Interfaces;
 
 public interface IUserService
 {

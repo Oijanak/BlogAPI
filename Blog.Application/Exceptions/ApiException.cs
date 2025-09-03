@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace BlogApi.Domain.Exceptions;
+namespace BlogApi.Application.Exceptions;
 public class ApiException : ApplicationException
 {
     public int StatusCode { get; set; }

@@ -1,7 +1,7 @@
 using System;
 using BlogApi.Domain.Models;
 
-namespace BlogApi.Domain.Interfaces;
+namespace BlogApi.Application.Interfaces;
 
 public interface IUserRepository
 {

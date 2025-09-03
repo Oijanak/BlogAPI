@@ -1,10 +1,10 @@
 
 using Microsoft.EntityFrameworkCore; 
 
-using BlogApi.Domain.Interfaces;
+using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
-using BlogApi.Domain.DTOs;
+using BlogApi.Application.DTOs;
 
 namespace BlogApi.Infrastructure.Repository;
 public class UserRepository : IUserRepository

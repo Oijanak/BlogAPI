@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace BlogApi.Domain.DTOs;
+namespace BlogApi.Application.DTOs;
 
 public class ApiErrorResponse
 {

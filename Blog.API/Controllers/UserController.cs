@@ -1,7 +1,5 @@
-using BlogApi.Domain.Interfaces;
-using BlogApi.Domain.DTOs;
-using BlogApi.Domain.Models;
-using Microsoft.AspNetCore.Http;
+using BlogApi.Application.Interfaces;
+using BlogApi.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 

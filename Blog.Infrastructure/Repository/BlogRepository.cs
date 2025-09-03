@@ -1,5 +1,5 @@
 using System;
-using BlogApi.Domain.Interfaces;
+using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
 

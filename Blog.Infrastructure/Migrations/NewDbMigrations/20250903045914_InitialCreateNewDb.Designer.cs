@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Blog.Infrastructure.Migrations.NewDbMigrations
+namespace BlogApi.Infrastructure.Migrations.NewDbMigrations
 {
     [DbContext(typeof(BlogDbContext))]
     [Migration("20250903045914_InitialCreateNewDb")]

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Blog.Infrastructure.Migrations.NewDbMigrations
+namespace BlogApi.Infrastructure.Migrations.NewDbMigrations
 {
     /// <inheritdoc />
     public partial class InitialCreateNewDb : Migration
