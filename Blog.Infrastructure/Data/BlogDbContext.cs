@@ -16,31 +16,8 @@ public class BlogDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<User>()
-            .HasIndex(u => u.Email)
-            .IsUnique();
-
-        modelBuilder.Entity<User>()
-        .ToTable(t => t.HasCheckConstraint(
-            "CK_User_Email_Format",
-            @"Email LIKE '_%@_%._%'"
-        ));
-
-
-        modelBuilder.Entity<Blog>()
-        .Property(b => b.CreatedAt)
-        .HasDefaultValueSql("GETUTCDATE()");
-
-        modelBuilder.Entity<Blog>()
-       .Property(b => b.UpdatedAt)
-       .HasDefaultValueSql("GETUTCDATE()");
-
-        modelBuilder.Entity<Blog>()
-        .HasOne(b => b.User)
-        .WithMany(u => u.Blogs)
-        .HasForeignKey(b=>b.UserId)
-        .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.ApplyConfiguration(new UserConfig());
+        modelBuilder.ApplyConfiguration(new BlogConfig());
     }
     
     public override int SaveChanges()

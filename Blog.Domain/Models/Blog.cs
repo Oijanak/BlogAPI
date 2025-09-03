@@ -5,25 +5,19 @@ namespace BlogApi.Domain.Models
 {
     public class Blog
     {
-        [Key]
-        public int BlogId { get; set; }
-
-        [Required]
-        [MaxLength(200)]
+        public int BlogId { get; init; }
+        
         public string BlogTitle { get; set; } = string.Empty;
-
-        [Required]
+        
         public string BlogContent { get; set; } = string.Empty;
 
-        public DateTime CreatedAt{ get; private set; } = DateTime.UtcNow;
+        public DateTime CreatedAt{ get; init; } = DateTime.UtcNow;
 
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; init; } = DateTime.UtcNow;
 
-        public int UserId { get; set; }
-
+        public int UserId { get; init; }
         
-        [ForeignKey("UserId")]
-        public User User { get; set; } = null!;
+        public User User { get; init; } = null!;
 
     }
 }

@@ -7,24 +7,15 @@ namespace BlogApi.Domain.Models
 {
     public class User
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int UserId { get; set; }
-
-        [Required]
-        [MaxLength(100)]
+        public int UserId { get; init; }
+        
         public string Name { get; set; } = string.Empty;
-
-        [Required]
-        [EmailAddress]
         
         public string Email { get; set; } = string.Empty;
-
-        [Required]
+        
         public string PasswordHash { get; set; }=string.Empty;
 
         
-        [NotMapped]
         public string Password
         {
             set {
@@ -37,8 +28,6 @@ namespace BlogApi.Domain.Models
         }
 
         public ICollection<Blog> Blogs { get; } = new List<Blog>();
-
-        
 
         public bool VerifyPassword(string plainPassword)
         {
