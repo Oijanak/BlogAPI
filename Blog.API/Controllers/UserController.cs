@@ -1,4 +1,6 @@
+using System.Net;
 using BlogApi.Application.DTOs;
+using BlogApi.Application.Exceptions;
 using BlogApi.Application.Features.Users.Commands.DeleteUserCommand;
 using BlogApi.Application.Features.Users.Query.GetBlogsByUserId;
 using BlogApi.Application.Features.Users.Query.GetUserListQuery;
@@ -72,10 +74,12 @@ namespace BlogApi.API.Controllers
             return Ok(response);
         }
 
-        [HttpPatch("{userId}")]
+        [HttpPatch]
         [Authorize]
-        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserCommand updateUser)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserCommand updateUser)
         {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId") ?? throw new ApiException("User not authorized", HttpStatusCode.Unauthorized);
+            int userId = int.Parse(userIdClaim.Value);
             updateUser.UserId = userId;
             UserDTO updatedUser = await _sender.Send(updateUser);
             return Ok(new ApiResponse<UserDTO>

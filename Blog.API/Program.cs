@@ -2,7 +2,6 @@ using System.Text;
 using BlogApi.API.Controllers.Middlewares;
 using BlogApi.Application;
 using BlogApi.Application.Interfaces;
-using BlogApi.Application.Services;
 using BlogApi.Application.DTOs;
 using BlogApi.Infrastructure.Data;
 using BlogApi.Infrastructure.Repository;
@@ -31,14 +30,17 @@ builder.Services.AddSwaggerGen(options=>
 
     
 });
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true;
+    });
 builder.Services.AddApplication();
 
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IBlogService, BlogService>();
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
