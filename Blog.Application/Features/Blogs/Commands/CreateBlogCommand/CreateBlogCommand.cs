@@ -11,6 +11,7 @@ public class CreateBlogCommand:IRequest<BlogDTO>
 
     public CreateBlogCommand(int userId,string blogTitle, string blogContent)
     {
+        UserId = userId;
         BlogTitle = blogTitle;
         BlogContent = blogContent;
     }
