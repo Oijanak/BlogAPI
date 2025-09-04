@@ -24,9 +24,9 @@ namespace BlogApi.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] CreateUserCommand user)
+        public async Task<IActionResult> RegisterUser(RegisterUserRequest user)
         {
-            UserDTO createdUser = await _sender.Send(user);
+            UserDTO createdUser = await _sender.Send(new CreateUserCommand(user.Name,user.Email,user.Password));
             return Created("",new ApiResponse<UserDTO>
             {
                 Message = "User Registered Successfully",
@@ -68,20 +68,20 @@ namespace BlogApi.API.Controllers
          }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginUserRequest loginRequest)
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            LoginResponse response = await _sender.Send(loginRequest);
+            LoginResponse response = await _sender.Send(new LoginUserRequest(loginRequest.Email,loginRequest.Password));
             return Ok(response);
         }
 
         [HttpPatch]
         [Authorize]
-        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserCommand updateUser)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUser)
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId") ?? throw new ApiException("User not authorized", HttpStatusCode.Unauthorized);
             int userId = int.Parse(userIdClaim.Value);
-            updateUser.UserId = userId;
-            UserDTO updatedUser = await _sender.Send(updateUser);
+            
+            UserDTO updatedUser = await _sender.Send(new UpdateUserCommand(userId,updateUser.Name,updateUser.Email,updateUser.Password));
             return Ok(new ApiResponse<UserDTO>
             {
                 Message = "User updated successfully",

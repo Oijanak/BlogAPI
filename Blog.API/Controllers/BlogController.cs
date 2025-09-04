@@ -26,12 +26,11 @@ public class BlogController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> CreateBlog([FromBody] CreateBlogCommand blog)
+    public async Task<IActionResult> CreateBlog([FromBody] CreateBlogRequest blog)
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId") ?? throw new ApiException("User not authorized", HttpStatusCode.Unauthorized);
         int userId = int.Parse(userIdClaim.Value);
-        blog.UserId = userId;
-        BlogDTO createdBlog = await _sender.Send(blog);
+        BlogDTO createdBlog = await _sender.Send(new CreateBlogCommand(userId,blog.BlogTitle, blog.BlogContent));
 
         return Created("",new ApiResponse<BlogDTO>
         {
@@ -64,14 +63,11 @@ public class BlogController : ControllerBase
 
     [HttpPatch("{blogId}")]
     [Authorize]
-    public async Task<IActionResult> UpdateBlog(int blogId, [FromBody] UpdateBlogCommand updateBlogCommand)
+    public async Task<IActionResult> UpdateBlog(int blogId, [FromBody]UpdateBlogRequest updateBlog)
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId") ?? throw new ApiException("User not authorized", HttpStatusCode.Unauthorized);
         int userId = int.Parse(userIdClaim.Value);
-        updateBlogCommand.UserId = userId;
-        updateBlogCommand.BlogId = blogId;
-
-        BlogDTO updatedBlog = await _sender.Send(updateBlogCommand);
+        BlogDTO updatedBlog = await _sender.Send(new UpdateBlogCommand(blogId,userId,updateBlog.BlogTitle,updateBlog.BlogContent));
         return Ok(new ApiResponse<BlogDTO>
         {
             Message = "Blog updated successfully",

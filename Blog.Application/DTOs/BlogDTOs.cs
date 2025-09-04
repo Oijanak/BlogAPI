@@ -12,4 +12,14 @@ public class BlogDTO
 
 }
 
+public class CreateBlogRequest
+{
+    public string BlogTitle { get; set; } = string.Empty;
+    public string BlogContent { get; set; } = string.Empty;
+}
 
+public class UpdateBlogRequest
+{
+    public string? BlogTitle { get; set; }
+    public string? BlogContent { get; set; }
+}

@@ -1,9 +1,8 @@
 using FluentValidation;
 
-
-public class CreateUserCommandValidation : AbstractValidator<CreateUserCommand>
+public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
-    public CreateUserCommandValidation()
+    public CreateUserCommandValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required")
