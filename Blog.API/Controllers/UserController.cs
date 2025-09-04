@@ -1,5 +1,6 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Users.Commands.DeleteUserCommand;
+using BlogApi.Application.Features.Users.Query.GetBlogsByUserId;
 using BlogApi.Application.Features.Users.Query.GetUserListQuery;
 using BlogApi.Application.Features.Users.Query.GetUserRequest;
 using BlogApi.Application.Features.Users.Query.LoginUserRequest;
@@ -52,17 +53,17 @@ namespace BlogApi.API.Controllers
             });
         }
 
-        /*  [HttpGet("{userId}/blogs")]
+         [HttpGet("{userId}/blogs")]
         public async Task<IActionResult> GetUserBlogs(int userId)
          {
 
-             var blogs = await _sender.Send(userId);
+             var blogs = await _sender.Send(new GetBlogsByUserIdQuery(userId));
              return Ok(new ApiResponse<IEnumerable<BlogDTO>>
              {
                  Message = "User's blogs fetched successfully",
                  Data = blogs
              });
-         }*/
+         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserRequest loginRequest)
