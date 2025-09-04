@@ -1,17 +1,17 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
-using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 using System.Net;
 using System.Text.Json;
 
 namespace BlogApi.API.Controllers.Middlewares;
+
 public class GlobalExceptionMiddleware
 {
     private readonly RequestDelegate _next;
-
     private readonly ILogger<GlobalExceptionMiddleware> _logger;
 
-    public GlobalExceptionMiddleware(RequestDelegate next,ILogger<GlobalExceptionMiddleware> logger)
+    public GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger)
     {
         _next = next;
         _logger = logger;
@@ -29,7 +29,7 @@ public class GlobalExceptionMiddleware
         }
     }
 
-    private Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
         ApiErrorResponse response;
@@ -38,17 +38,42 @@ public class GlobalExceptionMiddleware
         {
             case ApiException apiEx:
                 context.Response.StatusCode = apiEx.StatusCode;
-                response = new ApiErrorResponse{StatusCode=apiEx.StatusCode,Message=apiEx.Message};
+                response = new ApiErrorResponse
+                {
+                    StatusCode = apiEx.StatusCode,
+                    Message = apiEx.Message
+                };
                 break;
 
+            case FluentValidation.ValidationException validationEx:
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+                var validationErrors = validationEx.Errors
+                    .Select(e => $"{e.PropertyName}: {e.ErrorMessage}")
+                    .ToList();
+
+                var errorResponse = new
+                {
+                    StatusCode = 400,
+                    Message = "Validation failed",
+                    Errors = validationErrors
+                };
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse));
+                return; 
+
             default:
-               _logger.LogError(exception, "An unhandled exception occurred.");
+                _logger.LogError(exception, "An unhandled exception occurred.");
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                response = new ApiErrorResponse { StatusCode = 500, Message="Internal Server Error" };
+                response = new ApiErrorResponse
+                {
+                    StatusCode = 500,
+                    Message = "Internal Server Error"
+                };
                 break;
         }
 
         var json = JsonSerializer.Serialize(response);
-        return context.Response.WriteAsync(json);
+        await context.Response.WriteAsync(json);
     }
 }

@@ -1,5 +1,9 @@
-using BlogApi.Application.Interfaces;
 using BlogApi.Application.DTOs;
+using BlogApi.Application.Features.Users.Commands.DeleteUserCommand;
+using BlogApi.Application.Features.Users.Query.GetUserListQuery;
+using BlogApi.Application.Features.Users.Query.GetUserRequest;
+using BlogApi.Application.Features.Users.Query.LoginUserRequest;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
@@ -9,17 +13,17 @@ namespace BlogApi.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly ISender _sender;
 
-        public UserController(IUserService userService)
+        public UserController(ISender sender)
         {
-            _userService = userService;
+            _sender= sender;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] CreateUserRequest user)
+        public async Task<IActionResult> RegisterUser([FromBody] CreateUserCommand user)
         {
-            UserDTO createdUser = await _userService.RegisterUserAsync(user);
+            UserDTO createdUser = await _sender.Send(user);
             return Created("",new ApiResponse<UserDTO>
             {
                 Message = "User Registered Successfully",
@@ -29,7 +33,7 @@ namespace BlogApi.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var users = await _userService.GetAllUsersAsync();
+            var users = await _sender.Send(new GetUserListQuery());
             return Ok(new ApiResponse<IEnumerable<UserDTO>>
             {
                 Message = "Users fetched successfully",
@@ -40,7 +44,7 @@ namespace BlogApi.API.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetById(int userId)
         {
-            UserDTO? user = await _userService.GetUserByIdAsync(userId);
+            UserDTO? user = await _sender.Send(new GetUserQuery(userId));
             return Ok(new ApiResponse<UserDTO?>
             {
                 Message = "User fetched successfully",
@@ -48,30 +52,31 @@ namespace BlogApi.API.Controllers
             });
         }
 
-        [HttpGet("{userId}/blogs")]
+        /*  [HttpGet("{userId}/blogs")]
         public async Task<IActionResult> GetUserBlogs(int userId)
-        { 
-          
-            var blogs = await _userService.GetBlogsByUserIdAsync(userId);
-            return Ok(new ApiResponse<IEnumerable<BlogDTO>>
-            {
-                Message = "User's blogs fetched successfully",
-                Data = blogs
-            });
-        }
+         {
+
+             var blogs = await _sender.Send(userId);
+             return Ok(new ApiResponse<IEnumerable<BlogDTO>>
+             {
+                 Message = "User's blogs fetched successfully",
+                 Data = blogs
+             });
+         }*/
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> Login([FromBody] LoginUserRequest loginRequest)
         {
-            LoginResponse response = await _userService.LoginUserAsync(loginRequest);
+            LoginResponse response = await _sender.Send(loginRequest);
             return Ok(response);
         }
 
         [HttpPatch("{userId}")]
         [Authorize]
-        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserRequest updateUser)
+        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserCommand updateUser)
         {
-            UserDTO updatedUser = await _userService.UpdateUserAsync(userId, updateUser);
+            updateUser.UserId = userId;
+            UserDTO updatedUser = await _sender.Send(updateUser);
             return Ok(new ApiResponse<UserDTO>
             {
                 Message = "User updated successfully",
@@ -82,7 +87,7 @@ namespace BlogApi.API.Controllers
         [HttpDelete("{userId}")]
         public async Task<IActionResult> DeleteUser(int userId)
         {
-            await _userService.DeleteUserAsync(userId);
+            await _sender.Send(new DeleteUserCommand(userId));
             return Ok(new ApiResponse<string>
             {
                 Message = "User deleted successfully",

@@ -1,5 +1,6 @@
 using System.Text;
 using BlogApi.API.Controllers.Middlewares;
+using BlogApi.Application;
 using BlogApi.Application.Interfaces;
 using BlogApi.Application.Services;
 using BlogApi.Application.DTOs;
@@ -31,6 +32,8 @@ builder.Services.AddSwaggerGen(options=>
     
 });
 builder.Services.AddControllers();
+builder.Services.AddApplication();
+
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();

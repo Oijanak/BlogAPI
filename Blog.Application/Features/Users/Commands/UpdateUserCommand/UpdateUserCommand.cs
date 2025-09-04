@@ -3,7 +3,7 @@ using MediatR;
 
 public class UpdateUserCommand : IRequest<UserDTO>
 {
-    public int UserId { get; }
+    public int UserId { get; set; }
     public string? Name { get; }
     public string? Email { get; }
     public string? Password { get; }
