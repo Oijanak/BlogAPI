@@ -1,3 +1,4 @@
+using BlogApi.Domain.Models;
 using MediatR;
 
 namespace BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
@@ -22,4 +23,13 @@ public class AuthorDTO
     public string AuthorEmail { get; set; }
     public string AuthorName { get; set; }
     public int Age { get; set; }
+
+    public AuthorDTO(Author author)
+    {
+        AuthorId = author.AuthorId;
+        AuthorEmail = author.AuthorEmail;
+        AuthorName = author.AuthorName;
+        Age = author.Age;
+        
+    }
 }

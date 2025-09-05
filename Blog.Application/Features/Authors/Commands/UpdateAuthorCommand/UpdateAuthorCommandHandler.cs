@@ -22,14 +22,7 @@ public class UpdateAuthorCommandHandler:IRequestHandler<UpdateAuthorCommand, Aut
         existingAuthor.AuthorName = request.AuthorName;
         existingAuthor.Age = request.Age;
         await _blogDbContext.SaveChangesAsync(cancellationToken);
-        return new AuthorDTO
-        {
-            AuthorId = existingAuthor.AuthorId,
-            Age = existingAuthor.Age,
-            AuthorEmail = existingAuthor.AuthorEmail,
-            AuthorName = existingAuthor.AuthorName,
-            
-        };
-        
+        return new AuthorDTO(existingAuthor);
+
     }
 }

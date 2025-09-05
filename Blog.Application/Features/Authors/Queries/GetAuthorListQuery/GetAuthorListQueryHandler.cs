@@ -16,12 +16,6 @@ public class GetAuthorListQueryHandler:IRequestHandler<GetAuthorListQuery,IEnume
     }
     public async Task<IEnumerable<AuthorDTO>> Handle(GetAuthorListQuery request, CancellationToken cancellationToken)
     {
-        return await _blogDbContext.Authors.Select(author => new AuthorDTO
-        {
-            AuthorEmail = author.AuthorEmail,
-            AuthorId = author.AuthorId,
-            AuthorName = author.AuthorName,
-            Age = author.Age
-        }).ToListAsync();
+        return await _blogDbContext.Authors.Select(author => new AuthorDTO(author)).ToListAsync();
     }
 }

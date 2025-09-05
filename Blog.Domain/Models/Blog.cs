@@ -15,7 +15,7 @@ namespace BlogApi.Domain.Models
 
         public DateTime UpdatedAt { get; init; } = DateTime.UtcNow;
         
-        public Author Author { get; init; } = null!;
+        public Author Author { get; set; } = null!;
         
         public int AuthorId { get; set; }
 

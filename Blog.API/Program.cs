@@ -3,18 +3,25 @@ using BlogApi.API.Controllers.Middlewares;
 using BlogApi.Application;
 using BlogApi.Application.Interfaces;
 using BlogApi.Application.DTOs;
+using BlogApi.Application.DTOs.Validators;
 using BlogApi.Infrastructure.Data;
 using BlogApi.Infrastructure.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<BlogDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserRequestValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+
 builder.Services.AddSwaggerGen(options=>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

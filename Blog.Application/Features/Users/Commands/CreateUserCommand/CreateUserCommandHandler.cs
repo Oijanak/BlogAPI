@@ -7,9 +7,9 @@ using MediatR;
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserDTO>
 {
     private readonly BlogDbContext _blogDbContext;
-    public CreateUserCommandHandler(BlogDbContext _blogDbContext)
+    public CreateUserCommandHandler(BlogDbContext blogDbContext)
     {
-        _blogDbContext = _blogDbContext;
+        _blogDbContext = blogDbContext;
     }
 
     public async Task<UserDTO> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -21,6 +21,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
             Password = request.Password
         };
         await _blogDbContext.Users.AddAsync(user);
+        await _blogDbContext.SaveChangesAsync(cancellationToken);
         return new UserDTO
         {
             UserId = user.UserId,

@@ -81,11 +81,3 @@ public class AuthorController:ControllerBase
     }
 }
 
-public class AuthorRequest
-{
-    public string AuthorName { get; set; }
-    public string AuthorEmail { get; set; }
-    
-    public int Age { get; set; }
-    
-}

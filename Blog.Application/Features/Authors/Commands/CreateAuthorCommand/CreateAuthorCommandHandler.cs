@@ -22,12 +22,6 @@ public class CreateAuthorCommandHandler:IRequestHandler<CreateAuthorCommand,Auth
         };
         await _blogDbContext.Authors.AddAsync(author, cancellationToken);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
-        return new AuthorDTO
-        {
-            AuthorId = author.AuthorId,
-            Age = author.Age,
-            AuthorEmail = author.AuthorEmail,
-            AuthorName = author.AuthorName,
-        };
+        return new AuthorDTO(author);
     }
 }

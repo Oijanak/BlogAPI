@@ -22,6 +22,38 @@ namespace BlogApi.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("BlogApi.Domain.Models.Author", b =>
+                {
+                    b.Property<int>("AuthorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuthorId"));
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AuthorEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AuthorId");
+
+                    b.HasIndex("AuthorEmail")
+                        .IsUnique();
+
+                    b.ToTable("Authors", t =>
+                        {
+                            t.HasCheckConstraint("CK_Author_Age", "[Age] >= 0 AND [Age] <= 100");
+
+                            t.HasCheckConstraint("CK_Author_Email_Format", "AuthorEmail LIKE '_%@_%._%'");
+                        });
+                });
+
             modelBuilder.Entity("BlogApi.Domain.Models.Blog", b =>
                 {
                     b.Property<int>("BlogId")
@@ -29,6 +61,9 @@ namespace BlogApi.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BlogId"));
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
 
                     b.Property<string>("BlogContent")
                         .IsRequired()
@@ -49,12 +84,9 @@ namespace BlogApi.Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("BlogId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Blogs");
                 });
@@ -92,16 +124,16 @@ namespace BlogApi.Infrastructure.Migrations
 
             modelBuilder.Entity("BlogApi.Domain.Models.Blog", b =>
                 {
-                    b.HasOne("BlogApi.Domain.Models.User", "User")
+                    b.HasOne("BlogApi.Domain.Models.Author", "Author")
                         .WithMany("Blogs")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("BlogApi.Domain.Models.User", b =>
+            modelBuilder.Entity("BlogApi.Domain.Models.Author", b =>
                 {
                     b.Navigation("Blogs");
                 });

@@ -14,8 +14,8 @@ public class AuthorConfig:IEntityTypeConfiguration<Author>
         builder.ToTable(t=>t.HasCheckConstraint("CK_Author_Age", "[Age] >= 0 AND [Age] <= 100"));
         builder.HasIndex(u => u.AuthorEmail).IsUnique();
         builder.ToTable(t => t.HasCheckConstraint(
-            "CK_User_Email_Format",
-            @"Email LIKE '_%@_%._%'"
+            "CK_Author_Email_Format",
+            @"AuthorEmail LIKE '_%@_%._%'"
         ));
     }
 }

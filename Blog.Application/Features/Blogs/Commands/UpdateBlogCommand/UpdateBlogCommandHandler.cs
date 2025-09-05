@@ -1,6 +1,7 @@
 using System.Net;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
+using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
@@ -12,9 +13,9 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,BlogDTO>
 {
     private readonly BlogDbContext _blogDbContext;
 
-    public UpdateBlogCommandHandler(BlogDbContext _blogDbContext)
+    public UpdateBlogCommandHandler(BlogDbContext blogDbContext)
     {
-        _blogDbContext = _blogDbContext;
+        _blogDbContext = blogDbContext;
     }
     public async Task<BlogDTO> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
     {
@@ -22,7 +23,7 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,BlogDTO>
         Blog existingBlog = await _blogDbContext.Blogs.FindAsync(request.BlogId) ?? throw new ApiException($"Blog not found with id {request.BlogId}", HttpStatusCode.NotFound);
         existingBlog.BlogTitle = request.BlogTitle;
         existingBlog.BlogContent = request.BlogContent;
-        existingBlog.AuthorId = request.AuthorId;
+        existingBlog.Author = author;
          _blogDbContext.Blogs.Update(existingBlog);
          await _blogDbContext.SaveChangesAsync(cancellationToken);
          return new BlogDTO()
@@ -32,7 +33,7 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,BlogDTO>
              BlogContent = existingBlog.BlogContent,
              CreatedAt = existingBlog.CreatedAt,
              UpdatedAt = existingBlog.UpdatedAt,
-             Author = existingBlog.Author,
+             Author = new AuthorDTO(existingBlog.Author),
          };
     }
 }

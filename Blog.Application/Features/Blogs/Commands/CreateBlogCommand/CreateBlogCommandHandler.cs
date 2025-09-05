@@ -1,6 +1,7 @@
 using System.Net;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
+using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
@@ -24,7 +25,8 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,BlogDTO>
         {
             BlogTitle = request.BlogTitle,
             BlogContent = request.BlogContent,
-            AuthorId= request.AuthorId
+            Author = author
+            
         };
         
        await _blogDbContext.Blogs.AddAsync(blog, cancellationToken);
@@ -36,7 +38,10 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,BlogDTO>
             BlogContent = blog.BlogContent,
             CreatedAt = blog.CreatedAt,
             UpdatedAt = blog.UpdatedAt,
-            Author = blog.Author
+            Author = new AuthorDTO(blog.Author)
+            {
+                
+            }
             
         };
         
