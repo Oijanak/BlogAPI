@@ -3,29 +3,28 @@ using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
+using BlogApi.Infrastructure.Data;
 using MediatR;
 
 namespace BlogApi.Application.Features.Blogs.Commands.UpdateBlogCommand;
 
 public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,BlogDTO>
 {
-    private readonly IBlogRepository _blogRepository;
+    private readonly BlogDbContext _blogDbContext;
 
-    public UpdateBlogCommandHandler(IBlogRepository blogRepository)
+    public UpdateBlogCommandHandler(BlogDbContext _blogDbContext)
     {
-        _blogRepository = blogRepository;
+        _blogDbContext = _blogDbContext;
     }
     public async Task<BlogDTO> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
     {
-        
-        Blog existingBlog = await _blogRepository.GetByIdAsync(request.BlogId) ?? throw new ApiException("Blog not found", HttpStatusCode.NotFound);
-        if (existingBlog.UserId != request.UserId)
-        {
-            throw new ApiException("Unauthorized to update this blog", HttpStatusCode.Unauthorized);
-        }
-        existingBlog.BlogTitle = request.BlogTitle ?? existingBlog.BlogTitle;
-        existingBlog.BlogContent = request.BlogContent ?? existingBlog.BlogContent;
-         await _blogRepository.Update(existingBlog);
+        Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId)??throw new ApiException($"Author not found with id {request.AuthorId}", HttpStatusCode.NotFound);
+        Blog existingBlog = await _blogDbContext.Blogs.FindAsync(request.BlogId) ?? throw new ApiException($"Blog not found with id {request.BlogId}", HttpStatusCode.NotFound);
+        existingBlog.BlogTitle = request.BlogTitle;
+        existingBlog.BlogContent = request.BlogContent;
+        existingBlog.AuthorId = request.AuthorId;
+         _blogDbContext.Blogs.Update(existingBlog);
+         await _blogDbContext.SaveChangesAsync(cancellationToken);
          return new BlogDTO()
          {
              BlogId = existingBlog.BlogId,
@@ -33,6 +32,7 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,BlogDTO>
              BlogContent = existingBlog.BlogContent,
              CreatedAt = existingBlog.CreatedAt,
              UpdatedAt = existingBlog.UpdatedAt,
+             Author = existingBlog.Author,
          };
     }
 }

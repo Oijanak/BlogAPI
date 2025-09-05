@@ -1,28 +1,29 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Interfaces;
+using BlogApi.Infrastructure.Data;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Blogs.Queries.GetBlogListQuery;
 
 public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, IEnumerable<BlogDTO>>
 {
-    private readonly IBlogRepository _blogRepository;
+    private readonly BlogDbContext _blogDbContext;
 
-    public GetBlogListQueryHandler(IBlogRepository blogRepository)
+    public GetBlogListQueryHandler(BlogDbContext blogDbContext)
     {
-        _blogRepository = blogRepository;
+        _blogDbContext = blogDbContext;
     }
     
     public async Task<IEnumerable<BlogDTO>> Handle(GetBlogListQuery request, CancellationToken cancellationToken)
     {
-        var blogs= await _blogRepository.GetAllAsync();
-        return blogs.Select(blog => new BlogDTO()
+        return await _blogDbContext.Blogs.Select(blog => new BlogDTO()
         {
             BlogId = blog.BlogId,
             BlogTitle = blog.BlogTitle,
             BlogContent = blog.BlogContent,
             CreatedAt = blog.CreatedAt,
             UpdatedAt = blog.UpdatedAt,
-        });
+        }).ToListAsync();
     }
 }

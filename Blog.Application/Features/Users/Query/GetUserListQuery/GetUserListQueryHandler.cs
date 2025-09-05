@@ -1,35 +1,29 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
+using BlogApi.Infrastructure.Data;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Users.Query.GetUserListQuery;
 
 public class GetUserListQueryHandler:IRequestHandler<GetUserListQuery, IEnumerable<UserDTO>>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly BlogDbContext _blogDbContext;
 
-    public GetUserListQueryHandler(IUserRepository userRepository)
+    public GetUserListQueryHandler(BlogDbContext blogDbContext)
     {
-        _userRepository = userRepository;
+        _blogDbContext = blogDbContext;
     }
     public async Task<IEnumerable<UserDTO>> Handle(GetUserListQuery request, CancellationToken cancellationToken)
     {
-        IEnumerable<User> users = await _userRepository.GetAllAsync();
-
-        return users.Select(u => new UserDTO
-        {
-            UserId = u.UserId,
-            Name = u.Name,
-            Email = u.Email,
-            Blogs = u.Blogs.Select(b => new BlogDTO
+        return await _blogDbContext.Users
+            .Select(u => new UserDTO
             {
-                BlogId = b.BlogId,
-                BlogTitle = b.BlogTitle,
-                BlogContent = b.BlogContent,
-                CreatedAt = b.CreatedAt,
-                UpdatedAt = b.UpdatedAt,
-            }).ToList()
-        });
+                UserId = u.UserId,
+                Name = u.Name,
+                Email = u.Email
+            })
+            .ToListAsync(cancellationToken); 
     }
 }

@@ -1,34 +1,43 @@
+using System.Net;
 using BlogApi.Application.DTOs;
+using BlogApi.Application.Exceptions;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
+using BlogApi.Infrastructure.Data;
 using MediatR;
 
 namespace BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 
 public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,BlogDTO>
 {
-    private readonly IBlogRepository _blogRepository;
+    private readonly BlogDbContext _blogDbContext;
 
-    public CreateBlogCommandHandler(IBlogRepository blogRepository)
+    public CreateBlogCommandHandler(BlogDbContext blogDbContext)
     {
-        _blogRepository = blogRepository;
+        _blogDbContext = blogDbContext;
     }
+    
     public async Task<BlogDTO> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
     {
+        Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId)??throw new ApiException("Author not found",HttpStatusCode.NotFound);
         Blog blog = new Blog
         {
             BlogTitle = request.BlogTitle,
             BlogContent = request.BlogContent,
-            UserId = request.UserId
+            AuthorId= request.AuthorId
         };
-       await _blogRepository.AddAsync(blog);
+        
+       await _blogDbContext.Blogs.AddAsync(blog, cancellationToken);
+       await _blogDbContext.SaveChangesAsync(cancellationToken);
         return new BlogDTO()
         {
             BlogId = blog.BlogId,
             BlogTitle = blog.BlogTitle,
             BlogContent = blog.BlogContent,
             CreatedAt = blog.CreatedAt,
-            UpdatedAt = blog.UpdatedAt
+            UpdatedAt = blog.UpdatedAt,
+            Author = blog.Author
+            
         };
         
     }

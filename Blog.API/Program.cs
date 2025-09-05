@@ -4,7 +4,6 @@ using BlogApi.Application;
 using BlogApi.Application.Interfaces;
 using BlogApi.Application.DTOs;
 using BlogApi.Infrastructure.Data;
-using BlogApi.Infrastructure.Repository;
 using BlogApi.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -38,8 +37,7 @@ builder.Services.AddControllers()
 builder.Services.AddApplication();
 
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IBlogRepository, BlogRepository>();
+
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

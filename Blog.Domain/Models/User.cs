@@ -27,8 +27,6 @@ namespace BlogApi.Domain.Models
     
         }
 
-        public ICollection<Blog> Blogs { get; } = new List<Blog>();
-
         public bool VerifyPassword(string plainPassword)
         {
             return BCrypt.Net.BCrypt.Verify(plainPassword, PasswordHash);

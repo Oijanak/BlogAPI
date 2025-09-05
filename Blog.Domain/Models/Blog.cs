@@ -14,10 +14,10 @@ namespace BlogApi.Domain.Models
         public DateTime CreatedAt{ get; init; } = DateTime.UtcNow;
 
         public DateTime UpdatedAt { get; init; } = DateTime.UtcNow;
-
-        public int UserId { get; init; }
         
-        public User User { get; init; } = null!;
+        public Author Author { get; init; } = null!;
+        
+        public int AuthorId { get; set; }
 
     }
 }

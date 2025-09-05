@@ -28,9 +28,8 @@ public class BlogController : ControllerBase
     [Authorize]
     public async Task<IActionResult> CreateBlog([FromBody] CreateBlogRequest blog)
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId") ?? throw new ApiException("User not authorized", HttpStatusCode.Unauthorized);
-        int userId = int.Parse(userIdClaim.Value);
-        BlogDTO createdBlog = await _sender.Send(new CreateBlogCommand(userId,blog.BlogTitle, blog.BlogContent));
+       
+        BlogDTO createdBlog = await _sender.Send(new CreateBlogCommand(blog.AuthorId,blog.BlogTitle, blog.BlogContent));
 
         return Created("",new ApiResponse<BlogDTO>
         {
@@ -65,9 +64,7 @@ public class BlogController : ControllerBase
     [Authorize]
     public async Task<IActionResult> UpdateBlog(int blogId, [FromBody]UpdateBlogRequest updateBlog)
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId") ?? throw new ApiException("User not authorized", HttpStatusCode.Unauthorized);
-        int userId = int.Parse(userIdClaim.Value);
-        BlogDTO updatedBlog = await _sender.Send(new UpdateBlogCommand(blogId,userId,updateBlog.BlogTitle,updateBlog.BlogContent));
+        BlogDTO updatedBlog = await _sender.Send(new UpdateBlogCommand(blogId,updateBlog.AuthorId,updateBlog.BlogTitle,updateBlog.BlogContent));
         return Ok(new ApiResponse<BlogDTO>
         {
             Message = "Blog updated successfully",
@@ -79,9 +76,7 @@ public class BlogController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeleteBlog(int blogId)
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId") ?? throw new ApiException("User not authorized", HttpStatusCode.Unauthorized);
-        int userId = int.Parse(userIdClaim.Value);
-        await _sender.Send(new DeleteBlogCommand(blogId,userId));
+        await _sender.Send(new DeleteBlogCommand(blogId));
         return Ok(new ApiResponse<string>
         {
             Message = "Blog deleted successfully",

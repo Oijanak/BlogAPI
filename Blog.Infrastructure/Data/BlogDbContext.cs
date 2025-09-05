@@ -12,12 +12,15 @@ public class BlogDbContext : DbContext
     }
     public DbSet<User> Users { get; set; }
     public DbSet<Blog> Blogs { get; set; }
+    
+    public DbSet<Author> Authors { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfiguration(new UserConfig());
         modelBuilder.ApplyConfiguration(new BlogConfig());
+        modelBuilder.ApplyConfiguration(new AuthorConfig());
     }
     
     public override int SaveChanges()

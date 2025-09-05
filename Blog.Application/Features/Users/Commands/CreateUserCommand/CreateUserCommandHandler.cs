@@ -1,14 +1,15 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
+using BlogApi.Infrastructure.Data;
 using MediatR;
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserDTO>
 {
-    private readonly IUserRepository _userRepository;
-    public CreateUserCommandHandler(IUserRepository userRepository)
+    private readonly BlogDbContext _blogDbContext;
+    public CreateUserCommandHandler(BlogDbContext _blogDbContext)
     {
-        _userRepository = userRepository;
+        _blogDbContext = _blogDbContext;
     }
 
     public async Task<UserDTO> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -19,12 +20,12 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
             Email = request.Email,
             Password = request.Password
         };
-        User createdUser = await _userRepository.AddAsync(user);
+        await _blogDbContext.Users.AddAsync(user);
         return new UserDTO
         {
-            UserId = createdUser.UserId,
-            Name = createdUser.Name,
-            Email = createdUser.Email
+            UserId = user.UserId,
+            Name = user.Name,
+            Email = user.Email
         };
     }
 }

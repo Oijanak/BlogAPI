@@ -3,21 +3,25 @@ using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
+using BlogApi.Infrastructure.Data;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+
 namespace BlogApi.Application.Features.Users.Query.LoginUserRequest;
 public class LoginUserRequestHandler : IRequestHandler<LoginUserRequest, LoginResponse>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly BlogDbContext _blogDbContext;
     private readonly ITokenService _tokenService;
 
-    public LoginUserRequestHandler(IUserRepository userRepository, ITokenService tokenService)
+    public LoginUserRequestHandler(BlogDbContext blogDbContext, ITokenService tokenService)
     {
-        _userRepository = userRepository;
+        _blogDbContext=blogDbContext;
         _tokenService = tokenService;
     }
     public async Task<LoginResponse> Handle(LoginUserRequest request, CancellationToken cancellationToken)
     {
-      User user = await _userRepository.GetUserByEmailAsync(request.Email) ?? throw new ApiException("Invalid Email or Password", HttpStatusCode.Unauthorized);
+        User user = await _blogDbContext.Users
+            .FirstOrDefaultAsync(u => u.Email == request.Email) ?? throw new ApiException("Invalid Email or Password", HttpStatusCode.Unauthorized);
 
         bool isPasswordValid = user.VerifyPassword(request.Password);
         if (!isPasswordValid)

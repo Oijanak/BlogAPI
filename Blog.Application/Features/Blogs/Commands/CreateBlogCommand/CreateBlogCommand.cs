@@ -5,13 +5,13 @@ namespace BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 
 public class CreateBlogCommand:IRequest<BlogDTO>
 {
-    public int UserId { get;}
+    public int AuthorId { get;}
     public string BlogTitle { get; }
     public string BlogContent { get; }
 
-    public CreateBlogCommand(int userId,string blogTitle, string blogContent)
+    public CreateBlogCommand(int authorId,string blogTitle, string blogContent)
     {
-        UserId = userId;
+        AuthorId = authorId;
         BlogTitle = blogTitle;
         BlogContent = blogContent;
     }
