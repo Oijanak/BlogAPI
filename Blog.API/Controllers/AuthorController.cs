@@ -1,3 +1,4 @@
+using Blog.API.Filters;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Features.Authors.Commands.DeleteAuthorCommand;
@@ -70,6 +71,7 @@ public class AuthorController:ControllerBase
     }
 
     [HttpGet("{authorId}/blogs")]
+    [AgeRequirement]
     public async Task<IActionResult> GetBlogsByAuthorId(int authorId)
     {
         IEnumerable<BlogDTO> blogDtos = await _sender.Send(new GetBlogsByAuthorIdQuery(authorId));
