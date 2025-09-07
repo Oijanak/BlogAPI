@@ -28,8 +28,8 @@ public class AuthorController:ControllerBase
             Data = createdAuthor
         });
     }
-    [HttpPut("{authorId}")]
-    public async Task<IActionResult> UpdateAuthor(int authorId,AuthorRequest author)
+    [HttpPut("{authorId:guid}")]
+    public async Task<IActionResult> UpdateAuthor(Guid authorId,AuthorRequest author)
     {
         AuthorDTO createdAuthor = await _sender.Send(new UpdateAuthorCommand(authorId,author.AuthorEmail,author.AuthorName,author.Age));
         return Ok(new ApiResponse<AuthorDTO>
@@ -39,8 +39,8 @@ public class AuthorController:ControllerBase
         });
     }
 
-    [HttpDelete("{authorId}")]
-    public async Task<IActionResult> DeleteAuthor(int authorId)
+    [HttpDelete("{authorId:guid}")]
+    public async Task<IActionResult> DeleteAuthor(Guid authorId)
     {
         await _sender.Send(new DeleteAuthorCommand(authorId));
         return Ok(new ApiResponse<string>
@@ -49,8 +49,8 @@ public class AuthorController:ControllerBase
         });
     }
 
-    [HttpGet("{authorId}")]
-    public async Task<IActionResult> GetAuthorById(int authorId)
+    [HttpGet("{authorId:guid}")]
+    public async Task<IActionResult> GetAuthorById(Guid authorId)
     {
         AuthorDTO author = await _sender.Send(new GetAuthorByIdQuery(authorId));
         return Ok(new ApiResponse<AuthorDTO>
@@ -70,9 +70,9 @@ public class AuthorController:ControllerBase
         });
     }
 
-    [HttpGet("{authorId}/blogs")]
+    [HttpGet("{authorId:guid}/blogs")]
     [AgeRequirement]
-    public async Task<IActionResult> GetBlogsByAuthorId(int authorId)
+    public async Task<IActionResult> GetBlogsByAuthorId(Guid authorId)
     {
         IEnumerable<BlogDTO> blogDtos = await _sender.Send(new GetBlogsByAuthorIdQuery(authorId));
         return Ok(new ApiResponse<IEnumerable<BlogDTO>>

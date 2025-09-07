@@ -4,9 +4,9 @@ namespace BlogApi.Application.Features.Authors.Commands.DeleteAuthorCommand;
 
 public class DeleteAuthorCommand:IRequest<Unit>
 {
-    public int AuthorId { get; }
+    public Guid AuthorId { get; }
 
-    public DeleteAuthorCommand(int authorId)
+    public DeleteAuthorCommand(Guid authorId)
     {
         AuthorId = authorId;
     }

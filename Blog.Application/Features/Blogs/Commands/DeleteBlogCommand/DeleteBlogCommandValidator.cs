@@ -6,7 +6,7 @@ public class DeleteBlogCommandValidator: AbstractValidator<DeleteBlogCommand>
 {
     public DeleteBlogCommandValidator()
     {
-        RuleFor(x => x.BlogId).NotEmpty().WithMessage("BlogId is Required").GreaterThan(0).WithMessage("BlogId is not valid");
+        RuleFor(x => x.BlogId).NotEmpty().WithMessage("BlogId is Required");
 
     }
     

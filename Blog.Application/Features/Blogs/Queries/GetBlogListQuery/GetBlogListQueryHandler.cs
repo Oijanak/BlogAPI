@@ -1,4 +1,5 @@
 using BlogApi.Application.DTOs;
+using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
 using BlogApi.Infrastructure.Data;
 using MediatR;
@@ -24,6 +25,7 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, IEnumerab
             BlogContent = blog.BlogContent,
             CreatedAt = blog.CreatedAt,
             UpdatedAt = blog.UpdatedAt,
+            Author = new AuthorDTO(blog.Author)
         }).ToListAsync();
     }
 }

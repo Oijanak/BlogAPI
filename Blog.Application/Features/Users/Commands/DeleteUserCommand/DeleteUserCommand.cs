@@ -4,9 +4,9 @@ namespace BlogApi.Application.Features.Users.Commands.DeleteUserCommand;
 
 public class DeleteUserCommand:IRequest<Unit>
 {
-    public int UserId { get; }
+    public Guid UserId { get; }
 
-    public DeleteUserCommand(int userId)
+    public DeleteUserCommand(Guid userId)
     {
         UserId = userId;
     }

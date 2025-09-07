@@ -5,9 +5,9 @@ namespace BlogApi.Application.Features.Blogs.Queries.GetBlogQuery;
 
 public class GetBlogQuery:IRequest<BlogDTO>
 {
-    public int BlogId { get;}
+    public Guid BlogId { get;}
 
-    public GetBlogQuery(int blogId)
+    public GetBlogQuery(Guid blogId)
     {
         BlogId = blogId;
     }

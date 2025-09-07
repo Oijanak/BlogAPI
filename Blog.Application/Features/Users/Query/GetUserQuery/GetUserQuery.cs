@@ -5,9 +5,9 @@ namespace BlogApi.Application.Features.Users.Query.GetUserRequest;
 
 public class GetUserQuery:IRequest<UserDTO>
 {
-    public int UserId { get; }
+    public Guid UserId { get; }
 
-    public GetUserQuery(int userId)
+    public GetUserQuery(Guid userId)
     {
         UserId = userId;
     }

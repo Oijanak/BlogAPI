@@ -49,8 +49,8 @@ public class BlogController : ControllerBase
         });
     }
 
-    [HttpGet("{blogId}")]
-    public async Task<IActionResult> GetBlogById(int blogId)
+    [HttpGet("{blogId:guid}")]
+    public async Task<IActionResult> GetBlogById(Guid blogId)
     {
         BlogDTO blog = await _sender.Send(new GetBlogQuery(blogId));
         return Ok(new ApiResponse<BlogDTO>
@@ -60,9 +60,9 @@ public class BlogController : ControllerBase
         });
     }
 
-    [HttpPatch("{blogId}")]
+    [HttpPatch("{blogId:guid}")]
     [Authorize]
-    public async Task<IActionResult> UpdateBlog(int blogId, [FromBody]UpdateBlogRequest updateBlog)
+    public async Task<IActionResult> UpdateBlog(Guid blogId, [FromBody]UpdateBlogRequest updateBlog)
     {
         BlogDTO updatedBlog = await _sender.Send(new UpdateBlogCommand(blogId,updateBlog.AuthorId,updateBlog.BlogTitle,updateBlog.BlogContent));
         return Ok(new ApiResponse<BlogDTO>
@@ -72,9 +72,9 @@ public class BlogController : ControllerBase
         });
     }
 
-    [HttpDelete("{blogId}")]
+    [HttpDelete("{blogId:guid}")]
     [Authorize]
-    public async Task<IActionResult> DeleteBlog(int blogId)
+    public async Task<IActionResult> DeleteBlog(Guid blogId)
     {
         await _sender.Send(new DeleteBlogCommand(blogId));
         return Ok(new ApiResponse<string>

@@ -16,17 +16,18 @@ public class GetBlogsAuthorIdQueryHandler:IRequestHandler<GetBlogsByAuthorIdQuer
     }
     public async Task<IEnumerable<BlogDTO>> Handle(GetBlogsByAuthorIdQuery request, CancellationToken cancellationToken)
     {
-        return await _blogDbContext.Authors
-            .SelectMany(author => author.Blogs.Select(blog => new BlogDTO
+        return await _blogDbContext.Blogs
+            .Where(blog => blog.AuthorId == request.AuthorId)
+            .Select(blog => new BlogDTO
             {
                 BlogId = blog.BlogId,
                 BlogTitle = blog.BlogTitle,
                 BlogContent = blog.BlogContent,
                 CreatedAt = blog.CreatedAt,
                 UpdatedAt = blog.UpdatedAt,
-                Author=new AuthorDTO(blog.Author)
+                Author = new AuthorDTO(blog.Author)
                 
-            }))
+            })
             .ToListAsync();
     }
 }

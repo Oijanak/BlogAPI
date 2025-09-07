@@ -43,8 +43,8 @@ namespace BlogApi.API.Controllers
             });
         }
 
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetById(int userId)
+        [HttpGet("{userId:guid}")]
+        public async Task<IActionResult> GetById(Guid userId)
         {
             UserDTO? user = await _sender.Send(new GetUserQuery(userId));
             return Ok(new ApiResponse<UserDTO?>
@@ -67,7 +67,7 @@ namespace BlogApi.API.Controllers
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUser)
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId") ?? throw new ApiException("User not authorized", HttpStatusCode.Unauthorized);
-            int userId = int.Parse(userIdClaim.Value);
+            Guid userId = Guid.Parse(userIdClaim.Value);
             
             UserDTO updatedUser = await _sender.Send(new UpdateUserCommand(userId,updateUser.Name,updateUser.Email,updateUser.Password));
             return Ok(new ApiResponse<UserDTO>
@@ -77,8 +77,8 @@ namespace BlogApi.API.Controllers
             });
         }
 
-        [HttpDelete("{userId}")]
-        public async Task<IActionResult> DeleteUser(int userId)
+        [HttpDelete("{userId:guid}")]
+        public async Task<IActionResult> DeleteUser(Guid userId)
         {
             await _sender.Send(new DeleteUserCommand(userId));
             return Ok(new ApiResponse<string>

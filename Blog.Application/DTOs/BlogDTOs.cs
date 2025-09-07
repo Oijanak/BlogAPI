@@ -6,7 +6,7 @@ namespace BlogApi.Application.DTOs;
 
 public class BlogDTO
 {
-    public int BlogId { get; set; }
+    public Guid BlogId { get; set; }
     public string BlogTitle { get; set; } = string.Empty;
     public string BlogContent { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
@@ -20,12 +20,12 @@ public class CreateBlogRequest
 {
     public string BlogTitle { get; set; } = string.Empty;
     public string BlogContent { get; set; } = string.Empty;
-    public int AuthorId{get;set;}
+    public Guid AuthorId{get;set;}
 }
 
 public class UpdateBlogRequest
 {
-    public int AuthorId { get; set; }
+    public Guid AuthorId { get; set; }
     public string BlogTitle { get; set; }
     public string BlogContent { get; set; }
 }

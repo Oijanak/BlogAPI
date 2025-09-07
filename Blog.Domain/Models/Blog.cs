@@ -5,7 +5,7 @@ namespace BlogApi.Domain.Models
 {
     public class Blog
     {
-        public int BlogId { get; init; }
+        public Guid BlogId { get; init; }=Guid.NewGuid();
         
         public string BlogTitle { get; set; } = string.Empty;
         
@@ -17,7 +17,7 @@ namespace BlogApi.Domain.Models
         
         public Author Author { get; set; } = null!;
         
-        public int AuthorId { get; set; }
+        public Guid AuthorId { get; set; }
 
     }
 }

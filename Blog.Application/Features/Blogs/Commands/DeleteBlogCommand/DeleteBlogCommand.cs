@@ -4,10 +4,10 @@ namespace BlogApi.Application.Features.Blogs.Commands.DeleteBlogCommand;
 
 public class DeleteBlogCommand: IRequest<Unit>
 {
-    public int BlogId { get;}
+    public Guid BlogId { get;}
     
 
-    public DeleteBlogCommand(int blogId)
+    public DeleteBlogCommand(Guid blogId)
     {
         BlogId = blogId;
        

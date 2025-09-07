@@ -20,7 +20,7 @@ public class AgeRequirementFilter: IAsyncAuthorizationFilter
     {
         
           if (context.RouteData.Values.TryGetValue("authorId", out var authorIdValue) &&
-                    int.TryParse(authorIdValue?.ToString(), out int authorId))
+                    Guid.TryParse(authorIdValue?.ToString(), out Guid authorId))
         {
             Author author=await _blogDbContext.Authors.FindAsync(authorId);
             if (author is not null)

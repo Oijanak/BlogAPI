@@ -6,8 +6,8 @@ public class GetUserQueryValidator:AbstractValidator<GetUserQuery>
 {
     public GetUserQueryValidator()
     {
-        RuleFor(x => x.UserId).NotEmpty().WithMessage("User Id is Required")
-            .GreaterThan(0).WithMessage("User Id is Invalid");;
+        RuleFor(x => x.UserId).NotEmpty().WithMessage("User Id is Required");
+
     }
     
 }

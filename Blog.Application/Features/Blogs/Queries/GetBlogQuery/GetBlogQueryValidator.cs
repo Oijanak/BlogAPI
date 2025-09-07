@@ -6,6 +6,6 @@ public class GetBlogQueryValidator:AbstractValidator<GetBlogQuery>
 {
     public GetBlogQueryValidator()
     {
-        RuleFor(b => b.BlogId).GreaterThan(0).WithMessage("BlogId is invalid");
+        RuleFor(b => b.BlogId).NotEmpty().WithMessage("BlogId is required");
     }
 }

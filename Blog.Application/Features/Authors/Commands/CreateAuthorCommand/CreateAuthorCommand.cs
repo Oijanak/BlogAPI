@@ -19,7 +19,7 @@ public class CreateAuthorCommand:IRequest<AuthorDTO>
 
 public class AuthorDTO
 {
-    public int AuthorId { get; set; }
+    public Guid AuthorId { get; set; }
     public string AuthorEmail { get; set; }
     public string AuthorName { get; set; }
     public int Age { get; set; }

@@ -5,9 +5,9 @@ namespace BlogApi.Application.Features.Authors.Queries.GetAuthorByIdCommand;
 
 public class GetAuthorByIdQuery:IRequest<AuthorDTO>
 {
-    public int AuthorId { get; set; }
+    public Guid AuthorId { get; set; }
 
-    public GetAuthorByIdQuery(int authorId)
+    public GetAuthorByIdQuery(Guid authorId)
     {
         AuthorId = authorId;
     }

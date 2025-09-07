@@ -16,7 +16,7 @@ namespace BlogApi.Infrastructure.Services
             _config = config;
         }
 
-        public string GenerateToken(int userId, string email)
+        public string GenerateToken(Guid userId, string email)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? throw new InvalidOperationException("Jwt Key is not found")) );
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
