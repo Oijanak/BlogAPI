@@ -5,6 +5,7 @@ using BlogApi.Application.Features.Authors.Commands.DeleteAuthorCommand;
 using BlogApi.Application.Features.Authors.Commands.UpdateAuthorCommand;
 using BlogApi.Application.Features.Authors.Queries.GetAuthorByIdCommand;
 using BlogApi.Application.Features.Authors.Queries.GetAuthorListQuery;
+using BlogApi.Application.Features.Authors.Queries.GetAuthorsWithAgeQuery;
 using BlogApi.Application.Features.Authors.Queries.GetBlogsByAuthorIdQuery;
 using BlogApi.Domain.Models;
 using MediatR;
@@ -81,5 +82,18 @@ public class AuthorController:ControllerBase
             Data = blogDtos,
         });
     }
+
+    [HttpGet("age")]
+    public async Task<IActionResult> GetAuthorsByAgeBetween([FromQuery]int age1,[FromQuery]int age2)
+    {
+        IEnumerable<AuthorDTO> authors = await _sender.Send(new GetAuthorsWithAgeQuery(age1, age2));
+        return Ok(new ApiResponse<IEnumerable<AuthorDTO>>
+        {
+            Message = $"Author Between age {age1} and {age2} fetched successfully",
+            Data = authors,
+        });
+    }
 }
+
+
 
