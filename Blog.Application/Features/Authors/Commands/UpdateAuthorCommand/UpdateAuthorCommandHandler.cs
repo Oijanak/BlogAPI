@@ -17,7 +17,7 @@ public class UpdateAuthorCommandHandler:IRequestHandler<UpdateAuthorCommand, Aut
     }
     public async Task<AuthorDTO> Handle(UpdateAuthorCommand request, CancellationToken cancellationToken)
     {
-        Author existingAuthor= await _blogDbContext.Authors.FindAsync(request.AuthorId) ??  throw new ApiException("Author not found with id "+request.AuthorId,HttpStatusCode.NotFound);
+        Author existingAuthor= await _blogDbContext.Authors.FindAsync(request.AuthorId) ;
         existingAuthor.AuthorEmail = request.AuthorEmail;
         existingAuthor.AuthorName = request.AuthorName;
         existingAuthor.Age = request.Age;

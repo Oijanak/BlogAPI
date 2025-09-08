@@ -16,7 +16,7 @@ public class DeleteAuthorCommandHandler:IRequestHandler<DeleteAuthorCommand,Unit
     }
     public async Task<Unit> Handle(DeleteAuthorCommand request, CancellationToken cancellationToken)
     {
-        Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId)??throw new ApiException("Author not found with id "+request.AuthorId,HttpStatusCode.NotFound);
+        Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId);
         _blogDbContext.Authors.Remove(author);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
         return Unit.Value;

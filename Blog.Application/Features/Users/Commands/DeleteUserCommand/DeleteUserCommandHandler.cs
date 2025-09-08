@@ -17,7 +17,7 @@ public class DeleteUserCommandHandler:IRequestHandler<DeleteUserCommand,Unit>
     }
     public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        User user = await _blogDbContext.Users.FindAsync(request.UserId) ?? throw new ApiException("User not found with id " + request.UserId, HttpStatusCode.NotFound);
+        User user = await _blogDbContext.Users.FindAsync(request.UserId);
         _blogDbContext.Users.Remove(user);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
         return Unit.Value;

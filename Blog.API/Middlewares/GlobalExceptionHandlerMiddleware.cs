@@ -46,15 +46,19 @@ public class GlobalExceptionMiddleware
                 break;
 
             case FluentValidation.ValidationException validationEx:
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+               
+                int statusCode = 400;
 
+                
+                if (validationEx.Errors.Any(e => e.ErrorCode == "404"))
+                    statusCode = 404;
                 var validationErrors = validationEx.Errors
                     .Select(e => $"{e.PropertyName}: {e.ErrorMessage}")
                     .ToList();
-
+                context.Response.StatusCode = statusCode;
                 var errorResponse = new
                 {
-                    StatusCode = 400,
+                    StatusCode = statusCode,
                     Message = "Validation failed",
                     Errors = validationErrors
                 };

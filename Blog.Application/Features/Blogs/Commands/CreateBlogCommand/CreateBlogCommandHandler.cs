@@ -20,7 +20,7 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,BlogDTO>
     
     public async Task<BlogDTO> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
     {
-        Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId)??throw new ApiException("Author not found",HttpStatusCode.NotFound);
+        Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId);
         Blog blog = new Blog
         {
             BlogTitle = request.BlogTitle,

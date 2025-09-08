@@ -17,7 +17,7 @@ public class GetAuthorByIdQueryHandler:IRequestHandler<GetAuthorByIdQuery,Author
     }
     public async Task<AuthorDTO> Handle(GetAuthorByIdQuery request, CancellationToken cancellationToken)
     {
-        Author author= await _blogDbContext.Authors.FindAsync(request.AuthorId) ??  throw new ApiException("Author not found with id "+request.AuthorId,HttpStatusCode.NotFound);
+        Author author= await _blogDbContext.Authors.FindAsync(request.AuthorId) ;
         return new AuthorDTO(author);
     }
 }

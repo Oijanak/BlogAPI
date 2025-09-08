@@ -18,6 +18,7 @@ public class GetBlogsAuthorIdQueryHandler:IRequestHandler<GetBlogsByAuthorIdQuer
     {
         return await _blogDbContext.Blogs
             .Where(blog => blog.AuthorId == request.AuthorId)
+            .Include(blog => blog.Author) 
             .Select(blog => new BlogDTO
             {
                 BlogId = blog.BlogId,
@@ -26,7 +27,6 @@ public class GetBlogsAuthorIdQueryHandler:IRequestHandler<GetBlogsByAuthorIdQuer
                 CreatedAt = blog.CreatedAt,
                 UpdatedAt = blog.UpdatedAt,
                 Author = new AuthorDTO(blog.Author)
-                
             })
             .ToListAsync();
     }

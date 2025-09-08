@@ -19,8 +19,8 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,BlogDTO>
     }
     public async Task<BlogDTO> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
     {
-        Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId)??throw new ApiException($"Author not found with id {request.AuthorId}", HttpStatusCode.NotFound);
-        Blog existingBlog = await _blogDbContext.Blogs.FindAsync(request.BlogId) ?? throw new ApiException($"Blog not found with id {request.BlogId}", HttpStatusCode.NotFound);
+        Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId);
+        Blog existingBlog = await _blogDbContext.Blogs.FindAsync(request.BlogId) ;
         existingBlog.BlogTitle = request.BlogTitle;
         existingBlog.BlogContent = request.BlogContent;
         existingBlog.Author = author;

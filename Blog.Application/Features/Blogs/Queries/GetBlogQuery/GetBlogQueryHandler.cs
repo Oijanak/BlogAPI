@@ -1,4 +1,5 @@
 using BlogApi.Application.DTOs;
+using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
@@ -17,7 +18,7 @@ public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,BlogDTO>
     
     public async Task<BlogDTO> Handle(GetBlogQuery request, CancellationToken cancellationToken)
     {
-        Blog blog = await _blogDbContext.Blogs.FindAsync(request.BlogId) ?? throw new Exception("Blog not found");
+        Blog blog = await _blogDbContext.Blogs.FindAsync(request.BlogId) ;
         return new BlogDTO()
         {
             BlogId = blog.BlogId,
@@ -25,6 +26,7 @@ public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,BlogDTO>
             BlogContent = blog.BlogContent,
             CreatedAt = blog.CreatedAt,
             UpdatedAt = blog.UpdatedAt,
+            Author = new AuthorDTO(blog.Author)
         };
     }
 }
