@@ -12,9 +12,9 @@ public class GetUserQueryHandler:IRequestHandler<GetUserQuery,UserDTO>
 {
     private readonly BlogDbContext  _blogDbContext;
 
-    public GetUserQueryHandler(BlogDbContext _blogDbContext)
+    public GetUserQueryHandler(BlogDbContext blogDbContext)
     {
-        _blogDbContext = this._blogDbContext;
+        _blogDbContext = blogDbContext;
     }
     public async Task<UserDTO> Handle(GetUserQuery query, CancellationToken cancellationToken)
     {

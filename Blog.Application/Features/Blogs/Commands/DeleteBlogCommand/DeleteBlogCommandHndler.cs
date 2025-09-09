@@ -11,9 +11,9 @@ public class DeleteBlogCommandHndler:IRequestHandler<DeleteBlogCommand,Unit>
 {
     private readonly BlogDbContext _blogDbContext;
 
-    public DeleteBlogCommandHndler(BlogDbContext _blogDbContext)
+    public DeleteBlogCommandHndler(BlogDbContext blogDbContext)
     {
-      _blogDbContext = _blogDbContext;
+      _blogDbContext = blogDbContext;
     }
     public async Task<Unit> Handle(DeleteBlogCommand request, CancellationToken cancellationToken)
     {
