@@ -25,6 +25,12 @@ public class GlobalExceptionMiddleware
         }
         catch (Exception ex)
         {
+            // 🔹 Log the unhandled exception with Serilog
+            _logger.LogError(ex,
+                "Unhandled exception occurred while processing request {Method} {Path}",
+                context.Request.Method,
+                context.Request.Path);
+
             await HandleExceptionAsync(context, ex);
         }
     }
@@ -43,19 +49,26 @@ public class GlobalExceptionMiddleware
                     StatusCode = apiEx.StatusCode,
                     Message = apiEx.Message
                 };
+
+                _logger.LogWarning("API Exception: {Message} (Status: {StatusCode})",
+                    apiEx.Message, apiEx.StatusCode);
                 break;
 
             case FluentValidation.ValidationException validationEx:
-               
                 int statusCode = 400;
 
-                
                 if (validationEx.Errors.Any(e => e.ErrorCode == "404"))
                     statusCode = 404;
+
                 var validationErrors = validationEx.Errors
                     .Select(e => $"{e.PropertyName}: {e.ErrorMessage}")
                     .ToList();
+
                 context.Response.StatusCode = statusCode;
+
+                _logger.LogWarning("Validation failed with errors: {@ValidationErrors}",
+                    validationErrors);
+
                 var errorResponse = new
                 {
                     StatusCode = statusCode,
@@ -64,16 +77,19 @@ public class GlobalExceptionMiddleware
                 };
 
                 await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse));
-                return; 
+                return;
 
             default:
-                _logger.LogError(exception, "An unhandled exception occurred.");
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response = new ApiErrorResponse
                 {
                     StatusCode = 500,
                     Message = "Internal Server Error"
                 };
+
+                _logger.LogError(exception,
+                    "Unexpected server error occurred: {Message}",
+                    exception.Message);
                 break;
         }
 

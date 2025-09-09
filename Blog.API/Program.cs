@@ -1,4 +1,5 @@
 using System.Text;
+using Blog.API.Filters;
 using BlogApi.API.Controllers.Middlewares;
 using BlogApi.Application;
 using BlogApi.Application.Interfaces;
@@ -11,10 +12,22 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
 
 var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File
+    (
+        path: "Logs/log.txt",
+        rollingInterval: RollingInterval.Day
+    )
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddDbContext<BlogDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -36,7 +49,8 @@ builder.Services.AddSwaggerGen(options=>
 
     
 });
-builder.Services.AddControllers()
+builder.Services.AddControllers(
+        options=>options.Filters.Add<RequestResponseLoggingFilter>())
     .ConfigureApiBehaviorOptions(options =>
     {
         options.SuppressModelStateInvalidFilter = true;
