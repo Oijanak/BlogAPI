@@ -18,6 +18,7 @@ public class UpdateAuthorCommandHandler:IRequestHandler<UpdateAuthorCommand, Aut
     public async Task<AuthorDTO> Handle(UpdateAuthorCommand request, CancellationToken cancellationToken)
     {
         Author existingAuthor= await _blogDbContext.Authors.FindAsync(request.AuthorId) ;
+        ArgumentNullException.ThrowIfNull(existingAuthor,nameof(existingAuthor));
         existingAuthor.AuthorEmail = request.AuthorEmail;
         existingAuthor.AuthorName = request.AuthorName;
         existingAuthor.Age = request.Age;

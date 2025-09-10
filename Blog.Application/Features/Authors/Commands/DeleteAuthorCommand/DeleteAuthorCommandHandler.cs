@@ -17,6 +17,7 @@ public class DeleteAuthorCommandHandler:IRequestHandler<DeleteAuthorCommand,Unit
     public async Task<Unit> Handle(DeleteAuthorCommand request, CancellationToken cancellationToken)
     {
         Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId);
+        ArgumentNullException.ThrowIfNull(author,nameof(author));
         _blogDbContext.Authors.Remove(author);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
         return Unit.Value;

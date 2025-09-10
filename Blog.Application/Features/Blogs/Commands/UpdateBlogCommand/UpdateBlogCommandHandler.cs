@@ -20,7 +20,9 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,BlogDTO>
     public async Task<BlogDTO> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
     {
         Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId);
+        ArgumentNullException.ThrowIfNull(author,nameof(author));
         Blog existingBlog = await _blogDbContext.Blogs.FindAsync(request.BlogId) ;
+        ArgumentNullException.ThrowIfNull(existingBlog,nameof(existingBlog));
         existingBlog.BlogTitle = request.BlogTitle;
         existingBlog.BlogContent = request.BlogContent;
         existingBlog.Author = author;

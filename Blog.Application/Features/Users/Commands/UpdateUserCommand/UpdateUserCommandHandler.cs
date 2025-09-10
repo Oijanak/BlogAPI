@@ -14,8 +14,8 @@ public class UpdateUserCommanHanler:IRequestHandler<UpdateUserCommand,UserDTO>
     }
     public async Task<UserDTO> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        User user = await _blogDbContext.Users.FindAsync(request.UserId)??
-            throw new ApiException("User not found with id " + request.UserId, System.Net.HttpStatusCode.NotFound);;
+        User user = await _blogDbContext.Users.FindAsync(request.UserId);
+        ArgumentNullException.ThrowIfNull(user,nameof(user));
         user.Name = request.Name ?? user.Name;
         user.Email = request.Email ?? user.Email;
         if (request.Password is not null)

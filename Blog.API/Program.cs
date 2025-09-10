@@ -28,9 +28,10 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
-
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+ArgumentNullException.ThrowIfNullOrEmpty(connectionString,nameof(connectionString));
 builder.Services.AddDbContext<BlogDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString(connectionString)));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserRequestValidator>();
 builder.Services.AddFluentValidationAutoValidation();
@@ -59,20 +60,24 @@ builder.Services.AddApplication();
 
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
 
-
-
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+var jwtKey = builder.Configuration["Jwt:Key"];
+ArgumentNullException.ThrowIfNullOrEmpty(jwtIssuer, nameof(jwtIssuer));
+ArgumentNullException.ThrowIfNullOrEmpty(jwtAudience, nameof(jwtAudience));
+ArgumentNullException.ThrowIfNullOrEmpty(jwtKey, nameof(jwtKey));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]?? throw new InvalidOperationException("JWT Key not found in configuration."));
+        var key = Encoding.UTF8.GetBytes(jwtKey);
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidIssuer =jwtIssuer,
+            ValidAudience = jwtAudience,
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
     });

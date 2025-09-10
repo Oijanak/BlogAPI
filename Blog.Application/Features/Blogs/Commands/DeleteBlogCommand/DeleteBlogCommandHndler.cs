@@ -17,7 +17,8 @@ public class DeleteBlogCommandHndler:IRequestHandler<DeleteBlogCommand,Unit>
     }
     public async Task<Unit> Handle(DeleteBlogCommand request, CancellationToken cancellationToken)
     {
-        Blog existingBlog = await _blogDbContext.Blogs.FindAsync(request.BlogId)?? throw new ApiException("Blog not found", HttpStatusCode.NotFound);
+        Blog existingBlog = await _blogDbContext.Blogs.FindAsync(request.BlogId);
+        ArgumentNullException.ThrowIfNull(existingBlog,nameof(existingBlog));
         _blogDbContext.Blogs.Remove(existingBlog);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
         return Unit.Value;
