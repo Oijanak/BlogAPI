@@ -22,11 +22,6 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
         };
         await _blogDbContext.Users.AddAsync(user);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
-        return new UserDTO
-        {
-            UserId = user.UserId,
-            Name = user.Name,
-            Email = user.Email
-        };
+        return new UserDTO(user);
     }
 }

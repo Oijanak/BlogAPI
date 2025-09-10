@@ -1,3 +1,4 @@
+using BlogApi.Application.Features.Authors.Queries.GetBlogsByAuthorIdQuery;
 using BlogApi.Domain.Models;
 using MediatR;
 
@@ -23,7 +24,7 @@ public class AuthorDTO
     public string AuthorEmail { get; set; }
     public string AuthorName { get; set; }
     public int Age { get; set; }
-
+    public AuthorDTO(){}
     public AuthorDTO(Author author)
     {
         AuthorId = author.AuthorId;
@@ -31,5 +32,13 @@ public class AuthorDTO
         AuthorName = author.AuthorName;
         Age = author.Age;
         
+    }
+
+    public AuthorDTO(Guid authorId, string authorEmail, string authorName, int age)
+    {
+        AuthorId = authorId;
+        AuthorEmail = authorEmail;
+        AuthorName = authorName;
+        Age = age;
     }
 }

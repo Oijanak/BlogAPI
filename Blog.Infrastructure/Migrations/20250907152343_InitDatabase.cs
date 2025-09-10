@@ -80,6 +80,8 @@ namespace BlogApi.Infrastructure.Migrations
                 table: "Users",
                 column: "Email",
                 unique: true);
+            
+           
         }
 
         /// <inheritdoc />

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Domain.Models;
 
@@ -11,8 +12,8 @@ public class BlogDTO
     public string BlogContent { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt{ get; set; }
-
-    public AuthorDTO Author { get; set; } = null!;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public AuthorDTO Author { get; set; } 
 
 }
 
@@ -28,4 +29,17 @@ public class UpdateBlogRequest
     public Guid AuthorId { get; set; }
     public string BlogTitle { get; set; }
     public string BlogContent { get; set; }
+}
+public class BlogWithAuthorDTO
+{
+    public Guid BlogId { get; set; }
+    public string BlogTitle { get; set; }
+    public string BlogContent { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+
+    public Guid AuthorId { get; set; }
+    public string AuthorName { get; set; }
+    public string AuthorEmail { get; set; }
+    public int Age { get; set; }
 }

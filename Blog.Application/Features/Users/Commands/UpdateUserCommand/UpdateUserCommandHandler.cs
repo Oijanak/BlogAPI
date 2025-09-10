@@ -24,11 +24,6 @@ public class UpdateUserCommanHanler:IRequestHandler<UpdateUserCommand,UserDTO>
         _blogDbContext.Users.Update(user);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
 
-        return new UserDTO
-        {
-            UserId = user.UserId,
-            Name = user.Name,
-            Email = user.Email
-        };
+        return new UserDTO(user);
     }
 }

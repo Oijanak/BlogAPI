@@ -18,12 +18,7 @@ public class GetUserListQueryHandler:IRequestHandler<GetUserListQuery, IEnumerab
     public async Task<IEnumerable<UserDTO>> Handle(GetUserListQuery request, CancellationToken cancellationToken)
     {
         return await _blogDbContext.Users
-            .Select(u => new UserDTO
-            {
-                UserId = u.UserId,
-                Name = u.Name,
-                Email = u.Email
-            })
+            .Select(u => new UserDTO(u))
             .ToListAsync(cancellationToken); 
     }
 }

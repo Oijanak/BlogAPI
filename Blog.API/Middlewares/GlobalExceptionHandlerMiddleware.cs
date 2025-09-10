@@ -25,7 +25,6 @@ public class GlobalExceptionMiddleware
         }
         catch (Exception ex)
         {
-            // 🔹 Log the unhandled exception with Serilog
             _logger.LogError(ex,
                 "Unhandled exception occurred while processing request {Method} {Path}",
                 context.Request.Method,
@@ -87,7 +86,7 @@ public class GlobalExceptionMiddleware
                     Message = "Internal Server Error"
                 };
 
-                _logger.LogError(exception,
+                _logger.LogError(
                     "Unexpected server error occurred: {Message}",
                     exception.Message);
                 break;

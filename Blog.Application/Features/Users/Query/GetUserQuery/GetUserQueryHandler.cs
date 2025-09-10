@@ -19,11 +19,7 @@ public class GetUserQueryHandler:IRequestHandler<GetUserQuery,UserDTO>
     public async Task<UserDTO> Handle(GetUserQuery query, CancellationToken cancellationToken)
     {
         User user = await _blogDbContext.Users.FindAsync(query.UserId) ?? throw new ApiException("User not found with id " + query.UserId, HttpStatusCode.NotFound);
-        return new UserDTO
-        {
-            UserId = user.UserId,
-            Name = user.Name,
-            Email = user.Email
-        }; 
+        return new UserDTO(user);
+
     }
 }
