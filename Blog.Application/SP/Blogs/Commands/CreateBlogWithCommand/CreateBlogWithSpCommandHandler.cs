@@ -20,7 +20,7 @@ public class CreateBlogWithSpCommandHandler:IRequestHandler<CreateBlogWithSpComm
             .FromSqlInterpolated($"EXEC spCreateBlogWithAuthor {request.AuthorId}, {request.BlogTitle}, {request.BlogContent}")
             .AsNoTracking()
             .ToListAsync();
-        
+        ArgumentNullException.ThrowIfNull(blogs,nameof(blogs));
         var result=blogs.FirstOrDefault();
         return new BlogDTO
         {

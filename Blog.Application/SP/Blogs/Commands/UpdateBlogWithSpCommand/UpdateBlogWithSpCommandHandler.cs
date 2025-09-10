@@ -15,7 +15,6 @@ public class UpdateBlogWithSpCommandHandler:IRequestHandler<UpdateBlogWithSpComm
     public UpdateBlogWithSpCommandHandler(BlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
-
     }
     public async Task<BlogDTO> Handle(UpdateBlogWithSpCommand request, CancellationToken cancellationToken)
     {
@@ -23,6 +22,7 @@ public class UpdateBlogWithSpCommandHandler:IRequestHandler<UpdateBlogWithSpComm
                 .FromSqlInterpolated($"EXEC spUpdateBlog {request.BlogId}, {request.BlogTitle}, {request.BlogContent}, {request.AuthorId}")
                 .AsNoTracking()
                 .ToListAsync();
+            ArgumentNullException.ThrowIfNull(blogs, nameof(blogs));
             
             var updatedBlog=blogs.FirstOrDefault();
         
