@@ -52,7 +52,6 @@ public class BlogController : ControllerBase
     public async Task<IActionResult> UpdateBlog(Guid blogId, [FromBody]UpdateBlogRequest updateBlog)
     {
        return Ok(await _sender.Send(new UpdateBlogCommand(blogId,updateBlog.AuthorId,updateBlog.BlogTitle,updateBlog.BlogContent)));
-       
     }
 
     [HttpDelete("{blogId:guid}")]

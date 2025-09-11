@@ -77,6 +77,23 @@ public class GlobalExceptionMiddleware
 
                 await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse));
                 return;
+            
+            case ArgumentNullException argNullEx:
+            case ArgumentException argEx:
+                context.Response.StatusCode = 400;
+                var message = exception.Message;
+
+                _logger.LogWarning("Guard validation failed: {Message}", message);
+
+                var guardErrorResponse = new
+                {
+                    StatusCode = 400,
+                    Message = "Guard Validation failed",
+                    Errors = new[] { message }
+                };
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(guardErrorResponse));
+                return;
 
             default:
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;

@@ -30,6 +30,7 @@ namespace BlogApi.API.Controllers
         {
             return Created("",await _sender.Send(new CreateUserCommand(user.Name,user.Email,user.Password)));
         }
+        
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -41,7 +42,6 @@ namespace BlogApi.API.Controllers
         public async Task<IActionResult> GetById(Guid userId)
         {
             return Ok(await _sender.Send(new GetUserQuery(userId)));
-           
         }
         
 
