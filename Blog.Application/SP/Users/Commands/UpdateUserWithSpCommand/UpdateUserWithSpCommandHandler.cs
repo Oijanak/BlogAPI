@@ -16,7 +16,7 @@ public class UpdateUserWithSpCommandHandler:IRequestHandler<UpdateUserWithSpComm
     }
     public async Task<ApiResponse<UserDTO>> Handle(UpdateUserWithSpCommand request, CancellationToken cancellationToken)
     {
-        UpdateUserWithSpGuard.ValidateWithGuard(request);
+        UpdateUserWithSpGuard.ValidateWithGuard(request,_blogDbContext);
         request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
         var users = await _blogDbContext.Users
             .FromSqlInterpolated($"EXEC spUpdateUser {request.UserId}, {request.Name}, {request.Email}, {request.Password}")
