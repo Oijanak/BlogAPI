@@ -1,21 +1,25 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.DTOs;
+using BlogApi.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.SP.Authors.Commands.DeleteAuthorWithSpCommand;
 
-public class DeleteAuthorWithSpCommandHandler:IRequestHandler<DeleteAuthorWithSpCommand, Unit>
+public class DeleteAuthorWithSpCommandHandler:IRequestHandler<DeleteAuthorWithSpCommand, ApiResponse<string>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public DeleteAuthorWithSpCommandHandler(BlogDbContext blogDbContext)
+    public DeleteAuthorWithSpCommandHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<Unit> Handle(DeleteAuthorWithSpCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<string>> Handle(DeleteAuthorWithSpCommand request, CancellationToken cancellationToken)
     {
         await _blogDbContext.Database
             .ExecuteSqlInterpolatedAsync($"EXEC spDeleteAuthor {request.AuthorId}");
-        return Unit.Value;
+        return new ApiResponse<string>
+        {
+            Message = "Author deleted successfully",
+        };
     }
 }

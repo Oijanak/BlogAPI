@@ -1,13 +1,13 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 
 namespace BlogApi.Application.Features.Authors.Queries.GetBlogsByAuthorIdQuery;
 
 public class GetBlogsByAuthorQueryValidator:AbstractValidator<GetBlogsByAuthorIdQuery>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public GetBlogsByAuthorQueryValidator(BlogDbContext blogDbContext)
+    public GetBlogsByAuthorQueryValidator(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
         RuleFor(x=>x.AuthorId).NotEmpty().WithMessage("AuthorId is required")

@@ -1,7 +1,7 @@
 using BlogApi.Application.DTOs;
 using MediatR;
 
-public class CreateUserCommand : IRequest<UserDTO>
+public class CreateUserCommand : IRequest<ApiResponse<UserDTO>>
 {
 
     public string Name { get; }

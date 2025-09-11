@@ -1,7 +1,7 @@
 using BlogApi.Application.DTOs;
 using MediatR;
 
-public class UpdateUserCommand : IRequest<UserDTO>
+public class UpdateUserCommand : IRequest<ApiResponse<UserDTO>>
 {
     public Guid UserId { get; set; }
     public string? Name { get; }

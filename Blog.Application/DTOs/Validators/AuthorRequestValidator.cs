@@ -1,5 +1,5 @@
+using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,8 +8,8 @@ namespace BlogApi.Application.DTOs.Validators;
 public class AuthorRequestValidator:AbstractValidator<AuthorRequest>
 {
     
-    private  readonly BlogDbContext _blogDbContext; 
-    public AuthorRequestValidator(BlogDbContext blogDbContext)
+    private  readonly IBlogDbContext _blogDbContext; 
+    public AuthorRequestValidator(IBlogDbContext blogDbContext)
     {
         this._blogDbContext = blogDbContext;
         RuleFor(x => x.AuthorEmail)

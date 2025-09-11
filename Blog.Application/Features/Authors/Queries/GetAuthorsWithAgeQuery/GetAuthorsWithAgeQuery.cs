@@ -1,9 +1,10 @@
+using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using MediatR;
 
 namespace BlogApi.Application.Features.Authors.Queries.GetAuthorsWithAgeQuery;
 
-public class GetAuthorsWithAgeQuery:IRequest<IEnumerable<AuthorDTO>>
+public class GetAuthorsWithAgeQuery:IRequest<ApiResponse<IEnumerable<AuthorDto>>>
 {
   public int Age1 { get; }
   public int Age2 { get; }

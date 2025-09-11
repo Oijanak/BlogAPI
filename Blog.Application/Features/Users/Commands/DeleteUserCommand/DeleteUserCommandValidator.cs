@@ -1,13 +1,13 @@
+using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using FluentValidation;
 
 namespace BlogApi.Application.Features.Users.Commands.DeleteUserCommand;
 
 public class DeleteUserCommandValidator:AbstractValidator<DeleteUserCommand>
 {
-    private readonly BlogDbContext _blogDbContext;
-    public DeleteUserCommandValidator(BlogDbContext blogDbContext)
+    private readonly IBlogDbContext _blogDbContext;
+    public DeleteUserCommandValidator(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
         RuleFor(x => x.UserId)

@@ -1,0 +1,12 @@
+CREATE OR ALTER PROCEDURE spGetAuthorsWithAgeBetween
+    @Age1 INT,
+    @Age2 INT
+    AS
+BEGIN
+    SET NOCOUNT ON;
+
+SELECT
+   *
+FROM Authors
+WHERE Age BETWEEN @Age1 AND @Age2;
+END

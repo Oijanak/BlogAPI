@@ -1,12 +1,12 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 
 namespace BlogApi.Application.DTOs.Validators;
 
 public class CreateBlogRequestValidator:AbstractValidator<CreateBlogRequest>
 {
-    private  readonly BlogDbContext _blogDbContext; 
-    public CreateBlogRequestValidator(BlogDbContext blogDbContext)
+    private  readonly IBlogDbContext _blogDbContext; 
+    public CreateBlogRequestValidator(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
         RuleFor(x=>x.BlogTitle).NotEmpty().WithMessage("Blog title is required")

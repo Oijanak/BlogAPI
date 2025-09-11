@@ -1,23 +1,28 @@
 using System.Net;
+using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
+using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 
 namespace BlogApi.Application.Features.Authors.Queries.GetAuthorByIdCommand;
 
-public class GetAuthorByIdQueryHandler:IRequestHandler<GetAuthorByIdQuery,AuthorDTO>
+public class GetAuthorByIdQueryHandler:IRequestHandler<GetAuthorByIdQuery,ApiResponse<AuthorDto>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public GetAuthorByIdQueryHandler(BlogDbContext blogDbContext)
+    public GetAuthorByIdQueryHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<AuthorDTO> Handle(GetAuthorByIdQuery request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<AuthorDto>> Handle(GetAuthorByIdQuery request, CancellationToken cancellationToken)
     {
         Author author= await _blogDbContext.Authors.FindAsync(request.AuthorId) ;
-        return new AuthorDTO(author);
+        return new ApiResponse<AuthorDto>
+        {
+            Data = new AuthorDto(author),
+            Message = "Author fecthed successfully"
+        };
     }
 }

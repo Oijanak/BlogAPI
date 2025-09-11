@@ -1,12 +1,12 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 
 namespace BlogApi.Application.Features.Users.Query.GetUserRequest;
 
 public class GetUserQueryValidator:AbstractValidator<GetUserQuery>
 {
-    private readonly BlogDbContext _blogDbContext;
-    public GetUserQueryValidator(BlogDbContext blogDbContext)
+    private readonly IBlogDbContext _blogDbContext;
+    public GetUserQueryValidator(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
         RuleFor(x => x.UserId).NotEmpty().WithMessage("User Id is Required")

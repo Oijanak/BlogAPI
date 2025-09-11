@@ -1,4 +1,4 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,8 +6,8 @@ namespace BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 
 public class CreateAuthorCommandValidator:AbstractValidator<CreateAuthorCommand>
 {
-    private  readonly BlogDbContext _blogDbContext; 
-    public CreateAuthorCommandValidator(BlogDbContext blogDbContext)
+    private  readonly IBlogDbContext _blogDbContext; 
+    public CreateAuthorCommandValidator(IBlogDbContext blogDbContext)
     {
         this._blogDbContext = blogDbContext;
         RuleFor(x => x.AuthorEmail)

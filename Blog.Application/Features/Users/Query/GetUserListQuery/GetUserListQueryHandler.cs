@@ -1,24 +1,28 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Users.Query.GetUserListQuery;
 
-public class GetUserListQueryHandler:IRequestHandler<GetUserListQuery, IEnumerable<UserDTO>>
+public class GetUserListQueryHandler:IRequestHandler<GetUserListQuery, ApiResponse<IEnumerable<UserDTO>>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public GetUserListQueryHandler(BlogDbContext blogDbContext)
+    public GetUserListQueryHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<IEnumerable<UserDTO>> Handle(GetUserListQuery request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<IEnumerable<UserDTO>>> Handle(GetUserListQuery request, CancellationToken cancellationToken)
     {
-        return await _blogDbContext.Users
+        var users=await _blogDbContext.Users
             .Select(u => new UserDTO(u))
-            .ToListAsync(cancellationToken); 
+            .ToListAsync(cancellationToken);
+        return new ApiResponse<IEnumerable<UserDTO>>
+        {
+            Data = users,
+            Message = "Users fetched successfully"
+        };
     }
 }

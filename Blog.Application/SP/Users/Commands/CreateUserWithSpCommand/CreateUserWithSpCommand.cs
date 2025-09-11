@@ -3,7 +3,7 @@ using MediatR;
 
 namespace BlogApi.Application.SP.Users.Commands;
 
-public class CreateUserWithSpCommand:IRequest<UserDTO>
+public class CreateUserWithSpCommand:IRequest<ApiResponse<UserDTO>>
 {
     public string Name { get; }
     public string Email { get; }

@@ -3,17 +3,16 @@ using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Users.Query.LoginUserRequest;
 public class LoginUserRequestHandler : IRequestHandler<LoginUserRequest, LoginResponse>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
     private readonly ITokenService _tokenService;
 
-    public LoginUserRequestHandler(BlogDbContext blogDbContext, ITokenService tokenService)
+    public LoginUserRequestHandler(IBlogDbContext blogDbContext, ITokenService tokenService)
     {
         _blogDbContext=blogDbContext;
         _tokenService = tokenService;

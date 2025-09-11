@@ -1,21 +1,27 @@
+using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
+using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Authors.Queries.GetAuthorListQuery;
 
-public class GetAuthorListQueryHandler:IRequestHandler<GetAuthorListQuery,IEnumerable<AuthorDTO>>
+public class GetAuthorListQueryHandler:IRequestHandler<GetAuthorListQuery,ApiResponse<IEnumerable<AuthorDto>>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public GetAuthorListQueryHandler(BlogDbContext blogDbContext)
+    public GetAuthorListQueryHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<IEnumerable<AuthorDTO>> Handle(GetAuthorListQuery request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<IEnumerable<AuthorDto>>> Handle(GetAuthorListQuery request, CancellationToken cancellationToken)
     {
-        return await _blogDbContext.Authors.Select(author => new AuthorDTO(author)).ToListAsync();
+        IEnumerable<AuthorDto> result= await _blogDbContext.Authors.Select(author => new AuthorDto(author)).ToListAsync();
+        return new ApiResponse<IEnumerable<AuthorDto>>
+        {
+            Data = result,
+            Message = "Authors fecthed successfully"
+        };
     }
 }

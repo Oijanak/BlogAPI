@@ -13,7 +13,7 @@ public class BlogDTO
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt{ get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public AuthorDTO Author { get; set; } 
+    public AuthorDto Author { get; set; } 
 
 }
 

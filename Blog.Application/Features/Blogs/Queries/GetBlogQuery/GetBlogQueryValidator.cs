@@ -1,12 +1,12 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 
 namespace BlogApi.Application.Features.Blogs.Queries.GetBlogQuery;
 
 public class GetBlogQueryValidator:AbstractValidator<GetBlogQuery>
 {
-    private readonly BlogDbContext _blogDbContext;
-    public GetBlogQueryValidator(BlogDbContext blogDbContext)
+    private readonly IBlogDbContext _blogDbContext;
+    public GetBlogQueryValidator(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
         RuleFor(b => b.BlogId).NotEmpty().WithMessage("BlogId is required")

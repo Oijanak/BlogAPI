@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BlogApi.Application.Features.Authors.Queries.GetBlogsByAuthorIdQuery;
 
-public class GetBlogsByAuthorIdQuery:IRequest<IEnumerable<BlogDTO>>
+public class GetBlogsByAuthorIdQuery:IRequest<ApiResponse<IEnumerable<BlogDTO>>>
 {
     public Guid AuthorId { get; }
 

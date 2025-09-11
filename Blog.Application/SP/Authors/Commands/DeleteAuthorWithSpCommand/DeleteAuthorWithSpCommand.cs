@@ -1,8 +1,9 @@
+using BlogApi.Application.DTOs;
 using MediatR;
 
 namespace BlogApi.Application.SP.Authors.Commands.DeleteAuthorWithSpCommand;
 
-public class DeleteAuthorWithSpCommand:IRequest<Unit>
+public class DeleteAuthorWithSpCommand:IRequest<ApiResponse<string>>
 {
     public Guid AuthorId { get; }
 

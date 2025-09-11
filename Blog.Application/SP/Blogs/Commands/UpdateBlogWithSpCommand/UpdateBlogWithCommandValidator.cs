@@ -1,13 +1,13 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 
 namespace BlogApi.Application.SP.Blogs.Commands.UpdateBlogWithSpCommand;
 
 public class UpdateBlogWithCommandValidator:AbstractValidator<UpdateBlogWithSpCommand>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-   public UpdateBlogWithCommandValidator(BlogDbContext blogDbContext)
+   public UpdateBlogWithCommandValidator(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
         RuleFor(x => x.BlogId).NotEmpty().WithMessage("Blog Id is Required")

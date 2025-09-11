@@ -18,6 +18,7 @@ namespace BlogApi.Domain.Models
         
         public string Password
         {
+            
             set {
                  if (!string.IsNullOrWhiteSpace(value))
                 {

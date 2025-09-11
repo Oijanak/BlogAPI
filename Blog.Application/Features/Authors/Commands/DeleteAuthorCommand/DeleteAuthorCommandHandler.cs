@@ -1,25 +1,30 @@
 using System.Net;
+using Ardalis.GuardClauses;
+using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
+using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 
 namespace BlogApi.Application.Features.Authors.Commands.DeleteAuthorCommand;
 
-public class DeleteAuthorCommandHandler:IRequestHandler<DeleteAuthorCommand,Unit>
+public class DeleteAuthorCommandHandler:IRequestHandler<DeleteAuthorCommand,ApiResponse<string>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public DeleteAuthorCommandHandler(BlogDbContext blogDbContext)
+    public DeleteAuthorCommandHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<Unit> Handle(DeleteAuthorCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<string>> Handle(DeleteAuthorCommand request, CancellationToken cancellationToken)
     {
         Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId);
-        ArgumentNullException.ThrowIfNull(author,nameof(author));
+        Guard.Against.Null(author,nameof(author));
         _blogDbContext.Authors.Remove(author);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
-        return Unit.Value;
+        return new ApiResponse<string>
+        {
+            Message = "Author deleted successfully",
+        };
     }
 }

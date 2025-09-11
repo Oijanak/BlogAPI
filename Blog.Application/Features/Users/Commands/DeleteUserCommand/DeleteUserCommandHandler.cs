@@ -1,26 +1,29 @@
 using System.Net;
+using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 
 namespace BlogApi.Application.Features.Users.Commands.DeleteUserCommand;
 
-public class DeleteUserCommandHandler:IRequestHandler<DeleteUserCommand,Unit>
+public class DeleteUserCommandHandler:IRequestHandler<DeleteUserCommand,ApiResponse<string>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public DeleteUserCommandHandler(BlogDbContext blogDbContext)
+    public DeleteUserCommandHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<string>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         User user = await _blogDbContext.Users.FindAsync(request.UserId);
         ArgumentNullException.ThrowIfNull(user,nameof(user));
         _blogDbContext.Users.Remove(user);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
-        return Unit.Value;
+        return new ApiResponse<string>
+        {
+            Message = "User deleted successfully",
+        };
     }
 }

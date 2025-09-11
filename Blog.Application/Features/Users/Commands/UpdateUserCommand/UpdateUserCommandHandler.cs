@@ -2,17 +2,16 @@ using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 
-public class UpdateUserCommanHanler:IRequestHandler<UpdateUserCommand,UserDTO>
+public class UpdateUserCommanHanler:IRequestHandler<UpdateUserCommand,ApiResponse<UserDTO>>
 {
-    private readonly BlogDbContext _blogDbContext;
-    public UpdateUserCommanHanler(BlogDbContext blogDbContext)
+    private readonly IBlogDbContext _blogDbContext;
+    public UpdateUserCommanHanler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<UserDTO> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<UserDTO>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
         User user = await _blogDbContext.Users.FindAsync(request.UserId);
         ArgumentNullException.ThrowIfNull(user,nameof(user));
@@ -24,6 +23,10 @@ public class UpdateUserCommanHanler:IRequestHandler<UpdateUserCommand,UserDTO>
         _blogDbContext.Users.Update(user);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
 
-        return new UserDTO(user);
+        return new ApiResponse<UserDTO>
+        {
+            Data = new UserDTO(user),
+            Message = "User updated successfully",
+        };
     }
 }

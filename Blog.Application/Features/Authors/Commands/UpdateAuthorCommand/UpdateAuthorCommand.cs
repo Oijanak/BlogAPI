@@ -1,10 +1,11 @@
+using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using MediatR;
 
 namespace BlogApi.Application.Features.Authors.Commands.UpdateAuthorCommand;
 
 
-public class UpdateAuthorCommand:IRequest<AuthorDTO>
+public class UpdateAuthorCommand:IRequest<ApiResponse<AuthorDto>>
 {
     public Guid AuthorId { get; }
     public string AuthorEmail { get; }

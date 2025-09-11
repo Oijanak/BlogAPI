@@ -1,20 +1,20 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.SP.Blogs.Commands;
 
-public class CreateBlogWithSpCommandHandler:IRequestHandler<CreateBlogWithSpCommand,BlogDTO>
+public class CreateBlogWithSpCommandHandler:IRequestHandler<CreateBlogWithSpCommand,ApiResponse<BlogDTO>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public CreateBlogWithSpCommandHandler(BlogDbContext blogDbContext)
+    public CreateBlogWithSpCommandHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<BlogDTO> Handle(CreateBlogWithSpCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<BlogDTO>> Handle(CreateBlogWithSpCommand request, CancellationToken cancellationToken)
     {
         var blogs = await _blogDbContext.Blogs
             .FromSqlInterpolated($"EXEC spCreateBlogWithAuthor {request.AuthorId}, {request.BlogTitle}, {request.BlogContent}")
@@ -22,7 +22,7 @@ public class CreateBlogWithSpCommandHandler:IRequestHandler<CreateBlogWithSpComm
             .ToListAsync();
         ArgumentNullException.ThrowIfNull(blogs,nameof(blogs));
         var result=blogs.FirstOrDefault();
-        return new BlogDTO
+        var blogDtos=new BlogDTO
         {
             BlogId = result.BlogId,
             BlogTitle = result.BlogTitle,
@@ -30,7 +30,11 @@ public class CreateBlogWithSpCommandHandler:IRequestHandler<CreateBlogWithSpComm
             CreatedAt = result.CreatedAt,
             UpdatedAt = result.UpdatedAt,
         };
-
+        return new ApiResponse<BlogDTO>
+        {
+            Data = blogDtos,
+            Message = "Blog created successfully"
+        };
 
     }
 }

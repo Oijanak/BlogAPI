@@ -1,12 +1,12 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 
 namespace BlogApi.Application.SP.Blogs.Commands.DeleteBlogWithSpCommand;
 
 public class DeleteBlogWithSpCommandValidator:AbstractValidator<DeleteBlogWithSpCommand>
 {
-    private readonly BlogDbContext _blogDbContext;
-    public DeleteBlogWithSpCommandValidator(BlogDbContext blogDbContext)
+    private readonly IBlogDbContext _blogDbContext;
+    public DeleteBlogWithSpCommandValidator(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
         RuleFor(x => x.BlogId).NotEmpty().WithMessage("BlogId is Required")

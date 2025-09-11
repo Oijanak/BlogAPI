@@ -1,8 +1,9 @@
+using BlogApi.Application.DTOs;
 using MediatR;
 
 namespace BlogApi.Application.SP.Blogs.Commands.DeleteBlogWithSpCommand;
 
-public class DeleteBlogWithSpCommand:IRequest<Unit>
+public class DeleteBlogWithSpCommand:IRequest<ApiResponse<string>>
 {
     public Guid BlogId { get;}
     

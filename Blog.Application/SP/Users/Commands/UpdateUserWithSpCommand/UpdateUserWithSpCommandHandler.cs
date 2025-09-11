@@ -1,19 +1,19 @@
 using BlogApi.Application.DTOs;
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.SP.Users.Commands.UpdateUserWithSpCommand;
 
-public class UpdateUserWithSpCommandHandler:IRequestHandler<UpdateUserWithSpCommand, UserDTO>
+public class UpdateUserWithSpCommandHandler:IRequestHandler<UpdateUserWithSpCommand, ApiResponse<UserDTO>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public UpdateUserWithSpCommandHandler(BlogDbContext blogDbContext)
+    public UpdateUserWithSpCommandHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<UserDTO> Handle(UpdateUserWithSpCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<UserDTO>> Handle(UpdateUserWithSpCommand request, CancellationToken cancellationToken)
     {
         request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
@@ -23,6 +23,10 @@ public class UpdateUserWithSpCommandHandler:IRequestHandler<UpdateUserWithSpComm
             .ToListAsync();
 
         var updatedUser = users.FirstOrDefault();
-        return new UserDTO(updatedUser);
+        return new ApiResponse<UserDTO>
+        {
+            Data = new UserDTO(updatedUser),
+            Message = "User updated successfully",
+        };
     }
 }

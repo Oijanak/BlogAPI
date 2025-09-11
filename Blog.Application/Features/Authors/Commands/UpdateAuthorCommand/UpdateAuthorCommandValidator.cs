@@ -1,4 +1,4 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,10 +6,10 @@ namespace BlogApi.Application.Features.Authors.Commands.UpdateAuthorCommand;
 
 public class UpdateAuthorCommandValidator:AbstractValidator<UpdateAuthorCommand>
 {
-    private  readonly BlogDbContext _blogDbContext; 
-    public UpdateAuthorCommandValidator(BlogDbContext blogDbContext)
+    private  readonly IBlogDbContext _blogDbContext; 
+    public UpdateAuthorCommandValidator(IBlogDbContext blogDbContext)
     {
-        this._blogDbContext = blogDbContext;
+        _blogDbContext = blogDbContext;
         
         RuleFor(x=>x.AuthorId).NotEmpty().WithMessage("AuthorId is required")
             .MustAsync(async (authorId, cancellationToken) =>

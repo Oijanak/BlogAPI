@@ -5,6 +5,9 @@ using BlogApi.Application.Features.Users.Commands.DeleteUserCommand;
 using BlogApi.Application.Features.Users.Query.GetUserListQuery;
 using BlogApi.Application.Features.Users.Query.GetUserRequest;
 using BlogApi.Application.Features.Users.Query.LoginUserRequest;
+using BlogApi.Application.SP.Users.Commands;
+using BlogApi.Application.SP.Users.Commands.DeleteUserWithSpCommand;
+using BlogApi.Application.SP.Users.Commands.UpdateUserWithSpCommand;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -25,41 +28,27 @@ namespace BlogApi.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser(RegisterUserRequest user)
         {
-            UserDTO createdUser = await _sender.Send(new CreateUserCommand(user.Name,user.Email,user.Password));
-            return Created("",new ApiResponse<UserDTO>
-            {
-                Message = "User Registered Successfully",
-                Data = createdUser
-            });
+            return Created("",await _sender.Send(new CreateUserCommand(user.Name,user.Email,user.Password)));
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var users = await _sender.Send(new GetUserListQuery());
-            return Ok(new ApiResponse<IEnumerable<UserDTO>>
-            {
-                Message = "Users fetched successfully",
-                Data = users
-            });
+           return Ok(await _sender.Send(new GetUserListQuery()));
+            
         }
 
         [HttpGet("{userId:guid}")]
         public async Task<IActionResult> GetById(Guid userId)
         {
-            UserDTO? user = await _sender.Send(new GetUserQuery(userId));
-            return Ok(new ApiResponse<UserDTO?>
-            {
-                Message = "User fetched successfully",
-                Data = user
-            });
+            return Ok(await _sender.Send(new GetUserQuery(userId)));
+           
         }
         
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            LoginResponse response = await _sender.Send(new LoginUserRequest(loginRequest.Email,loginRequest.Password));
-            return Ok(response);
+            return Ok(await _sender.Send(new LoginUserRequest(loginRequest.Email,loginRequest.Password)));
         }
 
         [HttpPatch]
@@ -68,23 +57,32 @@ namespace BlogApi.API.Controllers
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId") ?? throw new ApiException("User not authorized", HttpStatusCode.Unauthorized);
             Guid userId = Guid.Parse(userIdClaim.Value);
-            
-            UserDTO updatedUser = await _sender.Send(new UpdateUserCommand(userId,updateUser.Name,updateUser.Email,updateUser.Password));
-            return Ok(new ApiResponse<UserDTO>
-            {
-                Message = "User updated successfully",
-                Data = updatedUser
-            });
+            return Ok(await _sender.Send(new UpdateUserCommand(userId,updateUser.Name,updateUser.Email,updateUser.Password)));
+          
         }
 
         [HttpDelete("{userId:guid}")]
         public async Task<IActionResult> DeleteUser(Guid userId)
         {
-            await _sender.Send(new DeleteUserCommand(userId));
-            return Ok(new ApiResponse<string>
-            {
-                Message = "User deleted successfully",
-            });
+            return Ok(await _sender.Send(new DeleteUserCommand(userId)));
+        }
+        
+        [HttpPost("sp")]
+        public async Task<IActionResult> RegisterUserWithSp(RegisterUserRequest user)
+        {
+           return Created("",await _sender.Send(new CreateUserWithSpCommand(user.Name,user.Email,user.Password)));
+        }
+    
+        [HttpPut("sp/{userId:guid}")]
+        public async Task<IActionResult> updateUser(Guid userId,UpdateUserRequest user)
+        {
+            return Ok(await _sender.Send(new UpdateUserWithSpCommand(userId,user.Name,user.Email,user.Password)));
+        }
+
+        [HttpDelete("sp/{userId:guid}")]
+        public async Task<IActionResult> DeleteUserWithSp(Guid userId)
+        {
+            return Ok(await _sender.Send(new DeleteUserWithSpCommand(userId)));
         }
 
        

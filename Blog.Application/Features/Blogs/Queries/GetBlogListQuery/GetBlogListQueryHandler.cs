@@ -1,31 +1,39 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Blogs.Queries.GetBlogListQuery;
 
-public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, IEnumerable<BlogDTO>>
+public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiResponse<IEnumerable<BlogDTO>>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public GetBlogListQueryHandler(BlogDbContext blogDbContext)
+    public GetBlogListQueryHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
     
-    public async Task<IEnumerable<BlogDTO>> Handle(GetBlogListQuery request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<IEnumerable<BlogDTO>>> Handle(GetBlogListQuery request, CancellationToken cancellationToken)
     {
-        return await _blogDbContext.Blogs.Select(blog => new BlogDTO()
+        var blogsEntities = await _blogDbContext.Blogs
+            .Include(blog => blog.Author)
+            .ToListAsync();
+
+        var blogDTOs = blogsEntities.Select(blog => new BlogDTO
         {
             BlogId = blog.BlogId,
             BlogTitle = blog.BlogTitle,
             BlogContent = blog.BlogContent,
             CreatedAt = blog.CreatedAt,
             UpdatedAt = blog.UpdatedAt,
-            Author = new AuthorDTO(blog.Author)
-        }).ToListAsync();
+            Author = new AuthorDto(blog.Author) 
+        }).ToList();
+        return new ApiResponse<IEnumerable<BlogDTO>>
+        {
+            Data = blogDTOs,
+            Message = "Blogs fetched successfully"
+        };
     }
 }

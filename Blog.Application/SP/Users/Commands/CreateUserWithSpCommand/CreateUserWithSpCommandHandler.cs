@@ -1,22 +1,24 @@
 using BlogApi.Application.DTOs;
+using BlogApi.Application.Guards;
+using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.SP.Users.Commands;
 
-public class CreateUserWithSpCommandHandler:IRequestHandler<CreateUserWithSpCommand, UserDTO>
+public class CreateUserWithSpCommandHandler:IRequestHandler<CreateUserWithSpCommand, ApiResponse<UserDTO>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public CreateUserWithSpCommandHandler(BlogDbContext blogDbcontext)
+    public CreateUserWithSpCommandHandler(IBlogDbContext blogDbcontext)
     {
         _blogDbContext = blogDbcontext;
     }
 
-    public async Task<UserDTO> Handle(CreateUserWithSpCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<UserDTO>> Handle(CreateUserWithSpCommand request, CancellationToken cancellationToken)
     {
+        CreateUserWithSpCommandGuard.ValidateWithGuard(request);
         request.Password=BCrypt.Net.BCrypt.HashPassword(request.Password);
         var users = await _blogDbContext.Users
             .FromSqlInterpolated($"EXEC spCreateUser {request.Name}, {request.Email}, {request.Password}")
@@ -24,6 +26,10 @@ public class CreateUserWithSpCommandHandler:IRequestHandler<CreateUserWithSpComm
             .ToListAsync(); 
 
         var user = users.FirstOrDefault();
-        return new UserDTO(user);
+        return new ApiResponse<UserDTO>
+        {
+            Data = new UserDTO(user),
+            Message = "User created successfully",
+        };
     }
 }

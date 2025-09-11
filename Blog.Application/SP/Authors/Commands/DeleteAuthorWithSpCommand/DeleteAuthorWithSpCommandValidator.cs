@@ -1,13 +1,13 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 
 namespace BlogApi.Application.SP.Authors.Commands.DeleteAuthorWithSpCommand;
 
 public class DeleteAuthorWithSpCommandValidator:AbstractValidator<DeleteAuthorWithSpCommand>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public DeleteAuthorWithSpCommandValidator(BlogDbContext blogDbContext)
+    public DeleteAuthorWithSpCommandValidator(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
         RuleFor(x=>x.AuthorId).NotEmpty().WithMessage("AuthorId is required")

@@ -2,31 +2,35 @@ using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 
 namespace BlogApi.Application.Features.Blogs.Queries.GetBlogQuery;
 
-public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,BlogDTO>
+public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,ApiResponse<BlogDTO>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public GetBlogQueryHandler(BlogDbContext blogDbContext)
+    public GetBlogQueryHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
     
-    public async Task<BlogDTO> Handle(GetBlogQuery request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<BlogDTO>> Handle(GetBlogQuery request, CancellationToken cancellationToken)
     {
         Blog blog = await _blogDbContext.Blogs.FindAsync(request.BlogId) ;
-        return new BlogDTO()
+        var blogResult= new BlogDTO()
         {
             BlogId = blog.BlogId,
             BlogTitle = blog.BlogTitle,
             BlogContent = blog.BlogContent,
             CreatedAt = blog.CreatedAt,
             UpdatedAt = blog.UpdatedAt,
-            Author = new AuthorDTO(blog.Author)
+            Author = new AuthorDto(blog.Author)
+        };
+        return new ApiResponse<BlogDTO>
+        {
+            Data = blogResult,
+            Message = "Blog fetched successfully"
         };
     }
 }

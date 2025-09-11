@@ -3,7 +3,7 @@ using MediatR;
 
 namespace BlogApi.Application.Features.Users.Query.GetUserListQuery;
 
-public class GetUserListQuery:IRequest<IEnumerable<UserDTO>>
+public class GetUserListQuery:IRequest<ApiResponse<IEnumerable<UserDTO>>>
 {
     
 }

@@ -1,18 +1,17 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserDTO>
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, ApiResponse<UserDTO>>
 {
-    private readonly BlogDbContext _blogDbContext;
-    public CreateUserCommandHandler(BlogDbContext blogDbContext)
+    private readonly IBlogDbContext _blogDbContext;
+    public CreateUserCommandHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
 
-    public async Task<UserDTO> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<UserDTO>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         User user = new User
         {
@@ -22,6 +21,11 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
         };
         await _blogDbContext.Users.AddAsync(user);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
-        return new UserDTO(user);
+
+        return new ApiResponse<UserDTO>
+        {
+            Data = new UserDTO(user),
+            Message = "User created successfully"
+        };
     }
 }

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace BlogApi.Application.SP.Blogs.Commands.UpdateBlogWithSpCommand;
 
-public class UpdateBlogWithSpCommand:IRequest<BlogDTO>
+public class UpdateBlogWithSpCommand:IRequest<ApiResponse<BlogDTO>>
 {
     public Guid BlogId { get; }
     public Guid AuthorId { get;}

@@ -1,4 +1,5 @@
 using System.Text;
+using Ardalis.GuardClauses;
 using Blog.API.Filters;
 using BlogApi.API.Controllers.Middlewares;
 using BlogApi.Application;
@@ -29,9 +30,9 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-ArgumentNullException.ThrowIfNullOrEmpty(connectionString,nameof(connectionString));
-builder.Services.AddDbContext<BlogDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString(connectionString)));
+Guard.Against.NullOrEmpty(connectionString,nameof(connectionString));
+builder.Services.AddDbContext<IBlogDbContext,BlogDbContext>(options =>
+    options.UseSqlServer(connectionString));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserRequestValidator>();
 builder.Services.AddFluentValidationAutoValidation();
@@ -63,9 +64,9 @@ builder.Services.AddScoped<ITokenService, JwtTokenService>();
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 var jwtKey = builder.Configuration["Jwt:Key"];
-ArgumentNullException.ThrowIfNullOrEmpty(jwtIssuer, nameof(jwtIssuer));
-ArgumentNullException.ThrowIfNullOrEmpty(jwtAudience, nameof(jwtAudience));
-ArgumentNullException.ThrowIfNullOrEmpty(jwtKey, nameof(jwtKey));
+Guard.Against.NullOrEmpty(jwtIssuer, nameof(jwtIssuer));
+Guard.Against.NullOrEmpty(jwtAudience, nameof(jwtAudience));
+Guard.Against.NullOrEmpty(jwtKey, nameof(jwtKey));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

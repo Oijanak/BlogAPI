@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BlogApi.Application.Features.Blogs.Queries.GetBlogListQuery;
 
-public class GetBlogListQuery: IRequest<IEnumerable<BlogDTO>>
+public class GetBlogListQuery: IRequest<ApiResponse<IEnumerable<BlogDTO>>>
 {
     
 }

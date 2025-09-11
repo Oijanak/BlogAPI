@@ -1,12 +1,12 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 
 namespace BlogApi.Application.SP.Blogs.Commands;
 
 public class CreateBlogWithSpCommandValidator:AbstractValidator<CreateBlogWithSpCommand>
 {
-    private readonly BlogDbContext _blogDbContext;
-    public CreateBlogWithSpCommandValidator(BlogDbContext blogDbContext)
+    private readonly IBlogDbContext _blogDbContext;
+    public CreateBlogWithSpCommandValidator(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
         RuleFor(x => x.AuthorId).NotEmpty().WithMessage("AuthorId is required")

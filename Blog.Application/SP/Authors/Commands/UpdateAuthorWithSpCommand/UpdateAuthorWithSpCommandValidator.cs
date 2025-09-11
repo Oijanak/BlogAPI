@@ -1,4 +1,4 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,8 +6,8 @@ namespace BlogApi.Application.SP.Authors.Commands.UpdateAuthorWithSpCommand;
 
 public class UpdateAuthorWithSpCommandValidator:AbstractValidator<UpdateAuthorWithSpCommand>
 {
-    private  readonly BlogDbContext _blogDbContext; 
-    public UpdateAuthorWithSpCommandValidator(BlogDbContext blogDbContext)
+    private  readonly IBlogDbContext _blogDbContext; 
+    public UpdateAuthorWithSpCommandValidator(IBlogDbContext blogDbContext)
     {
         this._blogDbContext = blogDbContext;
         

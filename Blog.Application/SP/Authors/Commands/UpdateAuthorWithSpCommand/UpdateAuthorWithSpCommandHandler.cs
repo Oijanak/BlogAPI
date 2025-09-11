@@ -1,19 +1,20 @@
+using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.SP.Authors.Commands.UpdateAuthorWithSpCommand;
 
-public class UpdateAuthorWithSpCommandHandler:IRequestHandler<UpdateAuthorWithSpCommand, AuthorDTO>
+public class UpdateAuthorWithSpCommandHandler:IRequestHandler<UpdateAuthorWithSpCommand, ApiResponse<AuthorDto>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public UpdateAuthorWithSpCommandHandler(BlogDbContext blogDbContext)
+    public UpdateAuthorWithSpCommandHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<AuthorDTO> Handle(UpdateAuthorWithSpCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<AuthorDto>> Handle(UpdateAuthorWithSpCommand request, CancellationToken cancellationToken)
     {
         var authors = await _blogDbContext.Authors
             .FromSqlInterpolated($"EXEC spUpdateAuthor {request.AuthorId}, {request.AuthorEmail}, {request.AuthorName}, {request.Age}")
@@ -21,6 +22,10 @@ public class UpdateAuthorWithSpCommandHandler:IRequestHandler<UpdateAuthorWithSp
             .ToListAsync(); 
 
         var author = authors.FirstOrDefault();
-        return new AuthorDTO(author);
+        return new ApiResponse<AuthorDto>
+        {
+            Data = new AuthorDto(author),
+            Message = "Author updated successfully",
+        };
     }
 }

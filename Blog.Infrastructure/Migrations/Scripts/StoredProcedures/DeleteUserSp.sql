@@ -1,0 +1,9 @@
+CREATE OR ALTER PROCEDURE spDeleteUser
+    @UserId UNIQUEIDENTIFIER
+    AS
+BEGIN
+    SET NOCOUNT ON;
+
+DELETE FROM [Users]
+WHERE UserId = @UserId;
+END;

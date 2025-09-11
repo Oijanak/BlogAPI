@@ -1,22 +1,26 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.DTOs;
+using BlogApi.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.SP.Users.Commands.DeleteUserWithSpCommand;
 
-public class DeleteUserWithSpCommandHandler:IRequestHandler<DeleteUserWithSpCommand,Unit>
+public class DeleteUserWithSpCommandHandler:IRequestHandler<DeleteUserWithSpCommand,ApiResponse<string>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public DeleteUserWithSpCommandHandler(BlogDbContext blogDbContext)
+    public DeleteUserWithSpCommandHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<Unit> Handle(DeleteUserWithSpCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<string>> Handle(DeleteUserWithSpCommand request, CancellationToken cancellationToken)
     {
         await _blogDbContext.Database
             .ExecuteSqlInterpolatedAsync($"EXEC spDeleteBlog {request.UserId}");
-        return Unit.Value;
-        
+        return new ApiResponse<string>
+        {
+            Message = "User deleted successfully",
+        };
+
     }
 }

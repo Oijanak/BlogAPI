@@ -1,11 +1,11 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 public class UpdateUserCommandValidation : AbstractValidator<UpdateUserCommand>
 {
-    private readonly BlogDbContext _blogDbContext;
-    public UpdateUserCommandValidation(BlogDbContext blogDbContext)
+    private readonly IBlogDbContext _blogDbContext;
+    public UpdateUserCommandValidation(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
         RuleFor(x=>x.UserId).NotEmpty()

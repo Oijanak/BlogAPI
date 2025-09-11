@@ -3,7 +3,7 @@ using MediatR;
 
 namespace BlogApi.Application.Features.Blogs.Queries.GetBlogQuery;
 
-public class GetBlogQuery:IRequest<BlogDTO>
+public class GetBlogQuery:IRequest<ApiResponse<BlogDTO>>
 {
     public Guid BlogId { get;}
 

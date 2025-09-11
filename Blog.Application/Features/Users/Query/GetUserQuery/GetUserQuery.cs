@@ -3,7 +3,7 @@ using MediatR;
 
 namespace BlogApi.Application.Features.Users.Query.GetUserRequest;
 
-public class GetUserQuery:IRequest<UserDTO>
+public class GetUserQuery:IRequest<ApiResponse<UserDTO>>
 {
     public Guid UserId { get; }
 

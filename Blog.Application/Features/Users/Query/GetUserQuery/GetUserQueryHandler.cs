@@ -3,23 +3,25 @@ using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 
 namespace BlogApi.Application.Features.Users.Query.GetUserRequest;
 
-public class GetUserQueryHandler:IRequestHandler<GetUserQuery,UserDTO>
+public class GetUserQueryHandler:IRequestHandler<GetUserQuery,ApiResponse<UserDTO>>
 {
-    private readonly BlogDbContext  _blogDbContext;
+    private readonly IBlogDbContext  _blogDbContext;
 
-    public GetUserQueryHandler(BlogDbContext blogDbContext)
+    public GetUserQueryHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<UserDTO> Handle(GetUserQuery query, CancellationToken cancellationToken)
+    public async Task<ApiResponse<UserDTO>> Handle(GetUserQuery query, CancellationToken cancellationToken)
     {
         User user = await _blogDbContext.Users.FindAsync(query.UserId) ?? throw new ApiException("User not found with id " + query.UserId, HttpStatusCode.NotFound);
-        return new UserDTO(user);
-
+        return new ApiResponse<UserDTO>
+        {
+            Data = new UserDTO(user),
+            Message = "User fetched successfully"
+        };
     }
 }

@@ -18,6 +18,7 @@ namespace BlogApi.Domain.Models
         public Author Author { get; set; } = null!;
         
         public Guid AuthorId { get; set; }
+        
 
     }
 }

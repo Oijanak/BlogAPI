@@ -1,13 +1,13 @@
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
    
-    public CreateUserCommandValidator(BlogDbContext blogDbContext)
+    public CreateUserCommandValidator(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
         RuleFor(x => x.Name)

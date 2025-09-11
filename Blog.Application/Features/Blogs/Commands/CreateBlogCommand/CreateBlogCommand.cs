@@ -3,7 +3,7 @@ using MediatR;
 
 namespace BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 
-public class CreateBlogCommand:IRequest<BlogDTO>
+public class CreateBlogCommand:IRequest<ApiResponse<BlogDTO>>
 {
     public Guid AuthorId { get;}
     public string BlogTitle { get; }

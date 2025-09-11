@@ -1,21 +1,22 @@
 using System.Net;
+using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
+using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
-using BlogApi.Infrastructure.Data;
 using MediatR;
 
 namespace BlogApi.Application.Features.Authors.Commands.UpdateAuthorCommand;
 
-public class UpdateAuthorCommandHandler:IRequestHandler<UpdateAuthorCommand, AuthorDTO>
+public class UpdateAuthorCommandHandler:IRequestHandler<UpdateAuthorCommand, ApiResponse<AuthorDto>>
 {
-    private readonly BlogDbContext _blogDbContext;
+    private readonly IBlogDbContext _blogDbContext;
 
-    public UpdateAuthorCommandHandler(BlogDbContext blogDbContext)
+    public UpdateAuthorCommandHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<AuthorDTO> Handle(UpdateAuthorCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<AuthorDto>> Handle(UpdateAuthorCommand request, CancellationToken cancellationToken)
     {
         Author existingAuthor= await _blogDbContext.Authors.FindAsync(request.AuthorId) ;
         ArgumentNullException.ThrowIfNull(existingAuthor,nameof(existingAuthor));
@@ -23,7 +24,11 @@ public class UpdateAuthorCommandHandler:IRequestHandler<UpdateAuthorCommand, Aut
         existingAuthor.AuthorName = request.AuthorName;
         existingAuthor.Age = request.Age;
         await _blogDbContext.SaveChangesAsync(cancellationToken);
-        return new AuthorDTO(existingAuthor);
+        return new ApiResponse<AuthorDto>
+        {
+            Data = new AuthorDto(existingAuthor),
+            Message = "Autho updated successfully"
+        };
 
     }
 }

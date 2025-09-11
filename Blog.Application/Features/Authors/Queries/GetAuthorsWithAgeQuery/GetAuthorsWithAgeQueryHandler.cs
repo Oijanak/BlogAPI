@@ -1,23 +1,29 @@
+using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
-using BlogApi.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Authors.Queries.GetAuthorsWithAgeQuery;
 
-public class GetAuthorsWithAgeQueryHandler:IRequestHandler<GetAuthorsWithAgeQuery,IEnumerable<AuthorDTO>>
+public class GetAuthorsWithAgeQueryHandler:IRequestHandler<GetAuthorsWithAgeQuery,ApiResponse<IEnumerable<AuthorDto>>>
 {
-    private readonly BlogDbContext  _blogDbContext;
+    private readonly IBlogDbContext  _blogDbContext;
 
-    public GetAuthorsWithAgeQueryHandler(BlogDbContext blogDbContext)
+    public GetAuthorsWithAgeQueryHandler(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
     }
-    public async Task<IEnumerable<AuthorDTO>> Handle(GetAuthorsWithAgeQuery request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<IEnumerable<AuthorDto>>> Handle(GetAuthorsWithAgeQuery request, CancellationToken cancellationToken)
     {
-        return  _blogDbContext.Authors
+        IEnumerable<AuthorDto> result= _blogDbContext.Authors
             .FromSqlInterpolated($"EXEC spGetAuthorsWithAgeBetween {request.Age1}, {request.Age2}")
             .AsEnumerable()
-            .Select(author => new AuthorDTO(author));
+            .Select(author => new AuthorDto(author));
+        return new ApiResponse<IEnumerable<AuthorDto>>
+        {
+            Data = result,
+            Message = "Authors fetched successfully"
+        };
     }
 }
