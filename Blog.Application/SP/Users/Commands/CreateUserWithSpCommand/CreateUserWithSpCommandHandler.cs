@@ -1,5 +1,4 @@
 using BlogApi.Application.DTOs;
-using BlogApi.Application.Guards;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using MediatR;
@@ -18,7 +17,6 @@ public class CreateUserWithSpCommandHandler:IRequestHandler<CreateUserWithSpComm
 
     public async Task<ApiResponse<UserDTO>> Handle(CreateUserWithSpCommand request, CancellationToken cancellationToken)
     {
-        CreateUserWithSpCommandGuard.ValidateWithGuard(request);
         request.Password=BCrypt.Net.BCrypt.HashPassword(request.Password);
         var users = await _blogDbContext.Users
             .FromSqlInterpolated($"EXEC spCreateUser {request.Name}, {request.Email}, {request.Password}")
