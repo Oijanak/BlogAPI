@@ -34,7 +34,7 @@ Guard.Against.NullOrEmpty(connectionString,nameof(connectionString));
 builder.Services.AddDbContext<IBlogDbContext,BlogDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
 builder.Services.AddFluentValidationAutoValidation();
 
 builder.Services.AddSwaggerGen(options=>

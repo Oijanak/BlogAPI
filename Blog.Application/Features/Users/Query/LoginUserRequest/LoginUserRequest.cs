@@ -3,12 +3,8 @@ using MediatR;
 namespace BlogApi.Application.Features.Users.Query.LoginUserRequest;
 public class LoginUserRequest : IRequest<LoginResponse>
 {
-    public string Email { get;}
-    public string Password { get;}
+    public string Email { get; set; }
+    public string Password { get; set; }
 
-    public LoginUserRequest(string email, string password)
-    {
-        Email = email;
-        Password = password;
-    }
+    
 }

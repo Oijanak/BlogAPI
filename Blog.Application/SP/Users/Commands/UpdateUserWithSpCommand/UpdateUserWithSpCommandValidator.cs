@@ -2,10 +2,12 @@ using BlogApi.Application.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-public class UpdateUserCommandValidation : AbstractValidator<UpdateUserCommand>
+namespace BlogApi.Application.SP.Users.Commands.UpdateUserWithSpCommand;
+
+public class UpdateUserWithSpCommandValidator:AbstractValidator<UpdateUserWithSpCommand>
 {
     private readonly IBlogDbContext _blogDbContext;
-    public UpdateUserCommandValidation(IBlogDbContext blogDbContext)
+    public UpdateUserWithSpCommandValidator(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
         RuleFor(x=>x.UserId).NotEmpty()
@@ -22,5 +24,4 @@ public class UpdateUserCommandValidation : AbstractValidator<UpdateUserCommand>
                               !string.IsNullOrWhiteSpace(x.User.Name)|| !string.IsNullOrWhiteSpace(x.User.Password))
             .WithMessage("At least one field is required. ");
     }
-    
 }

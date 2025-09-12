@@ -19,7 +19,7 @@ public class DeleteAuthorCommandHandler:IRequestHandler<DeleteAuthorCommand,ApiR
     public async Task<ApiResponse<string>> Handle(DeleteAuthorCommand request, CancellationToken cancellationToken)
     {
         Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId);
-        Guard.Against.Null(author,nameof(author));
+        Guard.Against.Null(author,nameof(author),"Author cannot be null");
         _blogDbContext.Authors.Remove(author);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
         return new ApiResponse<string>

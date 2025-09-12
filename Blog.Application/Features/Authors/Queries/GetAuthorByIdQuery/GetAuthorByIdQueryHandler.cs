@@ -1,4 +1,5 @@
 using System.Net;
+using Ardalis.GuardClauses;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
@@ -19,6 +20,7 @@ public class GetAuthorByIdQueryHandler:IRequestHandler<GetAuthorByIdQuery,ApiRes
     public async Task<ApiResponse<AuthorDto>> Handle(GetAuthorByIdQuery request, CancellationToken cancellationToken)
     {
         Author author= await _blogDbContext.Authors.FindAsync(request.AuthorId) ;
+        Guard.Against.Null(author,nameof(author),"Author cannot be null");
         return new ApiResponse<AuthorDto>
         {
             Data = new AuthorDto(author),

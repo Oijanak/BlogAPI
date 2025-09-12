@@ -1,3 +1,4 @@
+using Ardalis.GuardClauses;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Interfaces;
@@ -14,11 +15,11 @@ public class UpdateUserCommanHanler:IRequestHandler<UpdateUserCommand,ApiRespons
     public async Task<ApiResponse<UserDTO>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
         User user = await _blogDbContext.Users.FindAsync(request.UserId);
-        ArgumentNullException.ThrowIfNull(user,nameof(user));
-        user.Name = request.Name ?? user.Name;
-        user.Email = request.Email ?? user.Email;
-        if (request.Password is not null)
-            user.Password = request.Password;
+        Guard.Against.Null(user,nameof(user),"User cannot be null");
+        user.Name = request.User.Name ?? user.Name;
+        user.Email = request.User.Email ?? user.Email;
+        if (request.User.Password is not null)
+            user.Password = request.User.Password;
 
         _blogDbContext.Users.Update(user);
         await _blogDbContext.SaveChangesAsync(cancellationToken);

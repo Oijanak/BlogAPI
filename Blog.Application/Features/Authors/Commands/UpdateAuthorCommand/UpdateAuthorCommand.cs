@@ -1,23 +1,16 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BlogApi.Application.Features.Authors.Commands.UpdateAuthorCommand;
 
 
 public class UpdateAuthorCommand:IRequest<ApiResponse<AuthorDto>>
 {
-    public Guid AuthorId { get; }
-    public string AuthorEmail { get; }
-    public string AuthorName { get; }
-    public int Age { get; }
-
-    public UpdateAuthorCommand(Guid authorId,string authorEmail, string authorName, int age)
-    { AuthorId = authorId;
-      AuthorEmail = authorEmail;  
-      AuthorName = authorName;
-      Age = age;
-    }
-    
+    [FromRoute]
+    public Guid AuthorId { get; set; }
+    [FromBody]
+    public AuthorRequest Author { get; init; }
     
 }

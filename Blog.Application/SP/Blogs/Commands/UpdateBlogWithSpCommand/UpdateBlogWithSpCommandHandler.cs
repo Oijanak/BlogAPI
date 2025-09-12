@@ -19,7 +19,7 @@ public class UpdateBlogWithSpCommandHandler:IRequestHandler<UpdateBlogWithSpComm
     public async Task<ApiResponse<BlogDTO>> Handle(UpdateBlogWithSpCommand request, CancellationToken cancellationToken)
     {
             var blogs = await _blogDbContext.Blogs
-                .FromSqlInterpolated($"EXEC spUpdateBlog {request.BlogId}, {request.BlogTitle}, {request.BlogContent}, {request.AuthorId}")
+                .FromSqlInterpolated($"EXEC spUpdateBlog {request.BlogId}, {request.Blog.BlogTitle}, {request.Blog.BlogContent}, {request.Blog.AuthorId}")
                 .AsNoTracking()
                 .ToListAsync();
             ArgumentNullException.ThrowIfNull(blogs, nameof(blogs));

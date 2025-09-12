@@ -29,9 +29,9 @@ public class BlogController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> CreateBlog([FromBody] CreateBlogRequest blog)
+    public async Task<IActionResult> CreateBlog(CreateBlogCommand blogBlogCommand)
     {
-        return Created("",await _sender.Send(new CreateBlogCommand(blog.AuthorId,blog.BlogTitle, blog.BlogContent)));
+        return StatusCode(StatusCodes.Status201Created,await _sender.Send(blogBlogCommand));
     }
 
     [HttpGet]
@@ -41,43 +41,43 @@ public class BlogController : ControllerBase
        
     }
 
-    [HttpGet("{blogId:guid}")]
-    public async Task<IActionResult> GetBlogById(Guid blogId)
+    [HttpGet("{BlogId:guid}")]
+    public async Task<IActionResult> GetBlogById(GetBlogQuery blogQuery)
     {
-        return Ok(await _sender.Send(new GetBlogQuery(blogId)));
+        return Ok(await _sender.Send(blogQuery));
     }
 
-    [HttpPatch("{blogId:guid}")]
+    [HttpPatch("{BlogId:guid}")]
     [Authorize]
-    public async Task<IActionResult> UpdateBlog(Guid blogId, [FromBody]UpdateBlogRequest updateBlog)
+    public async Task<IActionResult> UpdateBlog(UpdateBlogCommand updateBlogCommand)
     {
-       return Ok(await _sender.Send(new UpdateBlogCommand(blogId,updateBlog.AuthorId,updateBlog.BlogTitle,updateBlog.BlogContent)));
+       return Ok(await _sender.Send(updateBlogCommand));
     }
 
-    [HttpDelete("{blogId:guid}")]
+    [HttpDelete("{BlogId:guid}")]
     [Authorize]
-    public async Task<IActionResult> DeleteBlog(Guid blogId)
+    public async Task<IActionResult> DeleteBlog(DeleteBlogCommand deleteBlogCommand)
     {
-        return Ok(await _sender.Send(new DeleteBlogCommand(blogId)));
+        return Ok(await _sender.Send(deleteBlogCommand));
     }
     
     [HttpPost("sp")]
-    public async Task<IActionResult> CreateBlogWithSp(CreateBlogRequest request)
+    public async Task<IActionResult> CreateBlogWithSp(CreateBlogWithSpCommand createBlogWithSpCommand)
     {
-        return Created("",await _sender.Send(new CreateBlogWithSpCommand(request.AuthorId,request.BlogTitle,request.BlogContent)));
+        return StatusCode(StatusCodes.Status201Created,await _sender.Send(createBlogWithSpCommand));
     }
 
-    [HttpPut("sp/{blogId:guid}")]
-    public async Task<IActionResult> UpdateBlogWithSp(Guid blogId,UpdateBlogRequest request)
+    [HttpPut("sp/{BlogId:guid}")]
+    public async Task<IActionResult> UpdateBlogWithSp(UpdateBlogWithSpCommand updateBlogWithSpCommand)
     {
-        return Ok(await _sender.Send(new UpdateBlogWithSpCommand(blogId,request.AuthorId,request.BlogTitle,request.BlogContent)));
+        return Ok(await _sender.Send(updateBlogWithSpCommand));
        
     }
 
-    [HttpDelete("sp/{blogId:guid}")]
-    public async Task<IActionResult> DeleteBlogWithSp(Guid blogId)
+    [HttpDelete("sp/{BlogId:guid}")]
+    public async Task<IActionResult> DeleteBlogWithSp(DeleteBlogWithSpCommand deleteBlogWithSpCommand)
     {
-        return Ok(await _sender.Send(new DeleteBlogWithSpCommand(blogId)));
+        return Ok(await _sender.Send(deleteBlogWithSpCommand));
     }
 
 }

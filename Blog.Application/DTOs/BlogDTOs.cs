@@ -17,13 +17,6 @@ public class BlogDTO
 
 }
 
-public class CreateBlogRequest
-{
-    public string BlogTitle { get; set; } = string.Empty;
-    public string BlogContent { get; set; } = string.Empty;
-    public Guid AuthorId{get;set;}
-}
-
 public class UpdateBlogRequest
 {
     public Guid AuthorId { get; set; }

@@ -19,12 +19,12 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
     }
     public async Task<ApiResponse<BlogDTO>> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
     {
-        Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId);
-        Guard.Against.Null(author,nameof(author));
+        Author author=await _blogDbContext.Authors.FindAsync(request.Blog.AuthorId);
+        Guard.Against.Null(author,nameof(author),"Blog cannot be null");
         Blog existingBlog = await _blogDbContext.Blogs.FindAsync(request.BlogId) ;
         Guard.Against.Null(existingBlog,nameof(existingBlog));
-        existingBlog.BlogTitle = request.BlogTitle;
-        existingBlog.BlogContent = request.BlogContent;
+        existingBlog.BlogTitle = request.Blog.BlogTitle;
+        existingBlog.BlogContent = request.Blog.BlogContent;
         existingBlog.Author = author;
          _blogDbContext.Blogs.Update(existingBlog);
          await _blogDbContext.SaveChangesAsync(cancellationToken);

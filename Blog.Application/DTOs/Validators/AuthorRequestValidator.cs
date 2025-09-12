@@ -11,7 +11,7 @@ public class AuthorRequestValidator:AbstractValidator<AuthorRequest>
     private  readonly IBlogDbContext _blogDbContext; 
     public AuthorRequestValidator(IBlogDbContext blogDbContext)
     {
-        this._blogDbContext = blogDbContext;
+        _blogDbContext = blogDbContext;
         RuleFor(x => x.AuthorEmail)
             .NotEmpty().WithMessage("Email is Required")
             .EmailAddress().WithMessage("Invalid email address")

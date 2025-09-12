@@ -17,7 +17,7 @@ public class UpdateAuthorWithSpCommandHandler:IRequestHandler<UpdateAuthorWithSp
     public async Task<ApiResponse<AuthorDto>> Handle(UpdateAuthorWithSpCommand request, CancellationToken cancellationToken)
     {
         var authors = await _blogDbContext.Authors
-            .FromSqlInterpolated($"EXEC spUpdateAuthor {request.AuthorId}, {request.AuthorEmail}, {request.AuthorName}, {request.Age}")
+            .FromSqlInterpolated($"EXEC spUpdateAuthor {request.AuthorId}, {request.Author.AuthorEmail}, {request.Author.AuthorName}, {request.Author.Age}")
             .AsNoTracking()
             .ToListAsync(); 
 

@@ -10,10 +10,10 @@ public static class UpdateUserWithSpGuard
     {
         Guard.Against.NullOrEmpty(request.UserId, nameof(request.UserId));
         Guard.Against.CheckUserExists(request.UserId, nameof(request.UserId),blogDbContext);
-        Guard.Against.NullOrEmpty(request.Name,nameof(request.Name));
-        Guard.Against.NullOrEmpty(request.Email,nameof(request.Email));
-        Guard.Against.NullOrEmpty(request.Password,nameof(request.Password));
-        Guard.Against.InvalidEmail(request.Email,nameof(request.Email));
+        Guard.Against.NullOrEmpty(request.User.Name,nameof(request.User.Name));
+        Guard.Against.NullOrEmpty(request.User.Email,nameof(request.User.Email));
+        Guard.Against.NullOrEmpty(request.User.Password,nameof(request.User.Password));
+        Guard.Against.InvalidEmail(request.User.Email,nameof(request.User.Email));
         
     } 
 }

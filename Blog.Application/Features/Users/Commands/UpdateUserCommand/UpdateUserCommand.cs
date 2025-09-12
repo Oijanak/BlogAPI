@@ -1,18 +1,12 @@
 using BlogApi.Application.DTOs;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 public class UpdateUserCommand : IRequest<ApiResponse<UserDTO>>
 {
+    [FromRoute]
     public Guid UserId { get; set; }
-    public string? Name { get; }
-    public string? Email { get; }
-    public string? Password { get; }
-
-    public UpdateUserCommand(Guid userId, string? name, string? email, string? password)
-    {
-        UserId = userId;
-        Name = name;
-        Email = email;
-        Password = password;
-    }
+   [FromBody]
+    public UpdateUserRequest User{get; set; }
+    
 }

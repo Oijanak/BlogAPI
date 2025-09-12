@@ -8,18 +8,18 @@ using MediatR;
 
 namespace BlogApi.Application.Features.Blogs.Commands.DeleteBlogCommand;
 
-public class DeleteBlogCommandHndler:IRequestHandler<DeleteBlogCommand,ApiResponse<string>>
+public class DeleteBlogCommandHandler:IRequestHandler<DeleteBlogCommand,ApiResponse<string>>
 {
     private readonly IBlogDbContext _blogDbContext;
 
-    public DeleteBlogCommandHndler(IBlogDbContext blogDbContext)
+    public DeleteBlogCommandHandler(IBlogDbContext blogDbContext)
     {
       _blogDbContext = blogDbContext;
     }
     public async Task<ApiResponse<string>> Handle(DeleteBlogCommand request, CancellationToken cancellationToken)
     {
         Blog existingBlog = await _blogDbContext.Blogs.FindAsync(request.BlogId);
-        Guard.Against.Null(existingBlog,nameof(existingBlog));
+        Guard.Against.Null(existingBlog,nameof(existingBlog),"Blog cannot be null");
         _blogDbContext.Blogs.Remove(existingBlog);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
         return new ApiResponse<string>

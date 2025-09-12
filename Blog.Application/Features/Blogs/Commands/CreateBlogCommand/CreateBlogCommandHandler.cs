@@ -21,7 +21,7 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
     public async Task<ApiResponse<BlogDTO>> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
     {
         Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId);
-        Guard.Against.Null(author,nameof(author));
+        Guard.Against.Null(author,nameof(author),"Author cannot be null");
         Blog blog = new Blog
         {
             BlogTitle = request.BlogTitle,

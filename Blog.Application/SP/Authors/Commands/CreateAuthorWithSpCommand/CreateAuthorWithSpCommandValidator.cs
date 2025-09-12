@@ -9,7 +9,7 @@ public class CreateAuthorWithSpCommandValidator:AbstractValidator<CreateAuthorWi
     private  readonly IBlogDbContext _blogDbContext; 
     public CreateAuthorWithSpCommandValidator(IBlogDbContext blogDbContext)
     {
-        this._blogDbContext = blogDbContext;
+        _blogDbContext = blogDbContext;
         RuleFor(x => x.AuthorEmail)
             .NotEmpty().WithMessage("Email is Required")
             .EmailAddress().WithMessage("Invalid email address")

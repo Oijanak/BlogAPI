@@ -60,7 +60,7 @@ public class GlobalExceptionMiddleware
                     statusCode = 404;
 
                 var validationErrors = validationEx.Errors
-                    .Select(e => $"{e.PropertyName}: {e.ErrorMessage}")
+                    .Select(e => $"{e.ErrorMessage}")
                     .ToList();
 
                 context.Response.StatusCode = statusCode;

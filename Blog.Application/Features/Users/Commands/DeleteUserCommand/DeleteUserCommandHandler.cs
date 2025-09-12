@@ -1,4 +1,5 @@
 using System.Net;
+using Ardalis.GuardClauses;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Interfaces;
@@ -18,7 +19,7 @@ public class DeleteUserCommandHandler:IRequestHandler<DeleteUserCommand,ApiRespo
     public async Task<ApiResponse<string>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         User user = await _blogDbContext.Users.FindAsync(request.UserId);
-        ArgumentNullException.ThrowIfNull(user,nameof(user));
+        Guard.Against.Null(user,nameof(user),"User cannot be null");
         _blogDbContext.Users.Remove(user);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
         return new ApiResponse<string>

@@ -23,26 +23,26 @@ public class AuthorController:ControllerBase
     public AuthorController(ISender sender)
         => _sender = sender;
     [HttpPost]
-    public async Task<IActionResult> CreateAuthor(AuthorRequest author)
+    public async Task<IActionResult> CreateAuthor(CreateAuthorCommand createAuthorCommand)
     {
-        return Created("",await _sender.Send(new CreateAuthorCommand(author.AuthorEmail,author.AuthorName,author.Age)));
+        return StatusCode(StatusCodes.Status201Created,await _sender.Send(createAuthorCommand));
     }
-    [HttpPut("{authorId:guid}")]
-    public async Task<IActionResult> UpdateAuthor(Guid authorId,AuthorRequest author)
+    [HttpPut("{AuthorId:guid}")]
+    public async Task<IActionResult> UpdateAuthor(UpdateAuthorCommand updateAuthorCommand)
     {
-        return Ok(await _sender.Send(new UpdateAuthorCommand(authorId,author.AuthorEmail,author.AuthorName,author.Age)));
-    }
-
-    [HttpDelete("{authorId:guid}")]
-    public async Task<IActionResult> DeleteAuthor(Guid authorId)
-    {
-        return Ok(await _sender.Send(new DeleteAuthorCommand(authorId)));
+        return Ok(await _sender.Send(updateAuthorCommand));
     }
 
-    [HttpGet("{authorId:guid}")]
-    public async Task<IActionResult> GetAuthorById(Guid authorId)
+    [HttpDelete("{AuthorId:guid}")]
+    public async Task<IActionResult> DeleteAuthor(DeleteAuthorCommand deleteAuthorCommand)
     {
-        return Ok(await _sender.Send(new GetAuthorByIdQuery(authorId)));
+        return Ok(await _sender.Send(deleteAuthorCommand));
+    }
+
+    [HttpGet("{AuthorId:guid}")]
+    public async Task<IActionResult> GetAuthorById(GetAuthorByIdQuery getAuthorByIdQuery)
+    {
+        return Ok(await _sender.Send(getAuthorByIdQuery));
     }
     [HttpGet]
     public async Task<IActionResult> GetAuthors()
@@ -50,35 +50,35 @@ public class AuthorController:ControllerBase
         return Ok(await _sender.Send(new GetAuthorListQuery()));
     }
 
-    [HttpGet("{authorId:guid}/blogs")]
+    [HttpGet("{AuthorId:guid}/blogs")]
     [AgeRequirement]
-    public async Task<IActionResult> GetBlogsByAuthorId(Guid authorId)
+    public async Task<IActionResult> GetBlogsByAuthorId(GetBlogsByAuthorIdQuery getBlogsByAuthorIdQuery)
     {
-        return Ok(await _sender.Send(new GetBlogsByAuthorIdQuery(authorId)));
+        return Ok(await _sender.Send(getBlogsByAuthorIdQuery));
     }
 
     [HttpGet("age")]
-    public async Task<IActionResult> GetAuthorsByAgeBetween([FromQuery]int age1,[FromQuery]int age2)
+    public async Task<IActionResult> GetAuthorsByAgeBetween(GetAuthorsWithAgeQuery getAuthorsWithAgeQuery)
     {
-       return Ok(await _sender.Send(new GetAuthorsWithAgeQuery(age1, age2)));
+       return Ok(await _sender.Send(getAuthorsWithAgeQuery));
     }
     
     [HttpPost("sp")]
-    public async Task<IActionResult> CreateAuthorWithSp(AuthorRequest request)
+    public async Task<IActionResult> CreateAuthorWithSp(CreateAuthorWithSpCommand createAuthorWithSpCommand)
     {
-         return  Created("",await _sender.Send(new CreateAuthorWithSpCommand(request.AuthorEmail, request.AuthorName, request.Age)));
+         return  StatusCode(StatusCodes.Status201Created,await _sender.Send(createAuthorWithSpCommand));
     }
 
-    [HttpPut("sp/{authorId:guid}")]
-    public async Task<IActionResult> UpdateAuthorWithSp(Guid authorId, AuthorRequest request)
+    [HttpPut("sp/{AuthorId:guid}")]
+    public async Task<IActionResult> UpdateAuthorWithSp(UpdateAuthorWithSpCommand updateAuthorWithSpCommand)
     {
-        return Ok(await _sender.Send(new UpdateAuthorWithSpCommand(authorId, request.AuthorEmail, request.AuthorName,request.Age)));
+        return Ok(await _sender.Send(updateAuthorWithSpCommand));
     }
 
-    [HttpDelete("sp/{authorId:guid}")]
-    public async Task<IActionResult> DeleteAuthorWithSp(Guid authorId)
+    [HttpDelete("sp/{AuthorId:guid}")]
+    public async Task<IActionResult> DeleteAuthorWithSp(DeleteAuthorWithSpCommand deleteAuthorWithSpCommand)
     {
-       return Ok(await _sender.Send(new DeleteAuthorWithSpCommand(authorId)));
+       return Ok(await _sender.Send(deleteAuthorWithSpCommand));
     }
 }
 
