@@ -1,11 +1,13 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 using BlogApi.Application.Features.Users.Query.LoginUserRequest;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.API.IntegrationTest.Blog;
 
@@ -32,7 +34,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory<Prog
     [Fact]
     public async Task CreateBlog_ShouldReturn_Created_WithJwtToken()
     {
-        var author = await CreateTestAuthorAsync("Author","test@example.com");
+        var author = await CreateTestAuthorAsync("Author","test01@example.com");
         var token = await GetJwtTokenAsync();
         
         _client.DefaultRequestHeaders.Authorization =
@@ -55,6 +57,29 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory<Prog
         createdBlog.Data.BlogTitle.Should().Be("Test Blog");
         createdBlog.Data.BlogContent.Should().Be("This is a test blog.");
     }
+    
+    [Fact]
+    public async Task CreateBlog_ShouldReturn_NotFound_WhenAuthorDoesNotExist()
+    {
+        var token = await GetJwtTokenAsync();
+
+        _client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        var blog = new CreateBlogCommand
+        {
+            BlogTitle = "Invalid Blog",
+            BlogContent = "This blog has an invalid author.",
+            AuthorId = Guid.NewGuid() 
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/blogs", blog);
+      
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+       
+
+    }
+
     
     [Fact]
     public async Task UpdateBlogWithSp_ShouldReturn_Ok()
@@ -199,3 +224,4 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory<Prog
     }
     
 }
+

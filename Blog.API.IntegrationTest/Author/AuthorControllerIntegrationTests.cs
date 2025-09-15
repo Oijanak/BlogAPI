@@ -29,6 +29,21 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory<Pr
         created.AuthorEmail.Should().Be("author@gmail.com");
     }
     
+    [Fact]
+    public async Task CreateAuthor_ShouldReturn_BadRequest_ForInvalidInput()
+    {
+        var author = new CreateAuthorCommand
+        {
+            AuthorName = "",                
+            AuthorEmail = "invalid-email",  
+            Age = 35
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/authors", author);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    
     
     [Fact]
     public async Task UpdateUser_ShouldReturn_Ok_WhenUserExists()
@@ -54,6 +69,45 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory<Pr
     }
     
     [Fact]
+    public async Task UpdateAuthor_ShouldReturn_NotFound_WhenAuthorDoesNotExist()
+    {
+        var nonExistentAuthorId = Guid.NewGuid(); 
+
+        var updateCommand = new AuthorRequest
+        {
+            AuthorName = "Updated Name",
+            AuthorEmail = "updated@example.com",
+            Age = 25
+        };
+
+        var response = await _client.PutAsJsonAsync($"/api/authors/{nonExistentAuthorId}", updateCommand);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        
+    }
+    
+    [Fact]
+    public async Task UpdateAuthor_ShouldReturn_BadRequest_ForInvalidUpdateRequest()
+    {
+        var createdAuthor = await CreateTestAuthorAsync("Test Author", "test@example.com");
+        
+        var invalidUpdateCommand = new AuthorRequest
+        {
+            AuthorName = "",              
+            AuthorEmail = "invalid-email", 
+            Age = -1                     
+        };
+        
+        var response = await _client.PutAsJsonAsync($"/api/authors/{createdAuthor.AuthorId}", invalidUpdateCommand);
+
+        
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        
+    }
+
+
+    
+    [Fact]
     public async Task GetAuthors_ShouldReturn_Ok()
     {
         var response = await _client.GetAsync("/api/authors");
@@ -77,6 +131,17 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory<Pr
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         result.Message.Should().Be("Author deleted successfully");
     }
+    [Fact]
+    public async Task DeleteAuthor_ShouldReturn_NotFound_WhenAuthorDoesNotExist()
+    {
+       
+        var nonExistentAuthorId = Guid.NewGuid();
+        
+        var response = await _client.DeleteAsync($"/api/authors/{nonExistentAuthorId}");
+        
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        
+    }
 
     [Fact]
     public async Task GetAuthorById_Should_Return_Ok()
@@ -91,6 +156,18 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory<Pr
         result.Data.AuthorName.Should().Be(createdAuthor.AuthorName);
         result.Data.AuthorEmail.Should().Be(createdAuthor.AuthorEmail);
     }
+    
+    [Fact]
+    public async Task GetAuthorById_ShouldReturn_NotFound_WhenAuthorDoesNotExist()
+    {
+        var nonExistentAuthorId = Guid.NewGuid(); 
+
+        var response = await _client.GetAsync($"/api/authors/{nonExistentAuthorId}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        
+    }
+
 
     
     private async Task<AuthorDto> CreateTestAuthorAsync(string name = "Test Author", string email = "test@gmail.com", int age = 35)
