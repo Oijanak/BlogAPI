@@ -21,6 +21,9 @@ using Xunit;
             _factory = factory;
             _client = factory.CreateClient();
         }
+         
+         
+         //Create User Test case
 
         [Fact]
         public async Task RegisterUser_ShouldReturn_Created()
@@ -56,6 +59,39 @@ using Xunit;
             
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
+        
+        //Get User By UserId
+        [Fact]
+        public async Task GetUserById_ShouldReturn_Ok()
+        {
+            var createUser = new CreateUserCommand
+            {
+                Name = "Original Name",
+                Email = "original@example.com",
+                Password = "12345"
+            };
+
+            var createResponse = await _client.PostAsJsonAsync("/api/users/register", createUser);
+            createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+            var createdUserResponse = await createResponse.Content.ReadFromJsonAsync<ApiResponse<UserDTO>>(
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            var userId = createdUserResponse?.Data?.UserId;
+
+            var getResponse = await _client.GetAsync($"/api/users/{userId}");
+            
+            var apiResponse = await getResponse.Content.ReadFromJsonAsync<ApiResponse<UserDTO>>(
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            apiResponse.Should().NotBeNull();
+            apiResponse.Data.Should().NotBeNull();
+            apiResponse.Data.Name.Should().Be("Original Name");
+            apiResponse.Data.Email.Should().Be("original@example.com");
+
+        }
+        
+        
+        //GetAllUsers Test case
 
         [Fact]
         public async Task GetAllUsers_ShouldReturn_Ok()
@@ -68,14 +104,14 @@ using Xunit;
             users.Should().NotBeNull();
         }
 
-        
+    //Update User test case      
     [Fact]
     public async Task UpdateUser_ShouldReturn_Ok_WhenUserExists_WithJwtToken()
     {
         var createUser = new CreateUserCommand
         {
             Name = "Original Name",
-            Email = "original@example.com",
+            Email = "original02@example.com",
             Password = "12345"
         };
 
@@ -109,7 +145,7 @@ using Xunit;
         var updateCommand = new UpdateUserRequest
         {
             Name = "Updated Name",
-            Email = "updated@example.com"
+            Email = "updated02@example.com"
         };
 
         var response = await _client.PatchAsJsonAsync($"/api/users/{userId}", updateCommand);
@@ -121,12 +157,59 @@ using Xunit;
 
         updatedUser.Should().NotBeNull();
         updatedUser.Data.Name.Should().Be("Updated Name");
-        updatedUser.Data.Email.Should().Be("updated@example.com");
+        updatedUser.Data.Email.Should().Be("updated02@example.com");
+    }
+    
+    [Fact]
+    public async Task UpdateUser_ShouldReturn_NotFound_WhenUserNotAuthorized()
+    {
+        var nonExistentUserId = Guid.NewGuid();
+
+        var createUser = new CreateUserCommand
+        {
+            Name = "Original Name",
+            Email = "original01@example.com",
+            Password = "12345"
+        };
+
+        var createResponse = await _client.PostAsJsonAsync("/api/users/register", createUser);
+        createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var createdUserResponse = await createResponse.Content.ReadFromJsonAsync<ApiResponse<UserDTO>>(
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        
+        var loginRequest = new LoginUserRequest()
+        {
+            Email = createUser.Email,
+            Password = createUser.Password
+        };
+
+        var loginResponse = await _client.PostAsJsonAsync("/api/users/login", loginRequest);
+        loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>(
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        string token = loginResult.Token;
+
+        _client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        var updateCommand = new UpdateUserRequest
+        {
+            Name = "Updated Name",
+            Email = "updated@example.com"
+        };
+
+        var response = await _client.PatchAsJsonAsync($"/api/users/{nonExistentUserId}", updateCommand);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        
     }
 
 
     
-    
+    //Delete User Test case
     [Fact]
     public async Task DeleteUser_ShouldReturn_Ok_WhenUserExists()
     {
@@ -154,6 +237,17 @@ using Xunit;
         deleteResult.Should().NotBeNull();
         deleteResult.Message.Should().Be("User deleted successfully");
     }
+    
+    [Fact]
+    public async Task DeleteUser_ShouldReturn_NotFound_WhenUserDoesNotExist()
+    {
+        var newUserId = Guid.NewGuid();
+        
+        var response = await _client.DeleteAsync($"/api/users/{newUserId}");
+       
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
 
 }
 

@@ -7,6 +7,6 @@ namespace BlogApi.Application.Features.Users.Query.GetUserRequest;
 public class GetUserQuery:IRequest<ApiResponse<UserDTO>>
 {
     [FromRoute]
-    public Guid UserId { get; }
+    public Guid UserId { get; set; }
     
 }
