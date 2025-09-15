@@ -7,10 +7,10 @@ namespace BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 
 public class CreateAuthorCommand:IRequest<ApiResponse<AuthorDto>>
 {
-    public string AuthorEmail { get;}
-    public string AuthorName { get; }
-    public int Age { get; }
-
+    public string AuthorEmail { get; set; }
+    public string AuthorName { get; set; }
+    public int Age { get; set; }
+    public CreateAuthorCommand(){}
     public CreateAuthorCommand(string authorEmail, string authorName, int age)
     {
         AuthorEmail = authorEmail;

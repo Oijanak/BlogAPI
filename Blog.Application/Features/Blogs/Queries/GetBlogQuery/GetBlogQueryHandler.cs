@@ -3,6 +3,7 @@ using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Blogs.Queries.GetBlogQuery;
 
@@ -17,7 +18,9 @@ public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,ApiResponse<BlogDT
     
     public async Task<ApiResponse<BlogDTO>> Handle(GetBlogQuery request, CancellationToken cancellationToken)
     {
-        Blog blog = await _blogDbContext.Blogs.FindAsync(request.BlogId) ;
+        Blog blog = await _blogDbContext.Blogs
+            .Include(b => b.Author)
+            .FirstOrDefaultAsync(b => b.BlogId == request.BlogId, cancellationToken);
         var blogResult= new BlogDTO()
         {
             BlogId = blog.BlogId,

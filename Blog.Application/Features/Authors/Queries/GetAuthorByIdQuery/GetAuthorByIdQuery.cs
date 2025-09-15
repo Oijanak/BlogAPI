@@ -10,6 +10,7 @@ public class GetAuthorByIdQuery:IRequest<ApiResponse<AuthorDto>>
     [FromRoute]
     public Guid AuthorId { get; set; }
 
+    public GetAuthorByIdQuery(){}
     public GetAuthorByIdQuery(Guid authorId)
     {
         AuthorId = authorId;

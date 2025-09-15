@@ -43,8 +43,7 @@ public class CreateUserCommandHandlerTests
         Assert.NotNull(response.Data.UserId);
         Assert.Equal("Janak", response.Data.Name);
         Assert.Equal("janak@example.com", response.Data.Email);
-
-        // Verify AddAsync and SaveChangesAsync were called
+        
         mockDbSet.Verify(d => d.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
         _mockDbContext.Verify(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }

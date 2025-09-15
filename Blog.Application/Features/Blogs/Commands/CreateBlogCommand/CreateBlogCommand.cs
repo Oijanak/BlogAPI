@@ -5,9 +5,10 @@ namespace BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 
 public class CreateBlogCommand:IRequest<ApiResponse<BlogDTO>>
 {
-    public Guid AuthorId { get;}
-    public string BlogTitle { get; }
-    public string BlogContent { get; }
+    public Guid AuthorId { get; set; }
+    public string BlogTitle { get; set; }
+    public string BlogContent { get; set; }
+    public CreateBlogCommand(){}
 
     public CreateBlogCommand(Guid authorId,string blogTitle, string blogContent)
     {
