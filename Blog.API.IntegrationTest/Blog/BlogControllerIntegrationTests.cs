@@ -72,11 +72,16 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory<Prog
             BlogContent = "This blog has an invalid author.",
             AuthorId = Guid.NewGuid() 
         };
+        
 
         var response = await _client.PostAsJsonAsync("/api/blogs", blog);
       
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-       
+        var error = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>(
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+       error.Should().NotBeNull();
+       error.Errors["AuthorId"].Should().Contain("Author not found");
+       error.Status.Should().Be(400);
 
     }
 
@@ -115,6 +120,26 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory<Prog
         updatedBlog.Data.BlogContent.Should().Be("Updated content");
         updatedBlog.Data.BlogTitle.Should().Be("SP Blog Updated");
     }
+    
+    [Fact]
+    public async Task UpdateBlogWithSp_ShouldReturn_NotFound_WhenBlogDoesNotExist()
+    {
+        var token = await GetJwtTokenAsync();
+        _client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        var updateBlog = new UpdateBlogRequest
+        {
+            AuthorId = Guid.NewGuid(),
+            BlogTitle = "SP Blog Updated",
+            BlogContent = "Updated content"
+        };
+        var response = await _client.PatchAsJsonAsync($"/api/blogs/{Guid.NewGuid()}", updateBlog);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        
+    }
+
     
     
     [Fact]
@@ -223,5 +248,12 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory<Prog
         return loginResult.Token;
     }
     
+}
+public class ValidationErrorResponse
+{
+    public string Type { get; set; }
+    public string Title { get; set; }
+    public int Status { get; set; }
+    public Dictionary<string, string[]> Errors { get; set; }
 }
 
