@@ -1,4 +1,6 @@
 using Blog.API.Filters;
+using BlogApi.Application.Dapper.Authors.CreateAuthorWithDapperCommand;
+using BlogApi.Application.Dapper.Authors.UpdateAuthorWithDapperCommand;
 using BlogApi.Application.Dapper.Users.Commands;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
@@ -81,6 +83,19 @@ public class AuthorController:ControllerBase
     {
        return Ok(await _sender.Send(deleteAuthorWithSpCommand));
     }
+
+    [HttpPost("dapper")]
+    public async Task<IActionResult> CreateAuthorWithDapper(CreateAuthorWithDapperCommand createAuthorWithDapperCommand)
+    {
+        return StatusCode(StatusCodes.Status201Created, await _sender.Send(createAuthorWithDapperCommand));
+    }
+
+    [HttpPut("dapper/{AuthorId:guid}")]
+    public async Task<IActionResult> UpdateAuthorWithDapper(UpdateAuthorWithDapperCommand updateAuthorWithDapperCommand)
+    {
+        return Ok(await _sender.Send(updateAuthorWithDapperCommand));
+    }
+    
     
    
 }
