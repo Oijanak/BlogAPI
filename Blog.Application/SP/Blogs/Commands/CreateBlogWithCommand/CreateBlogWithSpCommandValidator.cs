@@ -9,7 +9,8 @@ public class CreateBlogWithSpCommandValidator:AbstractValidator<CreateBlogWithSp
     public CreateBlogWithSpCommandValidator(IBlogDbContext blogDbContext)
     {
         _blogDbContext = blogDbContext;
-        RuleFor(x => x.AuthorId).NotEmpty().WithMessage("AuthorId is required")
+        RuleFor(x => x.AuthorId).NotEmpty().WithMessage("AuthorId is Empty")
+            .NotNull().WithMessage("AuthorId is Null")
             .MustAsync(async (authorId, cancellationToken) => 
                 await blogDbContext.Authors.FindAsync(authorId) != null).WithErrorCode("404")
             .WithMessage("Author not found");

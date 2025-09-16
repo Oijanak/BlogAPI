@@ -5,6 +5,9 @@ using BlogApi.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using BlogApi.Application.Dapper.Blogs.Commands.CreateBlogWithDapperCommand;
+using BlogApi.Application.Dapper.Blogs.Commands.DeleteBlogWithDapperCommand;
+using BlogApi.Application.Dapper.Blogs.Commands.UpdateBlogWithDapperCommand;
 using BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 using BlogApi.Application.Features.Blogs.Commands.DeleteBlogCommand;
 using BlogApi.Application.Features.Blogs.Commands.UpdateBlogCommand;
@@ -79,5 +82,24 @@ public class BlogController : ControllerBase
     {
         return Ok(await _sender.Send(deleteBlogWithSpCommand));
     }
+
+    [HttpPost("dapper")]
+    public async Task<IActionResult> CreateBlogWithDapper(CreateBlogWithDapperCommand createBlogWithDapperCommand)
+    {
+        return StatusCode(StatusCodes.Status201Created,await _sender.Send(createBlogWithDapperCommand));
+    }
+
+    [HttpPut("dapper/{BlogId:guid}")]
+    public async Task<IActionResult> UpdateBlogWithDapper(UpdateBlogWithDappersCommand updateBlogWithDappersCommand)
+    {
+        return Ok(await _sender.Send(updateBlogWithDappersCommand));
+    }
+
+    [HttpDelete("dapper/{BlogId:guid}")]
+    public async Task<IActionResult> DeleteBlogWithDapper(DeleteBlogWithDapperCommand deleteBlogWithDapperCommand)
+    {
+        return Ok(await _sender.Send(deleteBlogWithDapperCommand));
+    }
+    
 
 }
