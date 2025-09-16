@@ -6,8 +6,9 @@ CREATE OR ALTER PROCEDURE spCreateUser
     AS
 BEGIN
         SET NOCOUNT ON;
+        DECLARE @NewUserId UNIQUEIDENTIFIER = NEWID();
 
-INSERT INTO [Users] (Name, Email, PasswordHash)
+INSERT INTO [Users] (UserId,Name, Email, PasswordHash)
     OUTPUT inserted.*
-VALUES (@Name, @Email, @PasswordHash);
+VALUES (@NewUserId,@Name, @Email, @PasswordHash);
 END;

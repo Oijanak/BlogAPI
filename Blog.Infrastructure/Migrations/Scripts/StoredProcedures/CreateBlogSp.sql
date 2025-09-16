@@ -9,7 +9,6 @@ BEGIN
     DECLARE @NewBlogId UNIQUEIDENTIFIER = NEWID();
 
 INSERT INTO [Blogs] (BlogId, BlogTitle, BlogContent, AuthorId, CreatedAt, UpdatedAt)
-    OUTPUT inserted.*
 VALUES (@NewBlogId, @BlogTitle, @BlogContent, @AuthorId, GETUTCDATE(), GETUTCDATE());
 
 SELECT

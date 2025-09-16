@@ -1,3 +1,4 @@
+using System.Data;
 using System.Text;
 using Ardalis.GuardClauses;
 using Blog.API.Filters;
@@ -10,6 +11,7 @@ using BlogApi.Infrastructure.Data;
 using BlogApi.Infrastructure.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -59,6 +61,8 @@ builder.Services.AddControllers(
     });
 builder.Services.AddApplication();
 
+builder.Services.AddScoped<IDbConnection>(sp =>
+    new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
 
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];

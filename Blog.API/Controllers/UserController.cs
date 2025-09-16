@@ -1,5 +1,8 @@
 using System.Net;
 using Blog.API.Filters;
+using BlogApi.Application.Dapper.Users.Commands;
+using BlogApi.Application.Dapper.Users.Commands.DeleteUserWithDapperCommand;
+using BlogApi.Application.Dapper.Users.Commands.UpdateUserWithDapperCommand;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Features.Users.Commands.DeleteUserCommand;
@@ -23,20 +26,20 @@ namespace BlogApi.API.Controllers
 
         public UserController(ISender sender)
         {
-            _sender= sender;
+            _sender = sender;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser(CreateUserCommand createUserCommand)
         {
-            return StatusCode(StatusCodes.Status201Created,await _sender.Send(createUserCommand));
+            return StatusCode(StatusCodes.Status201Created, await _sender.Send(createUserCommand));
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-           return Ok(await _sender.Send(new GetUserListQuery()));
-            
+            return Ok(await _sender.Send(new GetUserListQuery()));
+
         }
 
         [HttpGet("{UserId:guid}")]
@@ -44,7 +47,7 @@ namespace BlogApi.API.Controllers
         {
             return Ok(await _sender.Send(getUserQuery));
         }
-        
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginUserRequest loginRequest)
@@ -65,13 +68,13 @@ namespace BlogApi.API.Controllers
         {
             return Ok(await _sender.Send(deleteUserCommand));
         }
-        
+
         [HttpPost("sp")]
         public async Task<IActionResult> RegisterUserWithSp(CreateUserWithSpCommand createUserWithSpCommand)
         {
-           return StatusCode(StatusCodes.Status201Created,await _sender.Send(createUserWithSpCommand));
+            return StatusCode(StatusCodes.Status201Created, await _sender.Send(createUserWithSpCommand));
         }
-    
+
         [HttpPut("sp/{UserId:guid}")]
         public async Task<IActionResult> UpdateUserSp(UpdateUserWithSpCommand updateUserWithSpCommand)
         {
@@ -84,6 +87,24 @@ namespace BlogApi.API.Controllers
             return Ok(await _sender.Send(deleteUserWithSpCommand));
         }
 
-       
+        //Using Dapper
+
+        [HttpPost("dapper")]
+        public async Task<IActionResult> CreateUserUsingDapper(CreateUserWithDapperCommand command)
+        {
+            return StatusCode(StatusCodes.Status201Created, await _sender.Send(command));
+        }
+
+        [HttpPut("dapper/{UserId:guid}")]
+        public async Task<IActionResult> UpdateUserUsingDapper(UpdateUserWithDapperCommand updateUserWithDapperCommand)
+        {
+            return Ok(await _sender.Send(updateUserWithDapperCommand));
+        }
+
+        [HttpDelete("dapper/{UserId:guid}")]
+        public async Task<IActionResult> DeleteUserUsingDapper(DeleteUserWithDapperCommand deleteUserWithSpCommand)
+        {
+            return Ok(await _sender.Send(deleteUserWithSpCommand));
+        }
     }
 }
