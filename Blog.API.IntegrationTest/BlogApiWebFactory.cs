@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-public class BlogApiWebFactory<TProgram>
-    : WebApplicationFactory<TProgram> where TProgram : class
+public class BlogApiWebFactory
+    : WebApplicationFactory<Program> 
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {

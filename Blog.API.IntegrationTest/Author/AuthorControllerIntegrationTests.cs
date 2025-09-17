@@ -7,12 +7,12 @@ using FluentAssertions;
 
 namespace Blog.API.IntegrationTest.Author;
 
-public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory<Program>>
+public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
 {
-    private readonly BlogApiWebFactory<Program> _factory;
+    private readonly BlogApiWebFactory _factory;
     private readonly HttpClient _client;
 
-    public AuthorControllerIntegrationTests(BlogApiWebFactory<Program> factory)
+    public AuthorControllerIntegrationTests(BlogApiWebFactory factory)
     {
         _factory = factory;
         _client = _factory.CreateClient();

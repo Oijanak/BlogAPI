@@ -11,12 +11,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.API.IntegrationTest.Blog;
 
-public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory<Program>>
+public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
 {
-    private readonly BlogApiWebFactory<Program> _factory;
+    private readonly BlogApiWebFactory _factory;
     private readonly HttpClient _client;
 
-    public BlogControllerIntegrationTests(BlogApiWebFactory<Program> factory)
+    public BlogControllerIntegrationTests(BlogApiWebFactory factory)
     {
         _factory=factory;
         _client=factory.CreateClient();

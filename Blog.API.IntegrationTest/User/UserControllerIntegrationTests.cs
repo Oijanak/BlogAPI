@@ -11,12 +11,12 @@ using System.Net.Http.Json;
 using Xunit;
 
 
-    public class UserControllerIntegrationTests :IClassFixture<BlogApiWebFactory<Program>>
+    public class UserControllerIntegrationTests :IClassFixture<BlogApiWebFactory>
     {
         private readonly HttpClient _client;
-        private readonly BlogApiWebFactory<Program> _factory;
+        private readonly BlogApiWebFactory _factory;
          public UserControllerIntegrationTests(
-            BlogApiWebFactory<Program> factory)
+            BlogApiWebFactory factory)
         {
             _factory = factory;
             _client = factory.CreateClient();
