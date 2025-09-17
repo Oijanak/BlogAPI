@@ -1,4 +1,5 @@
 using BlogApi.Application.Features.Users.Commands.LoginUserCommand;
+using BlogApi.Application.Features.Users.Commands.RefreshTokenCommand;
 using BlogApi.Application.Features.Users.Commands.RegisterUserCommand;
 using MediatR;
 using Microsoft.AspNetCore.Identity.Data;
@@ -24,6 +25,12 @@ public class AuthController:ControllerBase
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginUserCommand request)
+    {
+        return Ok(await _sender.Send(request));
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(RefreshTokenCommand request)
     {
         return Ok(await _sender.Send(request));
     }

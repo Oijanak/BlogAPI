@@ -28,12 +28,16 @@ public class RegisterUserCommandHandler:IRequestHandler<RegisterUserCommand, Api
         {
             UserName = request.Email,
             Email = request.Email,
-            Name = request.Name
+            Name = request.Name,
         };
         var result = await _userManager.CreateAsync(user, request.Password);
+        if (!result.Succeeded)
+        {
+         throw new ApiException(result.Errors.First().Description, HttpStatusCode.BadRequest);   
+        }
         return new ApiResponse<string>
         {
-            Message = "User Registerd successfully"
+            Message = "User Registered successfully"
         };
 
     }

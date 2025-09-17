@@ -77,7 +77,11 @@ var jwtKey = builder.Configuration["Jwt:Key"];
 Guard.Against.NullOrEmpty(jwtIssuer, nameof(jwtIssuer));
 Guard.Against.NullOrEmpty(jwtAudience, nameof(jwtAudience));
 Guard.Against.NullOrEmpty(jwtKey, nameof(jwtKey));
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         var key = Encoding.UTF8.GetBytes(jwtKey);

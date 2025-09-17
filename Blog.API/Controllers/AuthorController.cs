@@ -14,6 +14,7 @@ using BlogApi.Application.SP.Authors.Commands.DeleteAuthorWithSpCommand;
 using BlogApi.Application.SP.Authors.Commands.UpdateAuthorWithSpCommand;
 using BlogApi.Domain.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogApi.API.Controllers;
@@ -47,6 +48,7 @@ public class AuthorController:ControllerBase
         return Ok(await _sender.Send(getAuthorByIdQuery));
     }
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAuthors()
     {
         return Ok(await _sender.Send(new GetAuthorListQuery()));
