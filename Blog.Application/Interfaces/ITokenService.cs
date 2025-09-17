@@ -1,7 +1,10 @@
+using System.Security.Claims;
+
 namespace BlogApi.Application.Interfaces
 {
     public interface ITokenService
     {
-        string GenerateToken(Guid userId, string email);
+        string GenerateToken(List<Claim> claims);
+        string GenerateRefreshToken();
     }
 }

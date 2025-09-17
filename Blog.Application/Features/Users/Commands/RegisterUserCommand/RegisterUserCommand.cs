@@ -1,0 +1,7 @@
+using BlogApi.Application.DTOs;
+using MediatR;
+
+namespace BlogApi.Application.Features.Users.Commands.RegisterUserCommand;
+
+public record RegisterUserCommand(string Name,string Email, string Password) 
+    : IRequest<ApiResponse<string>>;

@@ -1,38 +1,16 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace BlogApi.Domain.Models
 {
-    public class User
+    public class User : IdentityUser
     {
-        public Guid UserId { get; init; } = Guid.NewGuid();
-        
-        public string Name { get; set; } = string.Empty;
-        
-        public string Email { get; set; } = string.Empty;
-        
-        public string PasswordHash { get; set; }=string.Empty;
-
-        
-        public string Password
-        {
-            
-            set {
-                 if (!string.IsNullOrWhiteSpace(value))
-                {
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(value);
-                }
-            }
-    
-        }
-
-        public bool VerifyPassword(string plainPassword)
-        {
-            return BCrypt.Net.BCrypt.Verify(plainPassword, PasswordHash);
-        }
-
+        public string Name { get; set; }=string.Empty;
+        public string? RefreshToken { get; set; }
+        public DateTime RefreshTokenExpires { get; set; }
 
     }
 }

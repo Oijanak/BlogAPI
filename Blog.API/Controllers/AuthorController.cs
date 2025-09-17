@@ -1,7 +1,6 @@
 using Blog.API.Filters;
 using BlogApi.Application.Dapper.Authors.CreateAuthorWithDapperCommand;
 using BlogApi.Application.Dapper.Authors.UpdateAuthorWithDapperCommand;
-using BlogApi.Application.Dapper.Users.Commands;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Features.Authors.Commands.DeleteAuthorCommand;

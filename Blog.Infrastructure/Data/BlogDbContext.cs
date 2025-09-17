@@ -1,16 +1,16 @@
 using System;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Infrastructure.Data;
 
-public class BlogDbContext : DbContext,IBlogDbContext
+public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
 {
     public BlogDbContext(DbContextOptions<BlogDbContext> options) : base(options)
     {
     }
-    public DbSet<User> Users { get; set; }
     public DbSet<Blog> Blogs { get; set; }
     
     public DbSet<Author> Authors { get; set; }
@@ -18,7 +18,6 @@ public class BlogDbContext : DbContext,IBlogDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new UserConfig());
         modelBuilder.ApplyConfiguration(new BlogConfig());
         modelBuilder.ApplyConfiguration(new AuthorConfig());
     }

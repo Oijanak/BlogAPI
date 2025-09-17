@@ -5,7 +5,6 @@ using System.Text.Json.Serialization;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
-using BlogApi.Application.Features.Users.Query.LoginUserRequest;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,14 +19,8 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     {
         _factory=factory;
         _client=factory.CreateClient();
-        var user = new CreateUserCommand
-        {
-            Name = "user",
-            Email = "user@example.com",
-            Password = "12345"
-        };
-
-        _client.PostAsJsonAsync("/api/users/register", user).GetAwaiter().GetResult();
+       
+     
     }
     
 
@@ -35,11 +28,6 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     public async Task CreateBlog_ShouldReturn_Created_WithJwtToken()
     {
         var author = await CreateTestAuthorAsync("Author","test01@example.com");
-        var token = await GetJwtTokenAsync();
-        
-        _client.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        
         var blog = new CreateBlogCommand
         {
             BlogTitle = "Test Blog",
@@ -61,10 +49,6 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     [Fact]
     public async Task CreateBlog_ShouldReturn_NotFound_WhenAuthorDoesNotExist()
     {
-        var token = await GetJwtTokenAsync();
-
-        _client.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
         var blog = new CreateBlogCommand
         {
@@ -90,10 +74,6 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     public async Task UpdateBlogWithSp_ShouldReturn_Ok()
     {
         var author = await CreateTestAuthorAsync();
-        var token = await GetJwtTokenAsync();
-        _client.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        
         var blog = new CreateBlogCommand
         {
             BlogTitle = "Test Blog",
@@ -124,10 +104,6 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     [Fact]
     public async Task UpdateBlogWithSp_ShouldReturn_NotFound_WhenBlogDoesNotExist()
     {
-        var token = await GetJwtTokenAsync();
-        _client.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
         var updateBlog = new UpdateBlogRequest
         {
             AuthorId = Guid.NewGuid(),
@@ -145,10 +121,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     [Fact]
     public async Task DeleteBlog_ShouldReturn_Ok_WithJwtToken()
     {
-        var token = await GetJwtTokenAsync();
         var author = await CreateTestAuthorAsync("Janak","janak@gmail.com");
-        _client.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         
         var createBlog = new CreateBlogCommand
         {
@@ -173,9 +146,6 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     public async Task GetBlogById_ShouldReturn_Ok_WhenExists()
     {
         var author = await CreateTestAuthorAsync("GetAuthor","get@gmail.com");
-        var token = await GetJwtTokenAsync();
-        _client.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         var blog = new CreateBlogCommand
         {
             AuthorId = author.AuthorId,
@@ -228,25 +198,6 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         return createdAuthor.Data;
     }
     
-    
-    
-    private async Task<string> GetJwtTokenAsync()
-    {
-        var loginRequest = new LoginUserRequest
-        {
-            Email = "user@example.com",
-            Password = "12345",
-        };
-
-        var loginResponse = await _client.PostAsJsonAsync("/api/users/login", loginRequest);
-        loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>(
-            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-
-        loginResult.Should().NotBeNull();
-        return loginResult.Token;
-    }
     
 }
 public class ValidationErrorResponse

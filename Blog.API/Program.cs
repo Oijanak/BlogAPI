@@ -7,10 +7,13 @@ using BlogApi.Application;
 using BlogApi.Application.Interfaces;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.DTOs.Validators;
+using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
+using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
 using BlogApi.Infrastructure.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -35,8 +38,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 Guard.Against.NullOrEmpty(connectionString,nameof(connectionString));
 builder.Services.AddDbContext<IBlogDbContext,BlogDbContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<BlogDbContext>()
+    .AddDefaultTokenProviders();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorCommandValidator>();
 builder.Services.AddFluentValidationAutoValidation();
 
 builder.Services.AddSwaggerGen(options=>
