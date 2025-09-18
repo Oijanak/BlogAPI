@@ -1,6 +1,9 @@
 using System;
+using System.Security.Claims;
 using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Common;
 using BlogApi.Domain.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,8 +11,11 @@ namespace BlogApi.Infrastructure.Data;
 
 public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
 {
-    public BlogDbContext(DbContextOptions<BlogDbContext> options) : base(options)
+    private readonly string _currentUserId;
+    public BlogDbContext(DbContextOptions<BlogDbContext> options,IHttpContextAccessor httpContextAccessor) : base(options)
     {
+        _currentUserId=httpContextAccessor.HttpContext?.User
+            ?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
     public DbSet<Blog> Blogs { get; set; }
     
@@ -24,26 +30,47 @@ public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
     
     public override int SaveChanges()
     {
-        UpdateTimestamps();
+        Update();
         return base.SaveChanges();
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        UpdateTimestamps();
+        Update();
         return base.SaveChangesAsync(cancellationToken);
     }
 
-    private void UpdateTimestamps()
+    private void Update()
     {
-        var entries = ChangeTracker.Entries<Blog>()
-        .Where(e => e.State == EntityState.Modified);
+        var entries = ChangeTracker.Entries<BaseEntity>();
 
         foreach (var entry in entries)
         {
-            entry.Property("UpdatedAt").CurrentValue = DateTime.UtcNow;
+            if (entry.State == EntityState.Added)
+            {
+                
+                if (entry.Properties.Any(p => p.Metadata.Name == "CreatedAt"))
+                {
+                    entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
+                }
+                
+                entry.Property("CreatedBy").CurrentValue = _currentUserId; 
+                
+            }
+
+            if (entry.State == EntityState.Modified)
+            {
+                
+                if (entry.Properties.Any(p => p.Metadata.Name == "UpdatedAt"))
+                {
+                    entry.Property("UpdatedAt").CurrentValue = DateTime.UtcNow;
+                }
+                
+                entry.Property("UpdatedBy").CurrentValue = _currentUserId; 
+            }
         }
     }
+
 
 
 }

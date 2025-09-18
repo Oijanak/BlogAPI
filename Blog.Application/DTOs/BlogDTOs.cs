@@ -12,6 +12,11 @@ public class BlogDTO
     public string BlogContent { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt{ get; set; }
+   
+    
+    public string CreatedBy { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? UpdatedBy { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public AuthorDto Author { get; set; } 
 
@@ -22,17 +27,4 @@ public class UpdateBlogRequest
     public Guid AuthorId { get; set; }
     public string BlogTitle { get; set; }
     public string BlogContent { get; set; }
-}
-public class BlogWithAuthorDTO
-{
-    public Guid BlogId { get; set; }
-    public string BlogTitle { get; set; }
-    public string BlogContent { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-
-    public Guid AuthorId { get; set; }
-    public string AuthorName { get; set; }
-    public string AuthorEmail { get; set; }
-    public int Age { get; set; }
 }

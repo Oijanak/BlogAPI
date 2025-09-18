@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using BlogApi.Domain.Common;
 
 namespace BlogApi.Domain.Models
 {
-    public class Blog
+    public class Blog:BaseEntity
     {
         public Guid BlogId { get; init; }=Guid.NewGuid();
         

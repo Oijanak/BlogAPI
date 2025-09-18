@@ -20,6 +20,16 @@ public class BlogConfig:IEntityTypeConfiguration<Blog>
       builder
          .Property(b => b.UpdatedAt)
          .HasDefaultValueSql("GETUTCDATE()");
+      
+      builder.HasOne(b => b.CreatedByUser)
+         .WithMany()
+         .HasForeignKey(b => b.CreatedBy)
+         .OnDelete(DeleteBehavior.Restrict);
+
+      builder.HasOne(b => b.UpdatedByUser)
+         .WithMany()
+         .HasForeignKey(b => b.UpdatedBy)
+         .OnDelete(DeleteBehavior.Restrict);
    }
     
 }

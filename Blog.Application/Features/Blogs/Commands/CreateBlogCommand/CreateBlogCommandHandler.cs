@@ -40,6 +40,7 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
                BlogContent = blog.BlogContent,
                CreatedAt = blog.CreatedAt,
                UpdatedAt = blog.UpdatedAt,
+               CreatedBy = blog.CreatedBy,
                Author = new AuthorDto(blog.Author)
            },
            Message = "Blog created successfully"

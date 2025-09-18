@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using BlogApi.Domain.Models;
 
 namespace BlogApi.Application.DTOs;
@@ -14,6 +15,10 @@ public class AuthorDto
     public string AuthorEmail { get; set; }
     public string AuthorName { get; set; }
     public int Age { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? UpdatedBy { get; set; }
+    
+    public string CreatedBy { get; set; }
     public AuthorDto(){}
     public AuthorDto(Author author)
     {
@@ -21,7 +26,8 @@ public class AuthorDto
         AuthorEmail = author.AuthorEmail;
         AuthorName = author.AuthorName;
         Age = author.Age;
-        
+        CreatedBy=author.CreatedBy;
+        UpdatedBy=author.UpdatedBy;
     }
 
     public AuthorDto(Guid authorId, string authorEmail, string authorName, int age)

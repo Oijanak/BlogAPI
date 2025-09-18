@@ -17,5 +17,15 @@ public class AuthorConfig:IEntityTypeConfiguration<Author>
             "CK_Author_Email_Format",
             @"AuthorEmail LIKE '_%@_%._%'"
         ));
+       
+        builder.HasOne(a => a.CreatedByUser)
+            .WithMany()
+            .HasForeignKey(a => a.CreatedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(a => a.UpdatedByUser)
+            .WithMany()
+            .HasForeignKey(a => a.UpdatedBy)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -1,6 +1,9 @@
+
+using BlogApi.Domain.Common;
+
 namespace BlogApi.Domain.Models;
 
-public class Author
+public class Author:BaseEntity
 {
     public Guid AuthorId { get; set; }=Guid.NewGuid();
     public string AuthorName { get; set; } = string.Empty;

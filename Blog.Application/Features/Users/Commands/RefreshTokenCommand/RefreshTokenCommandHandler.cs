@@ -23,7 +23,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, T
     public async Task<TokenResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         var principal = _tokenService.GetPrincipalFromExpiredToken(request.AccessToken);
-        var username = principal.Identity.Name;
+        var username = principal?.Identity?.Name;
 
         if (string.IsNullOrEmpty(username))
             throw new ApiException("Invalid access token",HttpStatusCode.Unauthorized);

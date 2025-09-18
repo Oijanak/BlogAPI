@@ -26,11 +26,13 @@ public class AuthorController:ControllerBase
     public AuthorController(ISender sender)
         => _sender = sender;
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> CreateAuthor(CreateAuthorCommand createAuthorCommand)
     {
         return StatusCode(StatusCodes.Status201Created,await _sender.Send(createAuthorCommand));
     }
     [HttpPut("{AuthorId:guid}")]
+    [Authorize]
     public async Task<IActionResult> UpdateAuthor(UpdateAuthorCommand updateAuthorCommand)
     {
         return Ok(await _sender.Send(updateAuthorCommand));
@@ -48,7 +50,6 @@ public class AuthorController:ControllerBase
         return Ok(await _sender.Send(getAuthorByIdQuery));
     }
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> GetAuthors()
     {
         return Ok(await _sender.Send(new GetAuthorListQuery()));

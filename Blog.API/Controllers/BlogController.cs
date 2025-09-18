@@ -31,6 +31,7 @@ public class BlogController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> CreateBlog(CreateBlogCommand blogBlogCommand)
     {
         return StatusCode(StatusCodes.Status201Created,await _sender.Send(blogBlogCommand));
@@ -50,6 +51,7 @@ public class BlogController : ControllerBase
     }
 
     [HttpPatch("{BlogId:guid}")]
+    [Authorize]
     public async Task<IActionResult> UpdateBlog(UpdateBlogCommand updateBlogCommand)
     {
        return Ok(await _sender.Send(updateBlogCommand));

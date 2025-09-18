@@ -35,6 +35,8 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
              BlogContent = existingBlog.BlogContent,
              CreatedAt = existingBlog.CreatedAt,
              UpdatedAt = existingBlog.UpdatedAt,
+             CreatedBy = existingBlog.CreatedBy,
+             UpdatedBy = existingBlog.UpdatedBy,
              Author = new AuthorDto(existingBlog.Author),
          };
          return new ApiResponse<BlogDTO>

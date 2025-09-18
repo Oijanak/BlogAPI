@@ -41,6 +41,7 @@ builder.Services.AddDbContext<IBlogDbContext,BlogDbContext>(options =>
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<BlogDbContext>()
     .AddDefaultTokenProviders();
+   
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorCommandValidator>();
 builder.Services.AddFluentValidationAutoValidation();
@@ -121,6 +122,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+//app.MapIdentityApi<User>();
 app.Run();
 
 public partial class Program
