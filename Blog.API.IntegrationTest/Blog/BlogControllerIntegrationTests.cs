@@ -19,11 +19,9 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     {
         _factory=factory;
         _client=factory.CreateClient();
-       
      
     }
     
-
     [Fact]
     public async Task CreateBlog_ShouldReturn_Created_WithJwtToken()
     {
