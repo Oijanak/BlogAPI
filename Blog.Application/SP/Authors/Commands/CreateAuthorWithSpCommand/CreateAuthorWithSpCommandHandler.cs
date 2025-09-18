@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.SP.Authors.Commands.CreateAuthorWithSpCommand;
@@ -9,15 +11,18 @@ namespace BlogApi.Application.SP.Authors.Commands.CreateAuthorWithSpCommand;
 public class CreateAuthorWithSpCommandHandler:IRequestHandler<CreateAuthorWithSpCommand,ApiResponse<AuthorDto>>
 {
     private readonly IBlogDbContext _blogDbContext;
+    private readonly string _currentUserId;
 
-    public CreateAuthorWithSpCommandHandler(IBlogDbContext blogDbContext)
+    public CreateAuthorWithSpCommandHandler(IBlogDbContext blogDbContext,IHttpContextAccessor httpContextAccessor)
     {
         _blogDbContext = blogDbContext;
+        _currentUserId=httpContextAccessor.HttpContext?.User
+            ?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
     public async Task<ApiResponse<AuthorDto>> Handle(CreateAuthorWithSpCommand request, CancellationToken cancellationToken)
     {
         var authors = await _blogDbContext.Authors
-            .FromSqlInterpolated($"EXEC spCreateAuthor {request.AuthorEmail}, {request.AuthorName}, {request.Age}")
+            .FromSqlInterpolated($"EXEC spCreateAuthor {request.AuthorEmail}, {request.AuthorName}, {request.Age},{_currentUserId}")
             .AsNoTracking()
             .ToListAsync(); 
 

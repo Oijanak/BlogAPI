@@ -1,19 +1,23 @@
 using System.Data;
+using System.Security.Claims;
 using Ardalis.GuardClauses;
 using BlogApi.Application.DTOs;
 using BlogApi.Domain.Models;
 using Dapper;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace BlogApi.Application.Dapper.Blogs.Commands.CreateBlogWithDapperCommand;
 
 public class CreateBlogWithDapperCommandHandler:IRequestHandler<CreateBlogWithDapperCommand,ApiResponse<BlogDTO>>
 {
     private readonly IDbConnection _dbConnection;
-
-    public CreateBlogWithDapperCommandHandler(IDbConnection dbConnection)
+    private readonly string _currentUserId;
+    public CreateBlogWithDapperCommandHandler(IDbConnection dbConnection,IHttpContextAccessor httpContextAccessor)
     {
         _dbConnection = dbConnection;
+        _currentUserId=httpContextAccessor.HttpContext?.User
+            ?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
     public async Task<ApiResponse<BlogDTO>> Handle(CreateBlogWithDapperCommand request, CancellationToken cancellationToken)
     {
@@ -27,7 +31,7 @@ public class CreateBlogWithDapperCommandHandler:IRequestHandler<CreateBlogWithDa
                 blog.Author = author;
                 return blog;
             },
-            request,
+            new{request.AuthorId,request.BlogTitle,request.BlogContent,CreatedBy=_currentUserId},
             splitOn: "AuthorId",   
             commandType: CommandType.StoredProcedure
         );

@@ -68,12 +68,13 @@ public class AuthorController:ControllerBase
        return Ok(await _sender.Send(getAuthorsWithAgeQuery));
     }
     
+    [Authorize]
     [HttpPost("sp")]
     public async Task<IActionResult> CreateAuthorWithSp(CreateAuthorWithSpCommand createAuthorWithSpCommand)
     {
          return  StatusCode(StatusCodes.Status201Created,await _sender.Send(createAuthorWithSpCommand));
     }
-
+    [Authorize]
     [HttpPut("sp/{AuthorId:guid}")]
     public async Task<IActionResult> UpdateAuthorWithSp(UpdateAuthorWithSpCommand updateAuthorWithSpCommand)
     {
@@ -86,12 +87,13 @@ public class AuthorController:ControllerBase
        return Ok(await _sender.Send(deleteAuthorWithSpCommand));
     }
 
+    [Authorize]
     [HttpPost("dapper")]
     public async Task<IActionResult> CreateAuthorWithDapper(CreateAuthorWithDapperCommand createAuthorWithDapperCommand)
     {
         return StatusCode(StatusCodes.Status201Created, await _sender.Send(createAuthorWithDapperCommand));
     }
-
+    [Authorize]
     [HttpPut("dapper/{AuthorId:guid}")]
     public async Task<IActionResult> UpdateAuthorWithDapper(UpdateAuthorWithDapperCommand updateAuthorWithDapperCommand)
     {

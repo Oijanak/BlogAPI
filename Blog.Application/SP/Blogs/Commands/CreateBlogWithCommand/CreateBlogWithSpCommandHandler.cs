@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.SP.Blogs.Commands;
@@ -9,15 +11,17 @@ namespace BlogApi.Application.SP.Blogs.Commands;
 public class CreateBlogWithSpCommandHandler:IRequestHandler<CreateBlogWithSpCommand,ApiResponse<BlogDTO>>
 {
     private readonly IBlogDbContext _blogDbContext;
-
-    public CreateBlogWithSpCommandHandler(IBlogDbContext blogDbContext)
+    private readonly string _currentUserId;
+    public CreateBlogWithSpCommandHandler(IBlogDbContext blogDbContext,IHttpContextAccessor httpContextAccessor)
     {
         _blogDbContext = blogDbContext;
+        _currentUserId=httpContextAccessor.HttpContext?.User
+            ?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
     public async Task<ApiResponse<BlogDTO>> Handle(CreateBlogWithSpCommand request, CancellationToken cancellationToken)
     {
         var blogs = await _blogDbContext.Blogs
-            .FromSqlInterpolated($"EXEC spCreateBlogWithAuthor {request.AuthorId}, {request.BlogTitle}, {request.BlogContent}")
+            .FromSqlInterpolated($"EXEC spCreateBlogWithAuthor {request.AuthorId}, {request.BlogTitle}, {request.BlogContent},{_currentUserId}")
             .AsNoTracking()
             .ToListAsync();
         ArgumentNullException.ThrowIfNull(blogs,nameof(blogs));

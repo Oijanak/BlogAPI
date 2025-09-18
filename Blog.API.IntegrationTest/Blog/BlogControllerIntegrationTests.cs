@@ -89,7 +89,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
             BlogContent= "Updated content"
         };
 
-        var response = await _client.PatchAsJsonAsync($"/api/blogs/{createdBlog.Data.BlogId}", updateBlog);
+        var response = await _client.PatchAsJsonAsync($"/api/blogs/sp/{createdBlog.Data.BlogId}", updateBlog);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         
         var updatedBlog = await response.Content.ReadFromJsonAsync<ApiResponse<BlogDTO>>(
@@ -108,7 +108,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
             BlogTitle = "SP Blog Updated",
             BlogContent = "Updated content"
         };
-        var response = await _client.PatchAsJsonAsync($"/api/blogs/{Guid.NewGuid()}", updateBlog);
+        var response = await _client.PatchAsJsonAsync($"/api/blogs/sp/{Guid.NewGuid()}", updateBlog);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         

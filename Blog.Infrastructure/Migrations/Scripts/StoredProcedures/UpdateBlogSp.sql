@@ -2,7 +2,8 @@ CREATE OR ALTER PROCEDURE spUpdateBlog
     @BlogId UNIQUEIDENTIFIER,
     @BlogTitle NVARCHAR(200),
     @BlogContent NVARCHAR(MAX),
-    @AuthorId UNIQUEIDENTIFIER
+    @AuthorId UNIQUEIDENTIFIER,
+    @UpdatedBy NVARCHAR(255)
     AS
 BEGIN
     SET NOCOUNT ON;
@@ -12,7 +13,8 @@ SET
     BlogTitle = @BlogTitle,
     BlogContent = @BlogContent,
     AuthorId = @AuthorId,
-    UpdatedAt = GETUTCDATE()
+    UpdatedAt = GETUTCDATE(),
+    UpdatedBy=@UpdatedBy
 WHERE BlogId = @BlogId;
 
 SELECT *

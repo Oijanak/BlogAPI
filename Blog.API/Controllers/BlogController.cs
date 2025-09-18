@@ -62,13 +62,13 @@ public class BlogController : ControllerBase
     {
         return Ok(await _sender.Send(deleteBlogCommand));
     }
-    
+    [Authorize]
     [HttpPost("sp")]
     public async Task<IActionResult> CreateBlogWithSp(CreateBlogWithSpCommand createBlogWithSpCommand)
     {
         return StatusCode(StatusCodes.Status201Created,await _sender.Send(createBlogWithSpCommand));
     }
-
+    [Authorize]
     [HttpPut("sp/{BlogId:guid}")]
     public async Task<IActionResult> UpdateBlogWithSp(UpdateBlogWithSpCommand updateBlogWithSpCommand)
     {
@@ -82,12 +82,13 @@ public class BlogController : ControllerBase
         return Ok(await _sender.Send(deleteBlogWithSpCommand));
     }
 
+    [Authorize]
     [HttpPost("dapper")]
     public async Task<IActionResult> CreateBlogWithDapper(CreateBlogWithDapperCommand createBlogWithDapperCommand)
     {
         return StatusCode(StatusCodes.Status201Created,await _sender.Send(createBlogWithDapperCommand));
     }
-
+    [Authorize]
     [HttpPut("dapper/{BlogId:guid}")]
     public async Task<IActionResult> UpdateBlogWithDapper(UpdateBlogWithDappersCommand updateBlogWithDappersCommand)
     {
@@ -99,6 +100,5 @@ public class BlogController : ControllerBase
     {
         return Ok(await _sender.Send(deleteBlogWithDapperCommand));
     }
-    
 
 }

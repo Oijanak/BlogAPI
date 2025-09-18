@@ -1,15 +1,16 @@
 CREATE OR ALTER PROCEDURE spCreateBlogWithAuthor
     @AuthorId UNIQUEIDENTIFIER,
     @BlogTitle NVARCHAR(200),
-    @BlogContent NVARCHAR(MAX)
+    @BlogContent NVARCHAR(MAX),
+    @CreatedBy NVARCHAR(255)
     AS
 BEGIN
     SET NOCOUNT ON;
 
     DECLARE @NewBlogId UNIQUEIDENTIFIER = NEWID();
 
-INSERT INTO [Blogs] (BlogId, BlogTitle, BlogContent, AuthorId, CreatedAt, UpdatedAt)
-VALUES (@NewBlogId, @BlogTitle, @BlogContent, @AuthorId, GETUTCDATE(), GETUTCDATE());
+INSERT INTO [Blogs] (BlogId, BlogTitle, BlogContent, AuthorId, CreatedAt, UpdatedAt,CreatedBy)
+VALUES (@NewBlogId, @BlogTitle, @BlogContent, @AuthorId, GETUTCDATE(), GETUTCDATE(),@CreatedBy);
 
 SELECT
     b.BlogId,
@@ -17,10 +18,12 @@ SELECT
     b.BlogContent,
     b.CreatedAt,
     b.UpdatedAt,
+    b.CreatedBy,
     a.AuthorId,
     a.AuthorName,
     a.AuthorEmail,
-    a.Age
+    a.Age,
+    a.CreatedBy
 FROM Blogs b
          INNER JOIN Authors a ON b.AuthorId = a.AuthorId
 WHERE b.BlogId = @NewBlogId;

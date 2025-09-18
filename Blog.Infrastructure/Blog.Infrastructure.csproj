@@ -18,39 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Migrations\Scripts\StoredProcedures\CreateAuthorSp.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migrations\Scripts\StoredProcedures\CreateBlogSp.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migrations\Scripts\StoredProcedures\CreateUserSp.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migrations\Scripts\StoredProcedures\DeleteAuthorSp.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migrations\Scripts\StoredProcedures\DeleteBlogSp.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migrations\Scripts\StoredProcedures\DeleteUserSp.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migrations\Scripts\StoredProcedures\GetAllAuthorsWithAgeBetweenSp.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migrations\Scripts\StoredProcedures\UpdateAuthorSp.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migrations\Scripts\StoredProcedures\UpdateUserSp.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migrations\Scripts\StoredProcedures\UpdateBlogSp.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migrations\Scripts\DropProcedures.sql">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <EmbeddedResource Include="Migrations\Scripts\DropProcedures.sql" />
+    <EmbeddedResource Include="Migrations\Scripts\StoredProcedures\*.sql" />
   </ItemGroup>
 
   <PropertyGroup>
