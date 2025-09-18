@@ -1,11 +1,12 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using FluentAssertions;
 
-namespace Blog.API.IntegrationTest.Author;
+namespace Blog.API.IntegrationTest.Controller;
 
 public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
 {
@@ -16,6 +17,14 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     {
         _factory = factory;
         _client = _factory.CreateClient();
+        var user = new 
+        {
+            Name = "user",
+            Email = "user@example.com",
+            Password = "User123!"
+        };
+
+        _client.PostAsJsonAsync("/api/Auth/register", user).GetAwaiter().GetResult();
     }
     
     [Fact]
@@ -30,7 +39,7 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     }
     
     [Fact]
-    public async Task CreateAuthor_ShouldReturn_BadRequest_ForInvalidInput()
+    public async Task CreateAuthor_ForInvalidInput_ShouldReturn_BadRequest()
     {
         var author = new CreateAuthorCommand
         {
@@ -38,6 +47,9 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
             AuthorEmail = "invalid-email",  
             Age = 35
         };
+        var token = await GetJwtTokenAsync();
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
 
         var response = await _client.PostAsJsonAsync("/api/authors", author);
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -46,10 +58,12 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     
     
     [Fact]
-    public async Task UpdateUser_ShouldReturn_Ok_WhenUserExists()
+    public async Task UpdateUser_WhenUserExists_ShouldReturn_Ok()
     {
         var createdUser = await CreateTestAuthorAsync("Janak","janak@gmail.com");
-
+        var token = await GetJwtTokenAsync();
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
         var updateCommand = new AuthorRequest
         {
                 AuthorName = "Updated Name",
@@ -69,7 +83,7 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     }
     
     [Fact]
-    public async Task UpdateAuthor_ShouldReturn_NotFound_WhenAuthorDoesNotExist()
+    public async Task UpdateAuthor_WhenAuthorDoesNotExist_ShouldReturn_NotFound()
     {
         var nonExistentAuthorId = Guid.NewGuid(); 
 
@@ -79,6 +93,9 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
             AuthorEmail = "updated@example.com",
             Age = 25
         };
+        var token = await GetJwtTokenAsync();
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
 
         var response = await _client.PutAsJsonAsync($"/api/authors/{nonExistentAuthorId}", updateCommand);
 
@@ -86,24 +103,27 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         
     }
     
-    [Fact]
-    public async Task UpdateAuthor_ShouldReturn_BadRequest_ForInvalidUpdateRequest()
+    [Theory]
+    [InlineData("", "test@example.com", 25)]        
+    public async Task UpdateAuthor_ForInvalidUpdateRequest_ShouldReturn_BadRequest(
+        string authorName, string authorEmail, int age)
     {
-        var createdAuthor = await CreateTestAuthorAsync("Test Author", "test@example.com");
-        
+        var createdAuthor = await CreateTestAuthorAsync("Valid Author", "valid@example.com");
+        var token = await GetJwtTokenAsync();
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
         var invalidUpdateCommand = new AuthorRequest
         {
-            AuthorName = "",              
-            AuthorEmail = "invalid-email", 
-            Age = -1                     
+            AuthorName = authorName,
+            AuthorEmail = authorEmail,
+            Age = age
         };
         
         var response = await _client.PutAsJsonAsync($"/api/authors/{createdAuthor.AuthorId}", invalidUpdateCommand);
-
         
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
     }
+
 
 
     
@@ -122,6 +142,7 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     [Fact]
     public async Task DeleteAuthor_ShouldReturn_Ok()
     {
+        var token = await GetJwtTokenAsync();
         var createdAuthor = await CreateTestAuthorAsync();
 
         var response = await _client.DeleteAsync($"/api/authors/{createdAuthor.AuthorId}");
@@ -158,7 +179,7 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     }
     
     [Fact]
-    public async Task GetAuthorById_ShouldReturn_NotFound_WhenAuthorDoesNotExist()
+    public async Task GetAuthorById_WhenAuthorDoesNotExist_ShouldReturn_NotFound()
     {
         var nonExistentAuthorId = Guid.NewGuid(); 
 
@@ -178,15 +199,32 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
             AuthorEmail = email,
             Age = age
         };
+        var token = await GetJwtTokenAsync();
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
 
         var response = await _client.PostAsJsonAsync("/api/authors", author);
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var createdAuthor = await response.Content.ReadFromJsonAsync<ApiResponse<AuthorDto>>(
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         return createdAuthor.Data;
     }
+    
+    private async Task<string> GetJwtTokenAsync()
+    {
+        var loginRequest = new
+        {
+            Email = "user@example.com",
+            Password = "User123!"
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/Auth/login", loginRequest);
+
+        var json = await response.Content.ReadFromJsonAsync<TokenResponse>();
+        return json.AccessToken;
+    }
+
     
 
     

@@ -8,7 +8,7 @@ using BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Blog.API.IntegrationTest.Blog;
+namespace Blog.API.IntegrationTest.Controller;
 
 public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
 {
@@ -23,7 +23,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     }
     
     [Fact]
-    public async Task CreateBlog_ShouldReturn_Created_WithJwtToken()
+    public async Task CreateBlog_ShouldReturn_Created()
     {
         var author = await CreateTestAuthorAsync("Author","test01@example.com");
         var blog = new CreateBlogCommand
@@ -45,7 +45,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     }
     
     [Fact]
-    public async Task CreateBlog_ShouldReturn_NotFound_WhenAuthorDoesNotExist()
+    public async Task CreateBlog_ForInvalidAuthorId_ShouldReturn_NotFound()
     {
 
         var blog = new CreateBlogCommand
@@ -100,7 +100,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     }
     
     [Fact]
-    public async Task UpdateBlogWithSp_ShouldReturn_NotFound_WhenBlogDoesNotExist()
+    public async Task UpdateBlogWithSp_ForInvalidAuthorId_ShouldReturn_NotFound()
     {
         var updateBlog = new UpdateBlogRequest
         {
@@ -117,7 +117,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     
     
     [Fact]
-    public async Task DeleteBlog_ShouldReturn_Ok_WithJwtToken()
+    public async Task DeleteBlog_ShouldReturn_Ok()
     {
         var author = await CreateTestAuthorAsync("Janak","janak@gmail.com");
         
