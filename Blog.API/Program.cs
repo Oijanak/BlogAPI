@@ -13,6 +13,7 @@ using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
 using BlogApi.Infrastructure.Services;
 using FluentValidation;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
@@ -47,6 +48,11 @@ builder.Services.AddIdentity<User, IdentityRole>()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorCommandValidator>();
 builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddHangfire(config =>
+{
+    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection"));
+});
+builder.Services.AddHangfireServer();
 
 builder.Services.AddSwaggerGen(options=>
 {
@@ -74,6 +80,7 @@ builder.Services.AddScoped<IDbConnection>(sp =>
     new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<ITokenCleanupService, TokenCleanupService>();
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 var jwtKey = builder.Configuration["Jwt:Key"];
@@ -124,6 +131,12 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.UseHangfireDashboard();
+RecurringJob.AddOrUpdate<ITokenCleanupService>(
+    "cleanup-expired-refresh-tokens",
+    service => service.RemoveExpiredTokensAsync(),
+    Cron.Daily
+);
 //app.MapIdentityApi<User>();
 app.Run();
 

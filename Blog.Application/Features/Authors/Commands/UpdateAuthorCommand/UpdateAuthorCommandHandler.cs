@@ -28,7 +28,7 @@ public class UpdateAuthorCommandHandler:IRequestHandler<UpdateAuthorCommand, Api
         return new ApiResponse<AuthorDto>
         {
             Data = new AuthorDto(existingAuthor),
-            Message = "Autho updated successfully"
+            Message = "Author updated successfully"
         };
 
     }

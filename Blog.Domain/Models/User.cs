@@ -10,7 +10,7 @@ namespace BlogApi.Domain.Models
     {
         public string Name { get; set; }=string.Empty;
         public string? RefreshToken { get; set; }
-        public DateTime RefreshTokenExpires { get; set; }
+        public DateTime? RefreshTokenExpires { get; set; }
 
     }
 }
