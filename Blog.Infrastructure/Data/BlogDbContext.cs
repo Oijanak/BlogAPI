@@ -11,11 +11,10 @@ namespace BlogApi.Infrastructure.Data;
 
 public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
 {
-    private readonly string _currentUserId;
-    public BlogDbContext(DbContextOptions<BlogDbContext> options,IHttpContextAccessor httpContextAccessor) : base(options)
+    private readonly ICurrentUserService _currentUserService;
+    public BlogDbContext(DbContextOptions<BlogDbContext> options,ICurrentUserService currentUserService) : base(options)
     {
-        _currentUserId=httpContextAccessor.HttpContext?.User
-            ?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        _currentUserService = currentUserService;
     }
     public DbSet<Blog> Blogs { get; set; }
     
@@ -42,6 +41,7 @@ public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
 
     private void Update()
     {
+        var currentUserId=_currentUserService.UserId;
         var entries = ChangeTracker.Entries<BaseEntity>();
 
         foreach (var entry in entries)
@@ -54,7 +54,7 @@ public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
                     entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
                 }
                 
-                entry.Property("CreatedBy").CurrentValue = _currentUserId; 
+                entry.Property("CreatedBy").CurrentValue = currentUserId; 
                 
             }
 
@@ -66,7 +66,7 @@ public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
                     entry.Property("UpdatedAt").CurrentValue = DateTime.UtcNow;
                 }
                 
-                entry.Property("UpdatedBy").CurrentValue = _currentUserId; 
+                entry.Property("UpdatedBy").CurrentValue = currentUserId; 
             }
         }
     }

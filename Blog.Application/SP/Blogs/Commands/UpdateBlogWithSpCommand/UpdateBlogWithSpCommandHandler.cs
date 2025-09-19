@@ -13,17 +13,17 @@ namespace BlogApi.Application.SP.Blogs.Commands.UpdateBlogWithSpCommand;
 public class UpdateBlogWithSpCommandHandler:IRequestHandler<UpdateBlogWithSpCommand,ApiResponse<BlogDTO>>
 {
     private readonly IBlogDbContext _blogDbContext;
-    private readonly string _currentUserId;
-    public UpdateBlogWithSpCommandHandler(IBlogDbContext blogDbContext,IHttpContextAccessor httpContextAccessor)
+    private readonly ICurrentUserService _currentUserService;
+    public UpdateBlogWithSpCommandHandler(IBlogDbContext blogDbContext,ICurrentUserService currentUserService)
     {
         _blogDbContext = blogDbContext;
-        _currentUserId=httpContextAccessor.HttpContext?.User
-            ?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        _currentUserService = currentUserService;
     }
     public async Task<ApiResponse<BlogDTO>> Handle(UpdateBlogWithSpCommand request, CancellationToken cancellationToken)
     {
+            var currentUserId = _currentUserService.UserId;
             var blogs = await _blogDbContext.Blogs
-                .FromSqlInterpolated($"EXEC spUpdateBlog {request.BlogId}, {request.Blog.BlogTitle}, {request.Blog.BlogContent}, {request.Blog.AuthorId},{_currentUserId}")
+                .FromSqlInterpolated($"EXEC spUpdateBlog {request.BlogId}, {request.Blog.BlogTitle}, {request.Blog.BlogContent}, {request.Blog.AuthorId},{currentUserId}")
                 .AsNoTracking()
                 .ToListAsync();
             ArgumentNullException.ThrowIfNull(blogs, nameof(blogs));

@@ -11,18 +11,18 @@ namespace BlogApi.Application.SP.Authors.Commands.UpdateAuthorWithSpCommand;
 public class UpdateAuthorWithSpCommandHandler:IRequestHandler<UpdateAuthorWithSpCommand, ApiResponse<AuthorDto>>
 {
     private readonly IBlogDbContext _blogDbContext;
-    private readonly string _currentUserId;
+    private readonly ICurrentUserService _currentUserService;
 
-    public UpdateAuthorWithSpCommandHandler(IBlogDbContext blogDbContext,IHttpContextAccessor httpContextAccessor)
+    public UpdateAuthorWithSpCommandHandler(IBlogDbContext blogDbContext,ICurrentUserService  currentUserService)
     {
         _blogDbContext = blogDbContext;
-         _currentUserId=httpContextAccessor.HttpContext?.User
-                    ?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+         _currentUserService=currentUserService;
     }
     public async Task<ApiResponse<AuthorDto>> Handle(UpdateAuthorWithSpCommand request, CancellationToken cancellationToken)
     {
+        var currentUserId = _currentUserService.UserId;
         var authors = await _blogDbContext.Authors
-            .FromSqlInterpolated($"EXEC spUpdateAuthor {request.AuthorId}, {request.Author.AuthorEmail}, {request.Author.AuthorName}, {request.Author.Age},{_currentUserId}")
+            .FromSqlInterpolated($"EXEC spUpdateAuthor {request.AuthorId}, {request.Author.AuthorEmail}, {request.Author.AuthorName}, {request.Author.Age},{currentUserId}")
             .AsNoTracking()
             .ToListAsync(); 
 

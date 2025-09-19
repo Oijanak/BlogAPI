@@ -2,6 +2,7 @@ using System.Data;
 using System.Security.Claims;
 using Ardalis.GuardClauses;
 using BlogApi.Application.DTOs;
+using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using Dapper;
 using MediatR;
@@ -12,15 +13,15 @@ namespace BlogApi.Application.Dapper.Blogs.Commands.CreateBlogWithDapperCommand;
 public class CreateBlogWithDapperCommandHandler:IRequestHandler<CreateBlogWithDapperCommand,ApiResponse<BlogDTO>>
 {
     private readonly IDbConnection _dbConnection;
-    private readonly string _currentUserId;
-    public CreateBlogWithDapperCommandHandler(IDbConnection dbConnection,IHttpContextAccessor httpContextAccessor)
+    private readonly ICurrentUserService _currentUserService;
+    public CreateBlogWithDapperCommandHandler(IDbConnection dbConnection,ICurrentUserService currentUserService)
     {
         _dbConnection = dbConnection;
-        _currentUserId=httpContextAccessor.HttpContext?.User
-            ?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        _currentUserService = currentUserService;
     }
     public async Task<ApiResponse<BlogDTO>> Handle(CreateBlogWithDapperCommand request, CancellationToken cancellationToken)
     {
+        var currentUserId=_currentUserService.UserId;
         var author = await _dbConnection.QueryFirstAsync<AuthorDto>("select * from [Authors] where AuthorId=@AuthorId",
             new { request.AuthorId });
         Guard.Against.Null(author, nameof(author),"Author with Id not found");
@@ -31,7 +32,7 @@ public class CreateBlogWithDapperCommandHandler:IRequestHandler<CreateBlogWithDa
                 blog.Author = author;
                 return blog;
             },
-            new{request.AuthorId,request.BlogTitle,request.BlogContent,CreatedBy=_currentUserId},
+            new{request.AuthorId,request.BlogTitle,request.BlogContent,CreatedBy=currentUserId},
             splitOn: "AuthorId",   
             commandType: CommandType.StoredProcedure
         );

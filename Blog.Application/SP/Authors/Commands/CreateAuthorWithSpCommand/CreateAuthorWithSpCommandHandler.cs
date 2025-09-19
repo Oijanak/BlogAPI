@@ -11,18 +11,18 @@ namespace BlogApi.Application.SP.Authors.Commands.CreateAuthorWithSpCommand;
 public class CreateAuthorWithSpCommandHandler:IRequestHandler<CreateAuthorWithSpCommand,ApiResponse<AuthorDto>>
 {
     private readonly IBlogDbContext _blogDbContext;
-    private readonly string _currentUserId;
+    private readonly ICurrentUserService _currentUserService;
 
-    public CreateAuthorWithSpCommandHandler(IBlogDbContext blogDbContext,IHttpContextAccessor httpContextAccessor)
+    public CreateAuthorWithSpCommandHandler(IBlogDbContext blogDbContext,ICurrentUserService currentUserService)
     {
         _blogDbContext = blogDbContext;
-        _currentUserId=httpContextAccessor.HttpContext?.User
-            ?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        _currentUserService = currentUserService;
     }
     public async Task<ApiResponse<AuthorDto>> Handle(CreateAuthorWithSpCommand request, CancellationToken cancellationToken)
     {
+        var currentUserId = _currentUserService.UserId;
         var authors = await _blogDbContext.Authors
-            .FromSqlInterpolated($"EXEC spCreateAuthor {request.AuthorEmail}, {request.AuthorName}, {request.Age},{_currentUserId}")
+            .FromSqlInterpolated($"EXEC spCreateAuthor {request.AuthorEmail}, {request.AuthorName}, {request.Age},{currentUserId}")
             .AsNoTracking()
             .ToListAsync(); 
 

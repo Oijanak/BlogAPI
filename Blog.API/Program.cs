@@ -8,6 +8,7 @@ using BlogApi.Application.Interfaces;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.DTOs.Validators;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
+using BlogApi.Application.Services;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
 using BlogApi.Infrastructure.Services;
@@ -38,6 +39,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 Guard.Against.NullOrEmpty(connectionString,nameof(connectionString));
 builder.Services.AddDbContext<IBlogDbContext,BlogDbContext>(options =>
     options.UseSqlServer(connectionString));
+
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<BlogDbContext>()
     .AddDefaultTokenProviders();
@@ -71,7 +73,7 @@ builder.Services.AddApplication();
 builder.Services.AddScoped<IDbConnection>(sp =>
     new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
-
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 var jwtKey = builder.Configuration["Jwt:Key"];
