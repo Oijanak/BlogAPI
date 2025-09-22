@@ -23,7 +23,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         var user = new 
         {
             Name = "user",
-            Email = "user@example.com",
+            Email = "user1@example.com",
             Password = "User123!"
         };
 
@@ -37,6 +37,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         var token = await GetJwtTokenAsync();
         _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
+        
         var author = await CreateTestAuthorAsync("Author","test01@example.com");
         var blog = new CreateBlogCommand
         {
@@ -171,7 +172,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     {
         var loginRequest = new
         {
-            Email = "user@example.com",
+            Email = "user1@example.com",
             Password = "User123!"
         };
 

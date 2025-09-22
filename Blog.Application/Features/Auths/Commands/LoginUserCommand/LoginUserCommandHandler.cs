@@ -8,7 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.JsonWebTokens;
 
-namespace BlogApi.Application.Features.Users.Commands.LoginUserCommand;
+namespace BlogApi.Application.Features.Auths.Commands.LoginUserCommand;
 
 public class LoginUserCommandHandler:IRequestHandler<LoginUserCommand, TokenResponse>
 {

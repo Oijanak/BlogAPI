@@ -1,6 +1,6 @@
-using BlogApi.Application.Features.Users.Commands.LoginUserCommand;
-using BlogApi.Application.Features.Users.Commands.RefreshTokenCommand;
-using BlogApi.Application.Features.Users.Commands.RegisterUserCommand;
+using BlogApi.Application.Features.Auths.Commands.LoginUserCommand;
+using BlogApi.Application.Features.Auths.Commands.RefreshTokenCommand;
+using BlogApi.Application.Features.Auths.Commands.RegisterUserCommand;
 using MediatR;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;

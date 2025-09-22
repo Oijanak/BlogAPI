@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 
-namespace BlogApi.Application.Features.Users.Commands.RegisterUserCommand;
+namespace BlogApi.Application.Features.Auths.Commands.RegisterUserCommand;
 
 public class RegisterUserCommandHandler:IRequestHandler<RegisterUserCommand, ApiResponse<string>>
 {

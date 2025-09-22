@@ -1,10 +1,10 @@
 using FluentValidation;
 
-namespace BlogApi.Application.Features.Users.Commands.RegisterUserCommand;
+namespace BlogApi.Application.Features.Auths.Commands.LoginUserCommand;
 
-public class RegisterUserCommandValidator:AbstractValidator<RegisterUserCommand>
+public class LoginUserCommandValidator:AbstractValidator<LoginUserCommand>
 {
-    public  RegisterUserCommandValidator()
+    public LoginUserCommandValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email is required")
@@ -13,9 +13,6 @@ public class RegisterUserCommandValidator:AbstractValidator<RegisterUserCommand>
         RuleFor(x => x.Password)
             .NotEmpty()
             .WithMessage("Password is required");
-
-        RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Name is required");
     }
     
 }

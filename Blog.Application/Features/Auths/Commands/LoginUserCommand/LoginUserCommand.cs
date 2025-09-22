@@ -1,7 +1,7 @@
 using BlogApi.Application.DTOs;
 using MediatR;
 
-namespace BlogApi.Application.Features.Users.Commands.LoginUserCommand;
+namespace BlogApi.Application.Features.Auths.Commands.LoginUserCommand;
 
 public class LoginUserCommand:IRequest<TokenResponse>
 {

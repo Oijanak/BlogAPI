@@ -67,7 +67,7 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         var updateCommand = new AuthorRequest
         {
                 AuthorName = "Updated Name",
-                AuthorEmail = "updated@example.com",
+                AuthorEmail = "updated1@example.com",
                 Age = 20
         };
 
@@ -78,7 +78,7 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         updatedUser.Data.AuthorName.Should().Be("Updated Name");
-        updatedUser.Data.AuthorEmail.Should().Be("updated@example.com");
+        updatedUser.Data.AuthorEmail.Should().Be("updated1@example.com");
         updatedUser.Data.Age.Should().Be(20);
     }
     

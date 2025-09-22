@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlogApi.Application.Features.Users.Commands.RefreshTokenCommand;
+namespace BlogApi.Application.Features.Auths.Commands.RefreshTokenCommand;
 
 public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, TokenResponse>
 {

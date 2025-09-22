@@ -1,7 +1,7 @@
 using BlogApi.Application.DTOs;
 using MediatR;
 
-namespace BlogApi.Application.Features.Users.Commands.RefreshTokenCommand;
+namespace BlogApi.Application.Features.Auths.Commands.RefreshTokenCommand;
 
 public class RefreshTokenCommand:IRequest<TokenResponse>
 {
