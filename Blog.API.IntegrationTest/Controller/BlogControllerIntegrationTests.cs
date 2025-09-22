@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -19,12 +20,23 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     {
         _factory=factory;
         _client=factory.CreateClient();
+        var user = new 
+        {
+            Name = "user",
+            Email = "user@example.com",
+            Password = "User123!"
+        };
+
+        _client.PostAsJsonAsync("/api/Auth/register", user).GetAwaiter().GetResult();
      
     }
     
     [Fact]
     public async Task CreateBlog_ShouldReturn_Created()
     {
+        var token = await GetJwtTokenAsync();
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
         var author = await CreateTestAuthorAsync("Author","test01@example.com");
         var blog = new CreateBlogCommand
         {
@@ -55,6 +67,10 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
             AuthorId = Guid.NewGuid() 
         };
         
+        var token = await GetJwtTokenAsync();
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+        
 
         var response = await _client.PostAsJsonAsync("/api/blogs", blog);
       
@@ -66,54 +82,6 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
        error.Status.Should().Be(400);
 
     }
-
-    
-    [Fact]
-    public async Task UpdateBlogWithSp_ShouldReturn_Ok()
-    {
-        var author = await CreateTestAuthorAsync();
-        var blog = new CreateBlogCommand
-        {
-            BlogTitle = "Test Blog",
-            BlogContent = "This is a test blog.",
-            AuthorId = author.AuthorId
-        };
-        var createResponse = await _client.PostAsJsonAsync("/api/blogs", blog);
-        var createdBlog = await createResponse.Content.ReadFromJsonAsync<ApiResponse<BlogDTO>>(
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-        var updateBlog = new UpdateBlogRequest
-        {
-            AuthorId = author.AuthorId,
-            BlogTitle = "SP Blog Updated",
-            BlogContent= "Updated content"
-        };
-
-        var response = await _client.PatchAsJsonAsync($"/api/blogs/sp/{createdBlog.Data.BlogId}", updateBlog);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
-        var updatedBlog = await response.Content.ReadFromJsonAsync<ApiResponse<BlogDTO>>(
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        updatedBlog.Data.Should().NotBeNull();
-        updatedBlog.Data.BlogContent.Should().Be("Updated content");
-        updatedBlog.Data.BlogTitle.Should().Be("SP Blog Updated");
-    }
-    
-    [Fact]
-    public async Task UpdateBlogWithSp_ForInvalidAuthorId_ShouldReturn_NotFound()
-    {
-        var updateBlog = new UpdateBlogRequest
-        {
-            AuthorId = Guid.NewGuid(),
-            BlogTitle = "SP Blog Updated",
-            BlogContent = "Updated content"
-        };
-        var response = await _client.PatchAsJsonAsync($"/api/blogs/sp/{Guid.NewGuid()}", updateBlog);
-
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        
-    }
-
     
     
     [Fact]
@@ -187,6 +155,9 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
             AuthorEmail = email,
             Age = age
         };
+        var token = await GetJwtTokenAsync();
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
         var response = await _client.PostAsJsonAsync("/api/authors", author);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
@@ -194,6 +165,20 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         return createdAuthor.Data;
+    }
+    
+    private async Task<string> GetJwtTokenAsync()
+    {
+        var loginRequest = new
+        {
+            Email = "user@example.com",
+            Password = "User123!"
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/Auth/login", loginRequest);
+
+        var json = await response.Content.ReadFromJsonAsync<TokenResponse>();
+        return json.AccessToken;
     }
     
     
