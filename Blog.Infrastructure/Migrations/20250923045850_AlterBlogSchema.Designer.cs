@@ -4,6 +4,7 @@ using BlogApi.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogApi.Infrastructure.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    partial class BlogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250923045850_AlterBlogSchema")]
+    partial class AlterBlogSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,6 +79,9 @@ namespace BlogApi.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ApprovedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApprovedByUserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid>("AuthorId")
@@ -115,7 +121,7 @@ namespace BlogApi.Infrastructure.Migrations
 
                     b.HasKey("BlogId");
 
-                    b.HasIndex("ApprovedBy");
+                    b.HasIndex("ApprovedByUserId");
 
                     b.HasIndex("AuthorId");
 
@@ -356,8 +362,7 @@ namespace BlogApi.Infrastructure.Migrations
                 {
                     b.HasOne("BlogApi.Domain.Models.User", "ApprovedByUser")
                         .WithMany()
-                        .HasForeignKey("ApprovedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ApprovedByUserId");
 
                     b.HasOne("BlogApi.Domain.Models.Author", "Author")
                         .WithMany("Blogs")

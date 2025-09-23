@@ -18,7 +18,9 @@ public class ApiResponse<T>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public T? Data { get; set; }
     public string? Message { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? totalSize { get; set; }
 
-   
+
 
 }

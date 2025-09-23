@@ -8,6 +8,7 @@ using System.Net;
 using BlogApi.Application.Dapper.Blogs.Commands.CreateBlogWithDapperCommand;
 using BlogApi.Application.Dapper.Blogs.Commands.DeleteBlogWithDapperCommand;
 using BlogApi.Application.Dapper.Blogs.Commands.UpdateBlogWithDapperCommand;
+using BlogApi.Application.Features.Blogs.Commands.ApproveStatusCommand;
 using BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 using BlogApi.Application.Features.Blogs.Commands.DeleteBlogCommand;
 using BlogApi.Application.Features.Blogs.Commands.UpdateBlogCommand;
@@ -31,16 +32,16 @@ public class BlogController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
+    [Authorize(Roles="Maker")]
     public async Task<IActionResult> CreateBlog(CreateBlogCommand blogBlogCommand)
     {
         return StatusCode(StatusCodes.Status201Created,await _sender.Send(blogBlogCommand));
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllBlogs()
+    public async Task<IActionResult> GetAllBlogs([FromQuery]GetBlogListQuery getBlogListQuery)
     {
-        return Ok(await _sender.Send(new GetBlogListQuery()));
+        return Ok(await _sender.Send(getBlogListQuery));
        
     }
 
@@ -50,11 +51,18 @@ public class BlogController : ControllerBase
         return Ok(await _sender.Send(blogQuery));
     }
 
-    [HttpPatch("{BlogId:guid}")]
+    [HttpPut("{BlogId:guid}")]
     [Authorize]
     public async Task<IActionResult> UpdateBlog(UpdateBlogCommand updateBlogCommand)
     {
        return Ok(await _sender.Send(updateBlogCommand));
+    }
+
+    [HttpPatch("{BlogId:guid}/approve")]
+    [Authorize(Roles = "Checker")]
+    public async Task<IActionResult> ApproveBlog(ApproveStatusCommand approveStatusCommand)
+    {
+        return Ok(await _sender.Send(approveStatusCommand));
     }
 
     [HttpDelete("{BlogId:guid}")]

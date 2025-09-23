@@ -25,13 +25,14 @@ public class LoginUserCommandHandler:IRequestHandler<LoginUserCommand, TokenResp
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
             throw new ApiException("Invalid credentials",HttpStatusCode.Unauthorized);
-       
+       var userRoles= await _userManager.GetRolesAsync(user);
         var authClaims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+        authClaims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
         
         var accessToken = _tokenService.GenerateToken(authClaims);
         var refreshToken = _tokenService.GenerateRefreshToken();

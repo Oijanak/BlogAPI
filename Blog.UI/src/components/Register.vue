@@ -8,11 +8,17 @@
         <input v-model="email" type="email" placeholder="Email" required />
         <input v-model="password" type="password" placeholder="Password" required />
 
+       
+        <select  v-model="role" required >
+          <option disabled value="">Select Role</option>
+          <option value="Maker">Maker</option>
+          <option value="Checker">Checker</option>
+        </select>
+
         <button type="submit">Register</button>
       </form>
-      
+
       <p v-if="successMessage" class="success-msg">{{ successMessage }}</p>
-     
       <p v-if="errorMessage" class="error-msg">{{ errorMessage }}</p>
     </div>
   </div>
@@ -25,6 +31,7 @@ import { useAuthStore } from "../stores/auth.js";
 const name = ref("");
 const email = ref("");
 const password = ref("");
+const role = ref(""); 
 const successMessage = ref("");
 const errorMessage = ref("");
 
@@ -39,11 +46,13 @@ const handleRegister = async () => {
       name: name.value,
       email: email.value,
       password: password.value,
+      role: role.value, 
     });
     successMessage.value = "Registered successfully";
     name.value = "";
     email.value = "";
     password.value = "";
+    role.value = "";
   } catch (err) {
     if (err.response?.data?.message) {
       errorMessage.value = err.response.data.message;
@@ -83,14 +92,16 @@ form {
   gap: 1rem;
 }
 
-input {
+input,
+select {
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 1rem;
 }
 
-input:focus {
+input:focus,
+select:focus {
   border-color: #3498db;
   outline: none;
 }

@@ -21,5 +21,7 @@ public class UpdateBlogCommandValidator:AbstractValidator<UpdateBlogCommand>
         RuleFor(x => x)
             .Must(x => !string.IsNullOrWhiteSpace(x.Blog.BlogTitle) || !string.IsNullOrWhiteSpace(x.Blog.BlogContent))
             .WithMessage("At least BlogTitle or BlogContent must have a value.");
+        RuleFor(x=>x.Blog.StartDate).NotEmpty().WithMessage("Start Date is required");
+        RuleFor(x=>x.Blog.EndDate).NotEmpty().WithMessage("End Date is required");
     }
 }

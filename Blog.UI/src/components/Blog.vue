@@ -1,82 +1,73 @@
 <template>
   <div class="blogs">
+    <!-- Header -->
     <div class="blogs-header">
       <h2>Blogs</h2>
       <button @click="openAddForm" class="btn btn-primary">
         + Add Blog
       </button>
     </div>
-    
-    <table class="table">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Content</th>
-        <th>Author</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="blog in blogs" :key="blog.blogId">
-        <td>{{ blog.blogId }}</td>
-        <td>{{ blog.blogTitle }}</td>
-        <td>{{ blog.blogContent }}</td>
-        <td>{{ blog.author.authorName }}</td>
-        <td>
-          <button class="btn btn-warning btn-sm" @click="openUpdateForm(blog)">
-            Update
-          </button>
-          <button class="btn btn-danger btn-sm" @click="deleteBlog(blog.blogId)">
-            Delete
-          </button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
 
-    
+   
+    <div class="blog-list">
+      <div class="blog-card" v-for="blog in blogs" :key="blog.blogId">
+        <h3>{{ blog.blogTitle }}</h3>
+        <p class="content">{{ blog.blogContent }}</p>
+
+        <p><strong>Author:</strong> {{ blog.author?.authorName }}</p>
+        <p><strong>Status:</strong> {{ blog.approveStatus }}</p>
+        <p><strong>Active:</strong> {{ blog.activeStatus }}</p>
+        <p><strong>Start:</strong> {{ formatDate(blog.startDate) }}</p>
+        <p><strong>End:</strong> {{ formatDate(blog.endDate) }}</p>
+        <p><small>Created By: {{ blog.createdBy }}</small></p>
+        <p v-if="blog.updatedBy"><small>Updated By: {{ blog.updatedBy }}</small></p>
+        <p v-if="blog.ApprovedBy"><small>Approved By: {{ blog.approvedBy }}</small></p>
+
+        <div class="actions">
+          <button class="btn btn-warning btn-sm" @click="openUpdateForm(blog)">Update</button>
+          <button class="btn btn-danger btn-sm" @click="deleteBlog(blog.blogId)">Delete</button>
+          <button
+              v-if="blog.approveStatus === 'Pending'"
+              class="btn btn-success btn-sm"
+              @click="approveBlog(blog.blogId)"
+          >
+            Approve
+          </button>
+        </div>
+      </div>
+    </div>
+
+  
     <div v-if="showForm" class="form-overlay">
       <div class="form-card">
         <h3>{{ isUpdate ? "Update Blog" : "Add Blog" }}</h3>
         <form @submit.prevent="saveBlog">
-          <input
-              v-model="form.blogTitle"
-              type="text"
-              placeholder="Title"
-              required
-          />
-          <textarea
-              v-model="form.blogContent"
-              placeholder="Content"
-              required
-          ></textarea>
-          <label for="">Select Author</label>
+          <input v-model="form.blogTitle" type="text" placeholder="Title" required />
+          <textarea v-model="form.blogContent" placeholder="Content" required></textarea>
+          
           <select v-model="form.authorId" required>
             <option value="" disabled>Select Author</option>
-            <option
-                v-for="author in authors"
-                :key="author.authorId"
-                :value="author.authorId"
-            >
+            <option v-for="author in authors" :key="author.authorId" :value="author.authorId">
               {{ author.authorName }}
             </option>
           </select>
 
+          <input v-model="form.startDate"  type="date" required />
+          <input v-model="form.endDate"  type="date" required />
+
           <div class="form-actions">
             <button type="submit" class="btn btn-success">Save</button>
-            <button
-                type="button"
-                class="btn btn-secondary"
-                @click="closeForm"
-            >
-              Cancel
-            </button>
+            <button type="button" class="btn btn-secondary" @click="closeForm">Cancel</button>
           </div>
         </form>
       </div>
     </div>
   </div>
+  <div class="pagination" v-if="totalPages > 1">
+  <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1">Prev</button>
+  <span>Page {{ currentPage }} of {{ totalPages }}</span>
+  <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages">Next</button>
+</div>
 </template>
 
 <script setup>
@@ -91,7 +82,17 @@ const blogs = ref([]);
 const authors = ref([]);
 const showForm = ref(false);
 const isUpdate = ref(false);
-const form = ref({ blogTitle: "", blogContent: "", authorId: null });
+const currentPage = ref(1);
+const pageSize = ref(3); 
+const totalPages = ref(1);
+
+const form = ref({
+  blogTitle: "",
+  blogContent: "",
+  authorId: null,
+  startDate: null,
+  endDate: null,
+});
 
 const authStore = useAuthStore();
 
@@ -101,12 +102,27 @@ const api = axios.create({
   },
 });
 
+function formatDate(date) {
+  if (!date) return "";
+  return new Date(date).toLocaleDateString();
+}
+
 async function fetchBlogs() {
   try {
-    const res = await api.get(BLOG_API_URL);
-    blogs.value = res.data.data;
+    const res = await api.get(BLOG_API_URL,{params: {
+        page: currentPage.value,
+        limit: pageSize.value
+      }});
+     blogs.value = res.data.data;
+     totalPages.value = Math.ceil(res.data.totalSize/pageSize.value);
   } catch (err) {
     console.error("Error fetching blogs:", err);
+  }
+}
+function goToPage(page) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchBlogs();
   }
 }
 
@@ -120,13 +136,26 @@ async function fetchAuthors() {
 }
 
 function openAddForm() {
-  form.value = { blogTitle: "", blogContent: "", authorId: null };
+  form.value = {
+    blogTitle: "",
+    blogContent: "",
+    authorId: null,
+    startDate: null,
+    endDate: null,
+  };
   isUpdate.value = false;
   showForm.value = true;
 }
 
 function openUpdateForm(blog) {
-  form.value = { ...blog };
+  form.value = {
+    blogId: blog.blogId,
+    blogTitle: blog.blogTitle,
+    blogContent: blog.blogContent,
+    authorId: blog.author?.authorId || null,
+    startDate: blog.startDate ? blog.startDate.split("T")[0] : new Date().toISOString().split("T")[0],
+    endDate: blog.endDate ? blog.endDate.split("T")[0] : new Date().toISOString().split("T")[0],
+  };
   isUpdate.value = true;
   showForm.value = true;
 }
@@ -138,7 +167,7 @@ function closeForm() {
 async function saveBlog() {
   try {
     if (isUpdate.value) {
-      await api.patch(`${BLOG_API_URL}/${form.value.blogId}`, form.value);
+      await api.put(`${BLOG_API_URL}/${form.value.blogId}`, form.value);
     } else {
       await api.post(BLOG_API_URL, form.value);
     }
@@ -160,12 +189,20 @@ async function deleteBlog(id) {
   }
 }
 
+async function approveBlog(id) {
+  try {
+    await api.patch(`${BLOG_API_URL}/${id}/approve`);
+    await fetchBlogs();
+  } catch (err) {
+    console.error("Error approving blog:", err);
+  }
+}
+
 onMounted(() => {
   fetchAuthors();
   fetchBlogs();
 });
 </script>
-
 <style scoped>
 .blogs {
   max-width: 1000px;
@@ -177,36 +214,50 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
 }
 
 .blogs-header h2 {
   color: #2c3e50;
 }
 
-.table {
-  width: 100%;
-  margin-top: 20px;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 8px;
+.blog-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.blog-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.blog-card:hover {
+  transform: translateY(-5px);
+}
+
+.blog-card h3 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.blog-card .content {
+  color: #555;
+  margin-bottom: 10px;
+  max-height: 100px;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.table th {
-  background: #2c3e50;
-  color: white;
-  padding: 12px;
-  text-align: left;
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
 }
 
-.table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-}
-
-.table tr:nth-child(even) {
-  background: #f9f9f9;
-}
 
 .btn {
   padding: 6px 12px;
@@ -214,16 +265,11 @@ onMounted(() => {
   border: none;
   cursor: pointer;
   font-size: 0.9rem;
-  margin: 0 10px;
 }
 
 .btn-primary {
-  background:#2c3e50;
-  color: white;
-}
-
-.btn-primary:hover {
   background: #2c3e50;
+  color: white;
 }
 
 .btn-warning {
@@ -231,17 +277,9 @@ onMounted(() => {
   color: white;
 }
 
-.btn-warning:hover {
-  background: #d68910;
-}
-
 .btn-danger {
   background: #e74c3c;
   color: white;
-}
-
-.btn-danger:hover {
-  background: #c0392b;
 }
 
 .btn-success {
@@ -249,17 +287,9 @@ onMounted(() => {
   color: white;
 }
 
-.btn-success:hover {
-  background: #1e8449;
-}
-
 .btn-secondary {
   background: #7f8c8d;
   color: white;
-}
-
-.btn-secondary:hover {
-  background: #626e70;
 }
 
 
@@ -284,42 +314,35 @@ onMounted(() => {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
 
-.form-card h3 {
-  margin-bottom: 1rem;
-  color: #2c3e50;
-  text-align: center;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-input,
-textarea,
-select {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  font-size: 1rem;
+.form-card input,
+.form-card textarea,
+.form-card select {
   width: 100%;
+  margin-bottom: 1rem;
+  padding: 10px 12px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border 0.2s;
 }
 
-textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: #2c3e50;
-  outline: none;
-}
-
-.form-actions {
+.pagination {
+  margin-top: 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

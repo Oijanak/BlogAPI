@@ -4,6 +4,7 @@ using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Enum;
 using BlogApi.Domain.Models;
 using MediatR;
 
@@ -26,8 +27,21 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
         {
             BlogTitle = request.BlogTitle,
             BlogContent = request.BlogContent,
-            Author = author
+            Author = author,
+            StartDate = request.StartDate,
+            EndDate = request.EndDate,
         };
+        
+        var currentDate = DateTime.UtcNow.Date; 
+
+        if (request.StartDate.Date <= currentDate && request.EndDate.Date >= currentDate)
+        {
+            blog.ActiveStatus = ActiveStatus.Active;
+        }
+        else
+        {
+            blog.ActiveStatus = ActiveStatus.Inactive;
+        }
         
        await _blogDbContext.Blogs.AddAsync(blog, cancellationToken);
        await _blogDbContext.SaveChangesAsync(cancellationToken);
@@ -41,13 +55,16 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
                CreatedAt = blog.CreatedAt,
                UpdatedAt = blog.UpdatedAt,
                CreatedBy = blog.CreatedBy,
+               StartDate = blog.StartDate,
+               EndDate = blog.EndDate,
+               ActiveStatus = blog.ActiveStatus,
+               ApproveStatus = blog.ApproveStatus,
+               ApprovedBy = blog.ApprovedBy,
                Author = new AuthorDto(blog.Author)
            },
            Message = "Blog created successfully"
        };
-
-
-
+       
 
 
     }

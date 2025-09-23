@@ -28,6 +28,13 @@ public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,ApiResponse<BlogDT
             BlogContent = blog.BlogContent,
             CreatedAt = blog.CreatedAt,
             UpdatedAt = blog.UpdatedAt,
+            CreatedBy=blog.CreatedBy,
+            UpdatedBy = blog.UpdatedBy,
+            StartDate = blog.StartDate,
+            EndDate = blog.EndDate,
+            ApprovedBy = blog.ApprovedBy,
+            ApproveStatus = blog.ApproveStatus,
+            ActiveStatus = blog.ActiveStatus,
             Author = new AuthorDto(blog.Author)
         };
         return new ApiResponse<BlogDTO>

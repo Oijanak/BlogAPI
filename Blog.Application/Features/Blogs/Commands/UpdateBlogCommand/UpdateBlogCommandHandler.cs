@@ -4,6 +4,7 @@ using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Enum;
 using BlogApi.Domain.Models;
 using MediatR;
 
@@ -25,6 +26,17 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
         Guard.Against.Null(existingBlog,nameof(existingBlog));
         existingBlog.BlogTitle = request.Blog.BlogTitle;
         existingBlog.BlogContent = request.Blog.BlogContent;
+        existingBlog.StartDate=request.Blog.StartDate;
+        existingBlog.EndDate=request.Blog.EndDate;
+        var currentDate = DateTime.UtcNow.Date;
+        if (request.Blog.StartDate.Date <= currentDate && request.Blog.EndDate.Date >= currentDate)
+        {
+            existingBlog.ActiveStatus = ActiveStatus.Active;
+        }
+        else
+        {
+            existingBlog.ActiveStatus = ActiveStatus.Inactive;
+        }
         existingBlog.Author = author;
          _blogDbContext.Blogs.Update(existingBlog);
          await _blogDbContext.SaveChangesAsync(cancellationToken);
@@ -37,6 +49,11 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
              UpdatedAt = existingBlog.UpdatedAt,
              CreatedBy = existingBlog.CreatedBy,
              UpdatedBy = existingBlog.UpdatedBy,
+             StartDate = existingBlog.StartDate,
+             EndDate = existingBlog.EndDate,
+             ActiveStatus = existingBlog.ActiveStatus,
+             ApproveStatus = existingBlog.ApproveStatus,
+             ApprovedBy = existingBlog.ApprovedBy,
              Author = new AuthorDto(existingBlog.Author),
          };
          return new ApiResponse<BlogDTO>

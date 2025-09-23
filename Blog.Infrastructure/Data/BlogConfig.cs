@@ -30,6 +30,11 @@ public class BlogConfig:IEntityTypeConfiguration<Blog>
          .WithMany()
          .HasForeignKey(b => b.UpdatedBy)
          .OnDelete(DeleteBehavior.Restrict);
+      
+       builder.HasOne(b => b.ApprovedByUser)
+               .WithMany()
+               .HasForeignKey(b => b.ApprovedBy)
+               .OnDelete(DeleteBehavior.Restrict);
    }
     
 }

@@ -17,9 +17,46 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiRespon
     
     public async Task<ApiResponse<IEnumerable<BlogDTO>>> Handle(GetBlogListQuery request, CancellationToken cancellationToken)
     {
-        var blogsEntities = await _blogDbContext.Blogs
+        var query = _blogDbContext.Blogs
             .Include(blog => blog.Author)
-            .ToListAsync();
+            .AsQueryable();
+        
+        if (request.StartDate.HasValue)
+        {
+            query = query.Where(b => b.StartDate.Date == request.StartDate.Value.Date);
+        }
+        if (request.EndDate.HasValue)
+        {
+            query = query.Where(b => b.EndDate.Date == request.EndDate.Value.Date);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.CreatedBy))
+        {
+            query = query.Where(b => b.CreatedBy == request.CreatedBy);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.ApprovedBy))
+        {
+            query = query.Where(b => b.ApprovedBy == request.ApprovedBy);
+        }
+
+        if (request.ApproveStatus.HasValue)
+        {
+            query = query.Where(b => b.ApproveStatus == request.ApproveStatus.Value);
+        }
+
+        if (request.ActiveStatus.HasValue)
+        {
+            query = query.Where(b => b.ActiveStatus == request.ActiveStatus.Value);
+        }
+        
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        int skip = (request.Page - 1) * request.Limit;
+        var blogsEntities = await query
+            .Skip(skip)
+            .Take(request.Limit)
+            .ToListAsync(cancellationToken);
 
         var blogDTOs = blogsEntities.Select(blog => new BlogDTO
         {
@@ -28,10 +65,18 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiRespon
             BlogContent = blog.BlogContent,
             CreatedAt = blog.CreatedAt,
             UpdatedAt = blog.UpdatedAt,
+            CreatedBy=blog.CreatedBy,
+            UpdatedBy = blog.UpdatedBy,
+            StartDate = blog.StartDate,
+            EndDate = blog.EndDate,
+            ApprovedBy = blog.ApprovedBy,
+            ActiveStatus = blog.ActiveStatus,
+            ApproveStatus = blog.ApproveStatus,
             Author = new AuthorDto(blog.Author) 
         }).ToList();
         return new ApiResponse<IEnumerable<BlogDTO>>
         {
+            totalSize = totalCount,
             Data = blogDTOs,
             Message = "Blogs fetched successfully"
         };

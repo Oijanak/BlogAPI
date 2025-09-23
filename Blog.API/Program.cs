@@ -48,12 +48,12 @@ builder.Services.AddIdentity<User, IdentityRole>()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorCommandValidator>();
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddHangfire(config =>
+/*builder.Services.AddHangfire(config =>
 {
     config.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection"));
 });
 builder.Services.AddHangfireServer();
-
+*/
 builder.Services.AddSwaggerGen(options=>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -85,7 +85,12 @@ builder.Services.AddControllers(
     .ConfigureApiBehaviorOptions(options =>
     {
         options.SuppressModelStateInvalidFilter = true;
+    }).AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+        new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
+    
 builder.Services.AddApplication();
 
 builder.Services.AddScoped<IDbConnection>(sp =>
@@ -144,12 +149,13 @@ app.UseCors("AllowVue");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.UseHangfireDashboard();
-RecurringJob.AddOrUpdate<ITokenCleanupService>(
+
+//app.UseHangfireDashboard();
+/*RecurringJob.AddOrUpdate<ITokenCleanupService>(
     "cleanup-expired-refresh-tokens",
     service => service.RemoveExpiredTokensAsync(),
     Cron.Daily
-);
+);*/
 //app.MapIdentityApi<User>();
 app.Run();
 
