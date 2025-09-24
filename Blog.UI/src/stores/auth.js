@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('auth', {
         },
 
         async refresh() {
-            const res = await axios.post(`${API_URL}/refresh`, { refreshToken: this.refreshToken })
+            const res = await axios.post(`${API_URL}/refresh`, { accessToken:this.accessToken,refreshToken: this.refreshToken })
             this.accessToken = res.data.accessToken
             this.refreshToken = res.data.refreshToken
             localStorage.setItem('accessToken', this.data.accessToken)

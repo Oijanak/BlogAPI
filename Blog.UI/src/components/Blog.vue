@@ -1,12 +1,35 @@
 <template>
   <div class="blogs">
-    <!-- Header -->
+   
     <div class="blogs-header">
       <h2>Blogs</h2>
       <button @click="openAddForm" class="btn btn-primary">
         + Add Blog
       </button>
     </div>
+
+    <div class="filters">
+  <label for="startDate">Start Date</label>
+  <input id="startDate" type="date" v-model="filters.startDate" />
+  <label for="endDate">End Date</label>
+  <input id="endDate" type="date" v-model="filters.endDate" />
+  <input type="text" v-model="filters.createdBy" placeholder="Created By" />
+  <input type="text" v-model="filters.approvedBy" placeholder="Approved By" />
+
+  <select v-model="filters.approveStatus">
+    <option value="" disabled>--Approve Status--</option>
+    <option value="Pending">Pending</option>
+    <option value="Approved">Approved</option>
+  </select>
+
+  <select v-model="filters.activeStatus">
+    <option value="" disabled>--Active Status--</option>
+    <option value="Active">Active</option>
+    <option value="Inactive">Inactive</option>
+  </select>
+
+  <button class="btn btn-primary" @click="fetchBlogs">Apply Filter</button>
+</div>
 
    
     <div class="blog-list">
@@ -46,7 +69,7 @@
           <textarea v-model="form.blogContent" placeholder="Content" required></textarea>
           
           <select v-model="form.authorId" required>
-            <option value="" disabled>Select Author</option>
+            <option value=null disabled>Select Author</option>
             <option v-for="author in authors" :key="author.authorId" :value="author.authorId">
               {{ author.authorName }}
             </option>
@@ -107,18 +130,36 @@ function formatDate(date) {
   return new Date(date).toLocaleDateString();
 }
 
+const filters = ref({
+  startDate: "",
+  endDate: "",
+  createdBy: "",
+  approvedBy: "",
+  approveStatus: "",
+  activeStatus: ""
+});
+
 async function fetchBlogs() {
   try {
-    const res = await api.get(BLOG_API_URL,{params: {
+    const res = await api.get(BLOG_API_URL, {
+      params: {
         page: currentPage.value,
-        limit: pageSize.value
-      }});
-     blogs.value = res.data.data;
-     totalPages.value = Math.ceil(res.data.totalSize/pageSize.value);
+        limit: pageSize.value,
+        startDate: filters.value.startDate || null,
+        endDate: filters.value.endDate || null,
+        createdBy: filters.value.createdBy || null,
+        approvedBy: filters.value.approvedBy || null,
+        approveStatus: filters.value.approveStatus || null,
+        activeStatus: filters.value.activeStatus || null
+      }
+    });
+    blogs.value = res.data.data;
+    totalPages.value = Math.ceil(res.data.totalSize / pageSize.value);
   } catch (err) {
     console.error("Error fetching blogs:", err);
   }
 }
+
 function goToPage(page) {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
@@ -344,5 +385,22 @@ onMounted(() => {
 .pagination button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.filters input, 
+.filters select {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.filters label{
+    padding: 6px;
+  border-radius: 6px;
 }
 </style>
