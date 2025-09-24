@@ -19,6 +19,9 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiRespon
     {
         var query = _blogDbContext.Blogs
             .Include(blog => blog.Author)
+            .Include(blog => blog.CreatedByUser)
+            .Include(blog => blog.UpdatedByUser)
+            .Include(blog => blog.ApprovedByUser)
             .AsQueryable();
         
         if (request.StartDate.HasValue)
@@ -65,14 +68,14 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiRespon
             BlogContent = blog.BlogContent,
             CreatedAt = blog.CreatedAt,
             UpdatedAt = blog.UpdatedAt,
-            CreatedBy=blog.CreatedBy,
-            UpdatedBy = blog.UpdatedBy,
+            CreatedBy = blog.CreatedByUser != null ? new UserDto(blog.CreatedByUser) : null,
+            UpdatedBy = blog.UpdatedByUser != null ? new UserDto(blog.UpdatedByUser) : null,
+            ApprovedBy = blog.ApprovedByUser != null ? new UserDto(blog.ApprovedByUser) : null,
             StartDate = blog.StartDate,
             EndDate = blog.EndDate,
-            ApprovedBy = blog.ApprovedBy,
             ActiveStatus = blog.ActiveStatus,
             ApproveStatus = blog.ApproveStatus,
-            Author = new AuthorDto(blog.Author) 
+            Author = blog.Author != null ? new AuthorDto(blog.Author) : null
         }).ToList();
         return new ApiResponse<IEnumerable<BlogDTO>>
         {

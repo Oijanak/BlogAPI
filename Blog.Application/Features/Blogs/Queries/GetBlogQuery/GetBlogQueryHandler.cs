@@ -19,23 +19,26 @@ public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,ApiResponse<BlogDT
     public async Task<ApiResponse<BlogDTO>> Handle(GetBlogQuery request, CancellationToken cancellationToken)
     {
         Blog blog = await _blogDbContext.Blogs
-            .Include(b => b.Author)
+             .Include(b => b.Author)
+            .Include(b => b.CreatedByUser)
+            .Include(b => b.UpdatedByUser)
+            .Include(b => b.ApprovedByUser)
             .FirstOrDefaultAsync(b => b.BlogId == request.BlogId, cancellationToken);
-        var blogResult= new BlogDTO()
+        var blogResult = new BlogDTO()
         {
             BlogId = blog.BlogId,
             BlogTitle = blog.BlogTitle,
             BlogContent = blog.BlogContent,
             CreatedAt = blog.CreatedAt,
             UpdatedAt = blog.UpdatedAt,
-            CreatedBy=blog.CreatedBy,
-            UpdatedBy = blog.UpdatedBy,
+            CreatedBy = blog.CreatedByUser != null ? new UserDto(blog.CreatedByUser) : null,
+            UpdatedBy = blog.UpdatedByUser != null ? new UserDto(blog.UpdatedByUser) : null,
+            ApprovedBy = blog.ApprovedByUser != null ? new UserDto(blog.ApprovedByUser) : null,
             StartDate = blog.StartDate,
             EndDate = blog.EndDate,
-            ApprovedBy = blog.ApprovedBy,
             ApproveStatus = blog.ApproveStatus,
             ActiveStatus = blog.ActiveStatus,
-            Author = new AuthorDto(blog.Author)
+            Author = blog.Author != null ? new AuthorDto(blog.Author) : null
         };
         return new ApiResponse<BlogDTO>
         {

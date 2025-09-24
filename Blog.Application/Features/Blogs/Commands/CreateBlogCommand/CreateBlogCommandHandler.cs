@@ -7,6 +7,7 @@ using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Enum;
 using BlogApi.Domain.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 
@@ -54,12 +55,15 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
                BlogContent = blog.BlogContent,
                CreatedAt = blog.CreatedAt,
                UpdatedAt = blog.UpdatedAt,
-               CreatedBy = blog.CreatedBy,
+               CreatedBy = await _blogDbContext.Users
+                            .Where(u => u.Id == blog.CreatedBy)
+                            .Select(u => new UserDto(u))
+                            .FirstOrDefaultAsync(),
                StartDate = blog.StartDate,
                EndDate = blog.EndDate,
                ActiveStatus = blog.ActiveStatus,
                ApproveStatus = blog.ApproveStatus,
-               ApprovedBy = blog.ApprovedBy,
+
                Author = new AuthorDto(blog.Author)
            },
            Message = "Blog created successfully"

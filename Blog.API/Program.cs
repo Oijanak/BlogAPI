@@ -161,7 +161,6 @@ RecurringJob.AddOrUpdate<IUpdateBlogActiveStatusService>(
     service => service.UpdateBlogActiveStatusAsync(),
     Cron.Daily
 );
-// app.MapIdentityApi<User>();
 app.Run();
 
 public partial class Program

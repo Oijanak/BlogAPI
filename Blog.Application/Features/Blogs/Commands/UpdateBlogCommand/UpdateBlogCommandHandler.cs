@@ -7,6 +7,7 @@ using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Enum;
 using BlogApi.Domain.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Blogs.Commands.UpdateBlogCommand;
 
@@ -22,7 +23,10 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
     {
         Author author=await _blogDbContext.Authors.FindAsync(request.Blog.AuthorId);
         Guard.Against.Null(author,nameof(author),"Blog cannot be null");
-        Blog existingBlog = await _blogDbContext.Blogs.FindAsync(request.BlogId) ;
+        Blog existingBlog = await _blogDbContext.Blogs
+            .Include(b => b.CreatedByUser)
+            .Include(b => b.UpdatedByUser)
+            .FirstOrDefaultAsync(b => b.BlogId == request.BlogId, cancellationToken);
         Guard.Against.Null(existingBlog,nameof(existingBlog));
         existingBlog.BlogTitle = request.Blog.BlogTitle;
         existingBlog.BlogContent = request.Blog.BlogContent;
@@ -47,13 +51,12 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
              BlogContent = existingBlog.BlogContent,
              CreatedAt = existingBlog.CreatedAt,
              UpdatedAt = existingBlog.UpdatedAt,
-             CreatedBy = existingBlog.CreatedBy,
-             UpdatedBy = existingBlog.UpdatedBy,
+             CreatedBy = existingBlog.CreatedByUser != null ? new UserDto(existingBlog.CreatedByUser) : null,
+             UpdatedBy = existingBlog.UpdatedByUser != null ? new UserDto(existingBlog.UpdatedByUser) : null,
              StartDate = existingBlog.StartDate,
              EndDate = existingBlog.EndDate,
              ActiveStatus = existingBlog.ActiveStatus,
              ApproveStatus = existingBlog.ApproveStatus,
-             ApprovedBy = existingBlog.ApprovedBy,
              Author = new AuthorDto(existingBlog.Author),
          };
          return new ApiResponse<BlogDTO>

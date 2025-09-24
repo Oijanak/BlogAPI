@@ -13,17 +13,27 @@
   <input id="startDate" type="date" v-model="filters.startDate" />
   <label for="endDate">End Date</label>
   <input id="endDate" type="date" v-model="filters.endDate" />
-  <input type="text" v-model="filters.createdBy" placeholder="Created By" />
-  <input type="text" v-model="filters.approvedBy" placeholder="Approved By" />
+  <select id="approvedBy" v-model="filters.approvedBy">
+  <option value="">--Approved By--</option>
+  <option v-for="user in users" :key="user.id" :value="user.id">
+    {{ user.name }}
+  </option>
+</select>
+  <select id="createdBy" v-model="filters.createdBy">
+  <option value="">--Created By--</option>
+  <option v-for="user in users" :key="user.id" :value="user.id">
+    {{ user.name }}
+  </option>
+</select>
 
   <select v-model="filters.approveStatus">
-    <option value="" disabled>--Approve Status--</option>
+    <option value="" >--Approve Status--</option>
     <option value="Pending">Pending</option>
     <option value="Approved">Approved</option>
   </select>
 
   <select v-model="filters.activeStatus">
-    <option value="" disabled>--Active Status--</option>
+    <option value="">--Active Status--</option>
     <option value="Active">Active</option>
     <option value="Inactive">Inactive</option>
   </select>
@@ -42,9 +52,9 @@
         <p><strong>Active:</strong> {{ blog.activeStatus }}</p>
         <p><strong>Start:</strong> {{ formatDate(blog.startDate) }}</p>
         <p><strong>End:</strong> {{ formatDate(blog.endDate) }}</p>
-        <p><small>Created By: {{ blog.createdBy }}</small></p>
-        <p v-if="blog.updatedBy"><small>Updated By: {{ blog.updatedBy }}</small></p>
-        <p v-if="blog.approvedBy"><small>Approved By: {{ blog.approvedBy }}</small></p>
+        <p><small>Created By: {{ blog.createdBy.name }}</small></p>
+        <p v-if="blog.updatedBy"><small>Updated By: {{ blog.updatedBy.name }}</small></p>
+        <p v-if="blog.approvedBy"><small>Approved By: {{ blog.approvedBy.name }}</small></p>
 
         <div class="actions">
           <button class="btn btn-warning btn-sm" @click="openUpdateForm(blog)">Update</button>
@@ -104,6 +114,7 @@ const AUTHOR_API_URL = "http://localhost:5058/api/authors";
 
 const blogs = ref([]);
 const authors = ref([]);
+const users = ref([]);
 const showForm = ref(false);
 const isUpdate = ref(false);
 const currentPage = ref(1);
@@ -160,6 +171,15 @@ async function fetchBlogs() {
     console.error("Error fetching blogs:", err);
   }
 }
+async function fetchUsers() {
+  try {
+    const res = await api.get("http://localhost:5058/api/users");
+    users.value = res.data.data; 
+  } catch (err) {
+    console.error("Error fetching users:", err);
+  }
+}
+
 
 function goToPage(page) {
   if (page >= 1 && page <= totalPages.value) {
@@ -258,6 +278,7 @@ onMounted(async() => {
       await authStore.refresh();
   }
   fetchAuthors();
+  fetchUsers();
   fetchBlogs();
 });
 </script>
