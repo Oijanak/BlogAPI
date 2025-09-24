@@ -42,8 +42,9 @@ const handleLogin = async () => {
       router.push("/blogs");
     }, 1000); 
   } catch (err) {
-    if (err.response?.data?.message) {
-      errorMessage.value = err.response.data.message;
+    console.log(err.response.data);
+    if (err.response?.data?.Message) {
+      errorMessage.value = err.response.data.Message;
     } else {
       errorMessage.value = "Invalid credentials. Please try again.";
     }

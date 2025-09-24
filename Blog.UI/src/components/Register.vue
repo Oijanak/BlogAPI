@@ -54,8 +54,9 @@ const handleRegister = async () => {
     password.value = "";
     role.value = "";
   } catch (err) {
-    if (err.response?.data?.message) {
-      errorMessage.value = err.response.data.message;
+    
+    if (err.response?.data?.Message) {
+      errorMessage.value = err.response.data.Message;
     } else {
       errorMessage.value = "Registration failed. Please try again.";
     }

@@ -44,7 +44,7 @@
         <p><strong>End:</strong> {{ formatDate(blog.endDate) }}</p>
         <p><small>Created By: {{ blog.createdBy }}</small></p>
         <p v-if="blog.updatedBy"><small>Updated By: {{ blog.updatedBy }}</small></p>
-        <p v-if="blog.ApprovedBy"><small>Approved By: {{ blog.approvedBy }}</small></p>
+        <p v-if="blog.approvedBy"><small>Approved By: {{ blog.approvedBy }}</small></p>
 
         <div class="actions">
           <button class="btn btn-warning btn-sm" @click="openUpdateForm(blog)">Update</button>
@@ -215,7 +215,7 @@ async function saveBlog() {
     await fetchBlogs();
     closeForm();
   } catch (err) {
-    console.error("Error saving blog:", err);
+    handleApiError(err, "add new blog");
   }
 }
 
@@ -225,7 +225,7 @@ async function deleteBlog(id) {
       await api.delete(`${BLOG_API_URL}/${id}`);
       await fetchBlogs();
     } catch (err) {
-      console.error("Error deleting blog:", err);
+      handleApiError(err, "delete the blog");
     }
   }
 }
@@ -235,7 +235,20 @@ async function approveBlog(id) {
     await api.patch(`${BLOG_API_URL}/${id}/approve`);
     await fetchBlogs();
   } catch (err) {
-    console.error("Error approving blog:", err);
+    handleApiError(err, "approve the blog");
+  }
+}
+function handleApiError(err, action = "operation") {
+  if (err.response) {
+    if (err.response.status === 401) {
+      alert(`Unauthorized: Please log in to ${action}.`);
+    } else if (err.response.status === 403) {
+      alert(`Forbidden: You don’t have permission to ${action}.`);
+    } else {
+      alert(`Error while trying to ${action}: ${err.response.data?.message || err.message}`);
+    }
+  } else {
+    alert(`Network error while trying to ${action}.`);
   }
 }
 
