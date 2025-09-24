@@ -1,13 +1,13 @@
 <script setup>
 import { useAuthStore } from "../stores/auth";
-import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 
 const authStore = useAuthStore();
 const router = useRouter();
 
-const isLoggedIn = computed(() => !!authStore.accessToken);
+const isLoggedIn = computed(() => authStore.isAuthenticated);
+const user = computed(() => authStore.currentUser);
 
 function handleLogout() {
   authStore.logout();
@@ -19,7 +19,14 @@ function handleLogout() {
   <nav class="navbar">
     <router-link v-if="!isLoggedIn" to="/register">Register</router-link>
     <router-link v-if="!isLoggedIn" to="/login">Login</router-link>
-    <button v-if="isLoggedIn" @click="handleLogout" class="logout-btn">Logout</button>
+    
+    <div v-if="isLoggedIn" class="user-info">
+      {{ user.email +" || "+user.role }}
+    </div>
+
+    <button v-if="isLoggedIn" @click="handleLogout" class="logout-btn">
+      Logout
+    </button>
   </nav>
 </template>
 
@@ -41,6 +48,15 @@ function handleLogout() {
 
 .navbar a:hover {
   color: #1abc9c;
+}
+
+.user-info {
+  color: #ecf0f1;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
 }
 
 .logout-btn {

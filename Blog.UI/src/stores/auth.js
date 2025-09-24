@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import { jwtDecode } from 'jwt-decode';
 
 const API_URL = "http://localhost:5058/api/Auth"
 
@@ -10,6 +11,18 @@ export const useAuthStore = defineStore('auth', {
     }),
     getters: {
         isAuthenticated: state => !!state.accessToken,
+         currentUser: (state) => {
+    if (!state.accessToken) return null;
+    try {
+        
+      const decoded = jwtDecode(state.accessToken);
+      const role=decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+      const email=decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]
+      return {role,email}; 
+    } catch (err) {
+      return null;
+    }
+  }
     },
 
     actions: {

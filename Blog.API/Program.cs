@@ -48,12 +48,12 @@ builder.Services.AddIdentity<User, IdentityRole>()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorCommandValidator>();
 builder.Services.AddFluentValidationAutoValidation();
-/*builder.Services.AddHangfire(config =>
+builder.Services.AddHangfire(config =>
 {
     config.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection"));
 });
 builder.Services.AddHangfireServer();
-*/
+
 builder.Services.AddSwaggerGen(options=>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -98,6 +98,7 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ITokenCleanupService, TokenCleanupService>();
+builder.Services.AddScoped<IUpdateBlogActiveStatusService, UpdateBlogActiveStatusService>();
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 var jwtKey = builder.Configuration["Jwt:Key"];
@@ -149,14 +150,18 @@ app.UseCors("AllowVue");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
-//app.UseHangfireDashboard();
-/*RecurringJob.AddOrUpdate<ITokenCleanupService>(
+app.UseHangfireDashboard();
+RecurringJob.AddOrUpdate<ITokenCleanupService>(
     "cleanup-expired-refresh-tokens",
     service => service.RemoveExpiredTokensAsync(),
     Cron.Daily
-);*/
-//app.MapIdentityApi<User>();
+);
+RecurringJob.AddOrUpdate<IUpdateBlogActiveStatusService>(
+    "update-blog-active-status",
+    service => service.UpdateBlogActiveStatusAsync(),
+    Cron.Daily
+);
+// app.MapIdentityApi<User>();
 app.Run();
 
 public partial class Program

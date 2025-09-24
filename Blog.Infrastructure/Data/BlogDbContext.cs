@@ -66,7 +66,8 @@ public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
                     entry.Property("UpdatedAt").CurrentValue = DateTime.UtcNow;
                 }
                 
-                entry.Property("UpdatedBy").CurrentValue = currentUserId; 
+                entry.Property("UpdatedBy").CurrentValue = currentUserId ?? entry.Property("UpdatedBy").CurrentValue;
+                
             }
         }
     }
