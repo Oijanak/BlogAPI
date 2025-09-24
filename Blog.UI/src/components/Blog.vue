@@ -93,10 +93,11 @@
 </div>
 </template>
 
-<script setup>
+<script setup >
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useAuthStore } from "../stores/auth";
+import { isTokenExpired } from "../utils/jwtDecode";
 
 const BLOG_API_URL = "http://localhost:5058/api/blogs";
 const AUTHOR_API_URL = "http://localhost:5058/api/authors";
@@ -248,11 +249,14 @@ function handleApiError(err, action = "operation") {
       alert(`Error while trying to ${action}: ${err.response.data?.message || err.message}`);
     }
   } else {
-    alert(`Network error while trying to ${action}.`);
+    alert(`Network error `);
   }
 }
 
-onMounted(() => {
+onMounted(async() => {
+  if (authStore.accessToken && isTokenExpired(authStore.accessToken)) {
+      await authStore.refresh();
+  }
   fetchAuthors();
   fetchBlogs();
 });
@@ -339,6 +343,7 @@ onMounted(() => {
 .btn-success {
   background: #27ae60;
   color: white;
+  margin: 0px 5px;
 }
 
 .btn-secondary {
