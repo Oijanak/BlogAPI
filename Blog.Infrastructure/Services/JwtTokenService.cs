@@ -31,7 +31,7 @@ namespace BlogApi.Infrastructure.Services
                 audience: _config["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(
-                    double.Parse(_config["Jwt:ExpireMinutes"] ?? "60")),
+                    double.Parse(_config["Jwt:ExpireMinutes"] ?? "5")),
                 signingCredentials: creds
             );
 

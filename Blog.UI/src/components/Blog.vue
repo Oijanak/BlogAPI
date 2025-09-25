@@ -41,6 +41,11 @@
   <button class="btn btn-primary" @click="fetchBlogs">Apply Filter</button>
 </div>
 
+ <div v-if="loading" class="loading">Loading blogs...</div>
+
+    <div v-else-if="blogs.length === 0" class="no-data">
+      No blogs available.
+    </div>
    
     <div class="blog-list">
       <div class="blog-card" v-for="blog in blogs" :key="blog.blogId">
@@ -120,6 +125,7 @@ const isUpdate = ref(false);
 const currentPage = ref(1);
 const pageSize = ref(3); 
 const totalPages = ref(1);
+const loading = ref(false);
 
 const form = ref({
   blogTitle: "",
@@ -152,6 +158,7 @@ const filters = ref({
 });
 
 async function fetchBlogs() {
+  loading.value = true;
   try {
     const res = await api.get(BLOG_API_URL, {
       params: {
@@ -162,13 +169,15 @@ async function fetchBlogs() {
         createdBy: filters.value.createdBy || null,
         approvedBy: filters.value.approvedBy || null,
         approveStatus: filters.value.approveStatus || null,
-        activeStatus: filters.value.activeStatus || null
-      }
+        activeStatus: filters.value.activeStatus || null,
+      },
     });
     blogs.value = res.data.data;
     totalPages.value = Math.ceil(res.data.totalSize / pageSize.value);
   } catch (err) {
     console.error("Error fetching blogs:", err);
+  } finally {
+    loading.value = false;
   }
 }
 async function fetchUsers() {
@@ -441,5 +450,17 @@ onMounted(async() => {
 .filters label{
     padding: 6px;
   border-radius: 6px;
+}
+.loading {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.1rem;
+  color: #2c3e50;
+}
+.no-data {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.1rem;
+  color: #7f8c8d;
 }
 </style>
