@@ -41,38 +41,70 @@
   <button class="btn btn-primary" @click="fetchBlogs">Apply Filter</button>
 </div>
 
- <div v-if="loading" class="loading">Loading blogs...</div>
 
-    <div v-else-if="blogs.length === 0" class="no-data">
-      No blogs available.
-    </div>
-   
-    <div class="blog-list">
-      <div class="blog-card" v-for="blog in blogs" :key="blog.blogId">
-        <h3>{{ blog.blogTitle }}</h3>
-        <p class="content">{{ blog.blogContent }}</p>
 
-        <p><strong>Author:</strong> {{ blog.author?.authorName }}</p>
-        <p><strong>Status:</strong> {{ blog.approveStatus }}</p>
-        <p><strong>Active:</strong> {{ blog.activeStatus }}</p>
-        <p><strong>Start:</strong> {{ formatDate(blog.startDate) }}</p>
-        <p><strong>End:</strong> {{ formatDate(blog.endDate) }}</p>
-        <p><small>Created By: {{ blog.createdBy.name }}</small></p>
-        <p v-if="blog.updatedBy"><small>Updated By: {{ blog.updatedBy.name }}</small></p>
-        <p v-if="blog.approvedBy"><small>Approved By: {{ blog.approvedBy.name }}</small></p>
+<div class="table-responsive">
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Content</th>
+        <th>Author</th>
+        <th>Approve Status</th>
+        <th>Active Status</th>
+        <th>StartDate</th>
+        <th>EndDate</th>
+        <th>Created By</th>
+        <th>Updated By</th>
+        <th>Approved By</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr v-if="loading">
+        <td colspan="11" class="text-center">Loading blogs...</td>
+      </tr>
 
-        <div class="actions">
+     
+      <tr v-else-if="blogs.length === 0">
+        <td colspan="11" class="text-center">No blogs available.</td>
+      </tr>
+
+      <!-- Blog rows -->
+      <tr v-else v-for="blog in blogs" :key="blog.blogId">
+        <td>{{ blog.blogTitle }}</td>
+        <td class="content">{{ blog.blogContent }}</td>
+        <td>{{ blog.author?.authorName }}</td>
+        <td :class="statusClass(blog.approveStatus)">
+          {{ blog.approveStatus }}
+        </td>
+        <td :class="statusClass(blog.activeStatus)">
+          {{ blog.activeStatus }}
+        </td>
+        <td>{{ formatDate(blog.startDate) }}</td>
+        <td>{{ formatDate(blog.endDate) }}</td>
+        <td>{{ blog.createdBy?.name || "N/A" }}</td>
+        <td>{{ blog.updatedBy?.name || "N/A" }}</td>
+        <td>{{ blog.approvedBy?.name || "N/A" }}</td>
+        <td class="actions-cell">
           <button class="btn btn-warning btn-sm" @click="openUpdateForm(blog)">Update</button>
           <button class="btn btn-danger btn-sm" @click="deleteBlog(blog.blogId)">Delete</button>
           <button
-              v-if="blog.approveStatus === 'Pending'"
-              class="btn btn-success btn-sm"
-              @click="approveBlog(blog.blogId)"
+            v-if="blog.approveStatus === 'Pending'"
+            class="btn btn-success btn-sm"
+            @click="approveBlog(blog.blogId)"
           >
             Approve
           </button>
-        </div>
-      </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+      
     </div>
 
   
@@ -89,9 +121,10 @@
               {{ author.authorName }}
             </option>
           </select>
-
-          <input v-model="form.startDate"  type="date" required />
-          <input v-model="form.endDate"  type="date" required />
+          <label for="startDate">StartDate</label>
+          <input v-model="form.startDate"  type="date" required id="startDate"/>
+          <label for="endDate">EndDate</label>
+          <input v-model="form.endDate" id="endDate"  type="date" required />
 
           <div class="form-actions">
             <button type="submit" class="btn btn-success">Save</button>
@@ -100,7 +133,7 @@
         </form>
       </div>
     </div>
-  </div>
+ 
   <div class="pagination" v-if="totalPages > 1">
   <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1">Prev</button>
   <span>Page {{ currentPage }} of {{ totalPages }}</span>
@@ -123,7 +156,7 @@ const users = ref([]);
 const showForm = ref(false);
 const isUpdate = ref(false);
 const currentPage = ref(1);
-const pageSize = ref(3); 
+const pageSize = ref(6); 
 const totalPages = ref(1);
 const loading = ref(false);
 
@@ -282,6 +315,22 @@ function handleApiError(err, action = "operation") {
   }
 }
 
+function statusClass(status) {
+  switch(status) {
+    case "Pending":
+      return "status-pending";
+    case "Approved":
+      return "status-approved";
+    case "Active":
+      return "status-active";
+    case "Inactive":
+      return "status-inactive";
+    default:
+      return "";
+  }
+}
+
+
 onMounted(async() => {
   if (authStore.accessToken && isTokenExpired(authStore.accessToken)) {
       await authStore.refresh();
@@ -305,45 +354,46 @@ onMounted(async() => {
   margin-bottom: 20px;
 }
 
-.blogs-header h2 {
-  color: #2c3e50;
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.blog-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+.table thead {
+  background: #2c3e50;
+  color: #fff;
 }
 
-.blog-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
+.table th,
+.table td {
+  padding: 12px 15px;
+  vertical-align: middle;
+  font-size: 0.95rem;
+  border: 1px solid #e9e3e3;
 }
 
-.blog-card:hover {
-  transform: translateY(-5px);
+.table th {
+  text-align: left;
+  font-weight: 600;
 }
 
-.blog-card h3 {
-  color: #2c3e50;
-  margin-bottom: 10px;
-}
-
-.blog-card .content {
-  color: #555;
-  margin-bottom: 10px;
-  max-height: 100px;
+.content {
+  max-width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.actions {
+.actions-cell {
   display: flex;
+  flex-direction: column;
   gap: 10px;
-  margin-top: 15px;
+  
 }
 
 
@@ -416,7 +466,7 @@ onMounted(async() => {
 }
 
 .pagination {
-  margin-top: 20px;
+ 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -433,6 +483,9 @@ onMounted(async() => {
 .pagination button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.text-center {
+  text-align: center;
 }
 
 .filters {
@@ -463,4 +516,25 @@ onMounted(async() => {
   font-size: 1.1rem;
   color: #7f8c8d;
 }
+
+.status-pending {
+  color: #f39c12;
+  font-weight: bold;
+}
+
+.status-approved {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.status-active {
+  color: #2c3e50;
+  font-weight: bold;
+}
+
+.status-inactive {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
 </style>
