@@ -159,7 +159,7 @@ RecurringJob.AddOrUpdate<ITokenCleanupService>(
 RecurringJob.AddOrUpdate<IUpdateBlogActiveStatusService>(
     "update-blog-active-status",
     service => service.UpdateBlogActiveStatusAsync(),
-    Cron.Daily
+    Cron.Hourly
 );
 app.Run();
 

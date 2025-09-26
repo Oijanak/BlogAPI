@@ -6,6 +6,7 @@ import {useAuthStore} from "@/stores/auth.js";
 
 
 
+
 const routes = [
     { path: '/', component: Register },
     { path: '/register', component: Register },
