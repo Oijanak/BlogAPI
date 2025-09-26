@@ -52,6 +52,21 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiRespon
         {
             query = query.Where(b => b.ActiveStatus == request.ActiveStatus.Value);
         }
+
+        if (!string.IsNullOrWhiteSpace(request.SortBy))
+        {
+            bool isDesc = request.SortOrder?.ToLower() == "desc";
+
+            query = request.SortBy.ToLower() switch
+            {
+                "author" => isDesc ? query.OrderByDescending(b => b.Author.AuthorName) : query.OrderBy(b => b.Author.AuthorName),
+                "blogtitle"     => isDesc ? query.OrderByDescending(b => b.BlogTitle) : query.OrderBy(b => b.BlogTitle),
+                "approvestatus" => isDesc ? query.OrderByDescending(b => b.ApproveStatus) : query.OrderBy(b => b.ApproveStatus),
+                "startdate" => isDesc ? query.OrderByDescending(b => b.StartDate) : query.OrderBy(b => b.StartDate),
+                "enddate"   => isDesc ? query.OrderByDescending(b => b.EndDate) : query.OrderBy(b => b.EndDate),
+        _           => isDesc ? query.OrderByDescending(b => b.CreatedAt) : query.OrderBy(b => b.CreatedAt)
+        };
+}
         
         var totalCount = await query.CountAsync(cancellationToken);
 

@@ -12,6 +12,11 @@ public record GetBlogListQuery(
     int Page = 1,
     
     int Limit = 10,
+
+    string? Search=null,
+
+    string? SortBy  = "CreatedAt",
+    string? SortOrder = "desc",
     
     DateTime? StartDate = null,
     

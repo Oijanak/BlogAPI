@@ -43,7 +43,7 @@
       <div class="filter-group">
         <label for="approveStatus">Approval Status</label>
         <select v-model="filters.approveStatus" class="filter-select">
-          <option value="">All Status</option>
+          <option value=null>All Status</option>
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
         </select>
@@ -52,7 +52,7 @@
       <div class="filter-group">
         <label for="activeStatus">Active Status</label>
         <select v-model="filters.activeStatus" class="filter-select">
-          <option value="">All Status</option>
+          <option value=null>All Status</option>
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
         </select>
@@ -94,7 +94,7 @@
                 Title <span class="sort-icon" :class="getSortIcon('blogTitle')"></span>
               </th>
               <th>Content</th>
-              <th @click="sortBy('author.authorName')" class="sortable">
+              <th @click="sortBy('author')" class="sortable">
                 Author <span class="sort-icon" :class="getSortIcon('author.authorName')"></span>
               </th>
               <th @click="sortBy('approveStatus')" class="sortable">
@@ -120,7 +120,7 @@
             </tr>
 
             <!-- Empty State -->
-            <tr v-else-if="filteredBlogs.length === 0">
+            <tr v-else-if="blogs.length === 0">
               <td colspan="10" class="empty-state">
                 <i class="icon-empty"></i>
                 No blogs found matching your criteria.
@@ -128,7 +128,7 @@
             </tr>
 
             <!-- Blog Data Rows -->
-            <tr v-else v-for="(blog,index) in filteredBlogs" :key="blog.blogId" class="table-row">
+            <tr v-else v-for="(blog,index) in blogs" :key="blog.blogId" class="table-row">
               <td>{{ (currentPage - 1) * pageSize + index + 1 }}.</td>
               <td class="title-cell">{{ blog.blogTitle }}</td>
               <td class="content-cell">
@@ -294,12 +294,14 @@ const sortDirection = ref('asc');
 const totalEntries = ref(0);
 
 const filters = ref({
-  startDate: "",
-  endDate: "",
+  startDate: null,
+  endDate: null,
   createdBy: "",
   approvedBy: "",
-  approveStatus: "",
-  activeStatus: ""
+  approveStatus: null,
+  activeStatus: null,
+  sortBy: "createdAt",  
+  sortOrder: "desc"     
 });
 
 const form = ref({
@@ -326,21 +328,7 @@ const paginationInfo = computed(() => {
   return { start, end, total };
 });
 
-const filteredBlogs = computed(() => {
-  let filtered = blogs.value;
 
-  filtered = [...filtered].sort((a, b) => {
-    let aValue = getNestedValue(a, sortField.value);
-    let bValue = getNestedValue(b, sortField.value);
-    if (sortDirection.value === 'asc') {
-      return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-    } else {
-      return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-    }
-  });
-
-  return filtered; 
-});
 
 
 const visiblePages = computed(() => {
@@ -381,29 +369,32 @@ function getNestedValue(obj, path) {
 }
 
 function sortBy(field) {
-  if (sortField.value === field) {
-    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+  if (filters.value.sortBy === field) {
+    filters.value.sortOrder = filters.value.sortOrder === "asc" ? "desc" : "asc";
   } else {
-    sortField.value = field;
-    sortDirection.value = 'asc';
+    filters.value.sortBy = field;
+    filters.value.sortOrder = "asc";
   }
+
+  fetchBlogs(); 
 }
 
 function getSortIcon(field) {
-  if (sortField.value !== field) return '';
-  return sortDirection.value === 'asc' ? 'icon-sort-up' : 'icon-sort-down';
+  if (filters.value.sortBy !== field) return '';
+  return filters.value.sortOrder === 'asc' ? 'icon-sort-up' : 'icon-sort-down';
 }
-
 async function fetchBlogs() {
   loading.value = true;
   try {
-    const res = await api.get(BLOG_API_URL, {
-      params: {
+    const res = await api.post(`${BLOG_API_URL}/getAll`, 
+       {
         page: currentPage.value,
         limit: pageSize.value,
+        sortBy: filters.value.sortBy,
+      sortOrder: filters.value.sortOrder,
         ...filters.value
-      },
-    });
+      }
+    );
     blogs.value = res.data.data || [];
     totalEntries.value = res.data.totalSize || 0;  
     totalPages.value = Math.ceil(totalEntries.value / pageSize.value);

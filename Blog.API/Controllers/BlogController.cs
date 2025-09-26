@@ -38,8 +38,8 @@ public class BlogController : ControllerBase
         return StatusCode(StatusCodes.Status201Created,await _sender.Send(blogBlogCommand));
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAllBlogs([FromQuery]GetBlogListQuery getBlogListQuery)
+    [HttpPost("getAll")]
+    public async Task<IActionResult> GetAllBlogs(GetBlogListQuery getBlogListQuery)
     {
         return Ok(await _sender.Send(getBlogListQuery));
        
