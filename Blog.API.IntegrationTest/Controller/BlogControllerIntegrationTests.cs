@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
+using BlogApi.Domain.Enum;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +24,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         var user = new 
         {
             Name = "user",
-            Email = "user1@example.com",
+            Email = "user02@example.com",
             Password = "User123!"
         };
 
@@ -38,22 +39,26 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
         
-        var author = await CreateTestAuthorAsync("Author","test01@example.com");
+        var author = await CreateTestAuthorAsync("Author","test001@example.com");
         var blog = new CreateBlogCommand
         {
             BlogTitle = "Test Blog",
             BlogContent = "This is a test blog.",
-            AuthorId = author.AuthorId
+            AuthorId = author.AuthorId,
+            StartDate = new DateTime(2025,09,25),
+            EndDate = new DateTime(2025,09,27)
         };
 
         var response = await _client.PostAsJsonAsync("/api/blogs", blog);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var createdBlog = await response.Content.ReadFromJsonAsync<ApiResponse<BlogDTO>>(
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true,Converters = { new JsonStringEnumConverter() } });
 
         createdBlog.Should().NotBeNull();
         createdBlog.Data.BlogTitle.Should().Be("Test Blog");
+        createdBlog.Data.ActiveStatus.Should().Be(ActiveStatus.Active);
+        createdBlog.Data.ApproveStatus.Should().Be(ApproveStatus.Pending);
         createdBlog.Data.BlogContent.Should().Be("This is a test blog.");
     }
     
@@ -77,7 +82,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
       
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var error = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>(
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true ,Converters = { new JsonStringEnumConverter() } });
        error.Should().NotBeNull();
        error.Errors["AuthorId"].Should().Contain("Author not found");
        error.Status.Should().Be(400);
@@ -88,23 +93,25 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     [Fact]
     public async Task DeleteBlog_ShouldReturn_Ok()
     {
-        var author = await CreateTestAuthorAsync("Janak","janak@gmail.com");
+        var author = await CreateTestAuthorAsync("Janak","janak50@gmail.com");
         
         var createBlog = new CreateBlogCommand
         {
             AuthorId = author.AuthorId,
             BlogTitle = "Delete Blog",
-            BlogContent = "Content to delete"
+            BlogContent = "Content to delete",
+            StartDate = new DateTime(2025,09,25),
+            EndDate = new DateTime(2025,09,27)
         };
         var createResponse = await _client.PostAsJsonAsync("/api/blogs", createBlog);
         var createdBlog = await createResponse.Content.ReadFromJsonAsync<ApiResponse<BlogDTO>>(
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true,Converters = { new JsonStringEnumConverter() } });
 
         var response = await _client.DeleteAsync($"/api/blogs/{createdBlog.Data.BlogId}");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var deleteResult = await response.Content.ReadFromJsonAsync<ApiResponse<string>>(
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true,  });
 
         deleteResult.Message.Should().Be("Blog deleted successfully");
     }
@@ -112,17 +119,19 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     [Fact]
     public async Task GetBlogById_ShouldReturn_Ok_WhenExists()
     {
-        var author = await CreateTestAuthorAsync("GetAuthor","get@gmail.com");
+        var author = await CreateTestAuthorAsync("GetAuthor","get01@gmail.com");
         var blog = new CreateBlogCommand
         {
             AuthorId = author.AuthorId,
             BlogTitle = "New Blog",
-            BlogContent = "Blog content"
+            BlogContent = "Blog content",
+            StartDate = new DateTime(2025,09,25),
+            EndDate = new DateTime(2025,09,27)
         };
 
         var createResponse = await _client.PostAsJsonAsync("/api/blogs", blog);
         var createdBlog = await createResponse.Content.ReadFromJsonAsync<ApiResponse<BlogDTO>>(
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true,Converters = { new JsonStringEnumConverter() } });
 
         var blogId = createdBlog.Data.BlogId;
 
@@ -130,25 +139,25 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var fetchedBlog = await response.Content.ReadFromJsonAsync<ApiResponse<BlogDTO>>(
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true,Converters = { new JsonStringEnumConverter() } });
         fetchedBlog.Data.BlogId.Should().Be(blogId);
     }
     
     [Fact]
     public async Task GetAllBlogs_ShouldReturn_Ok()
     {
-        var response = await _client.GetAsync("/api/blogs");
+        var response = await _client.PostAsJsonAsync("/api/blogs/getAll",new {});
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var blogs = await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<BlogDTO>>>(
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true,Converters = { new JsonStringEnumConverter() } });
 
         blogs.Should().NotBeNull();
         blogs.Data.Should().NotBeNull();
     }   
     
     
-    private async Task<AuthorDto> CreateTestAuthorAsync(string name = "Test Author", string email = "test@gmail.com", int age = 35)
+    private async Task<AuthorDto> CreateTestAuthorAsync(string name = "Test Author", string email = "test1@gmail.com", int age = 35)
     {
         var author = new CreateAuthorCommand
         { 
@@ -172,7 +181,7 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     {
         var loginRequest = new
         {
-            Email = "user1@example.com",
+            Email = "user02@example.com",
             Password = "User123!"
         };
 

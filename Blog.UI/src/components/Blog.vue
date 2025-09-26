@@ -474,18 +474,27 @@ function openAddForm() {
   showForm.value = true;
 }
 
-function openUpdateForm(blog) {
-  form.value = {
-    blogId: blog.blogId,
-    blogTitle: blog.blogTitle,
-    blogContent: blog.blogContent,
-    authorId: blog.author?.authorId || null,
-    startDate: blog.startDate ? blog.startDate.split("T")[0] : new Date().toISOString().split("T")[0],
-    endDate: blog.endDate ? blog.endDate.split("T")[0] : new Date().toISOString().split("T")[0],
-  };
-  isUpdate.value = true;
-  showForm.value = true;
+async function openUpdateForm(blog) {
+  try {
+    isUpdate.value = true;
+    showForm.value = true;
+    
+    const res = await api.get(`${BLOG_API_URL}/${blog.blogId}`);
+    const data = res.data.data;
+    
+    form.value = {
+      blogId: data.blogId,
+      blogTitle: data.blogTitle,
+      blogContent: data.blogContent,
+      authorId: data.author?.authorId || null,
+      startDate: data.startDate ? data.startDate.split("T")[0] : "",
+      endDate: data.endDate ? data.endDate.split("T")[0] : ""
+    };
+  } catch (err) {
+    console.error("Error fetching blog:", err);
+  }
 }
+
 
 function closeForm() {
   showForm.value = false;
