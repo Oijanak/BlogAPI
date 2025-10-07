@@ -12,9 +12,9 @@ BEGIN
     DECLARE @CurrentDate DATE = CAST(GETUTCDATE() AS DATE);
     DECLARE @ActiveStatus INT;
      IF (@StartDate <= @CurrentDate AND @EndDate >= @CurrentDate)
-        SET @ActiveStatus = 1;
-     ELSE
         SET @ActiveStatus = 0;
+     ELSE
+        SET @ActiveStatus = 1;
 
 UPDATE Blogs
 SET

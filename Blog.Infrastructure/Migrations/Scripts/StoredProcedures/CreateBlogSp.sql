@@ -14,9 +14,9 @@ BEGIN
     DECLARE @ActiveStatus INT;
 
     IF (@StartDate <= @CurrentDate AND @EndDate >= @CurrentDate)
-        SET @ActiveStatus = 1;
-ELSE
         SET @ActiveStatus = 0;
+ELSE
+        SET @ActiveStatus = 1;
 
 INSERT INTO Blogs (
     BlogId,
