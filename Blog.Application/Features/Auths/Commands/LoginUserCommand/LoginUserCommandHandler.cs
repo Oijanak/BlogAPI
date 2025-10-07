@@ -1,7 +1,6 @@
 using System.Net;
 using System.Security.Claims;
 using BlogApi.Application.DTOs;
-using BlogApi.Application.Exceptions;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using MediatR;
@@ -10,41 +9,51 @@ using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace BlogApi.Application.Features.Auths.Commands.LoginUserCommand;
 
-public class LoginUserCommandHandler:IRequestHandler<LoginUserCommand, TokenResponse>
+public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<TokenResponse>>
 {
     private readonly UserManager<User> _userManager;
     private readonly ITokenService _tokenService;
 
-    public LoginUserCommandHandler(UserManager<User> userManager,ITokenService tokenService)
+    public LoginUserCommandHandler(UserManager<User> userManager, ITokenService tokenService)
     {
         _userManager = userManager;
         _tokenService = tokenService;
     }
-    public async Task<TokenResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+
+    public async Task<Result<TokenResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
-        if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
-            throw new ApiException("Invalid credentials",HttpStatusCode.Unauthorized);
-       var userRoles= await _userManager.GetRolesAsync(user);
+        if (user == null)
+            return Result<TokenResponse>.Failure("Invalid email or password", (int)HttpStatusCode.Unauthorized);
+
+        var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
+        if (!isPasswordValid)
+            return Result<TokenResponse>.Failure("Invalid email or password", (int)HttpStatusCode.Unauthorized);
+
+        var userRoles = await _userManager.GetRolesAsync(user);
         var authClaims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.UserName ?? string.Empty),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+
         authClaims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
-        
+
         var accessToken = _tokenService.GenerateToken(authClaims);
         var refreshToken = _tokenService.GenerateRefreshToken();
+
         user.RefreshToken = refreshToken;
         user.RefreshTokenExpires = DateTime.UtcNow.AddDays(7);
         await _userManager.UpdateAsync(user);
 
-        return new TokenResponse
+        var response = new TokenResponse
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
             RefreshTokenExpires = user.RefreshTokenExpires
         };
+
+        return Result<TokenResponse>.Success(response, (int)HttpStatusCode.OK);
     }
 }

@@ -1,14 +1,11 @@
-using System.Net;
-using Ardalis.GuardClauses;
 using BlogApi.Application.DTOs;
-using BlogApi.Application.Exceptions;
 using BlogApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace BlogApi.Application.Features.Auths.Commands.RegisterUserCommand;
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, ApiResponse<string>>
+public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Result<string>>
 {
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
@@ -19,46 +16,36 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
         _roleManager = roleManager;
     }
 
-    public async Task<ApiResponse<string>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        
-        var existingUser = await _userManager.FindByNameAsync(request.Email);
+        var existingUser = await _userManager.FindByEmailAsync(request.Email);
         if (existingUser != null)
-        {
-            throw new ApiException("User with email already exists", HttpStatusCode.BadRequest);
-        }
-        
+            return Result<string>.Failure("User with this email already exists.");
+
         string roleName = request.role.ToString();
+
         if (!await _roleManager.RoleExistsAsync(roleName))
         {
             var roleResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
             if (!roleResult.Succeeded)
-            {
-                throw new ApiException("Failed to create role", HttpStatusCode.InternalServerError);
-            }
+                return Result<string>.Failure("Failed to create role.");
         }
-        
+
         var user = new User
         {
             UserName = request.Email,
             Email = request.Email,
-            Name = request.Name,
+            Name = request.Name
         };
 
         var result = await _userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
-        {
-            throw new ApiException(result.Errors.First().Description, HttpStatusCode.BadRequest);
-        }
+            return Result<string>.Failure(result.Errors.First().Description);
+
         var roleAssignResult = await _userManager.AddToRoleAsync(user, roleName);
         if (!roleAssignResult.Succeeded)
-        {
-            throw new ApiException("Failed to assign role to user", HttpStatusCode.InternalServerError);
-        }
+            return Result<string>.Failure("Failed to assign role to user.");
 
-        return new ApiResponse<string>
-        {
-            Message = "User registered successfully with role: " + roleName
-        };
+        return Result<string>.Success($"User registered successfully with role: {roleName}");
     }
 }

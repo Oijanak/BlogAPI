@@ -20,19 +20,22 @@ public class AuthController:ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterUserCommand request)
     {
-        return StatusCode(StatusCodes.Status201Created,await _sender.Send(request));
+        var result = await _sender.Send(request);
+        return StatusCode(result.StatusCode, result);
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginUserCommand request)
     {
-        return Ok(await _sender.Send(request));
+        var result = await _sender.Send(request);
+        return StatusCode(result.StatusCode, result);
     }
 
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh(RefreshTokenCommand request)
     {
-        return Ok(await _sender.Send(request));
+        var result = await _sender.Send(request);
+        return StatusCode(result.StatusCode, result);
     }
 
 }

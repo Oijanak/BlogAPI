@@ -3,6 +3,7 @@ using BlogApi.Application.Exceptions;
 using FluentValidation;
 using System.Net;
 using System.Text.Json;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BlogApi.API.Controllers.Middlewares;
 
@@ -93,6 +94,21 @@ public class GlobalExceptionMiddleware
                 };
 
                 await context.Response.WriteAsync(JsonSerializer.Serialize(guardErrorResponse));
+                return;
+            
+            case SecurityTokenException tokenEx:
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+                _logger.LogWarning("Token validation failed: {Message}", tokenEx.Message);
+
+                var tokenErrorResponse = new
+                {
+                    StatusCode = context.Response.StatusCode,
+                    Message = "Invalid or expired token",
+                    Errors = new[] { tokenEx.Message }
+                };
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(tokenErrorResponse));
                 return;
 
             default:

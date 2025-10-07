@@ -6,4 +6,4 @@ using MediatR;
 namespace BlogApi.Application.Features.Auths.Commands.RegisterUserCommand;
 
 public record RegisterUserCommand(string Name,string Email, string Password,Role role) 
-    : IRequest<ApiResponse<string>>;
+    : IRequest<Result<string>>;

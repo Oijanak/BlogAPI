@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace Blog.API.Filters;
 
 using Microsoft.AspNetCore.Mvc;
@@ -8,9 +10,9 @@ public class AuthorizeUser : Attribute, IAuthorizationFilter
 {
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        var userIdClaim = context.HttpContext.User.Claims
-            .FirstOrDefault(c => c.Type == "userId");
-        Guid.TryParse(userIdClaim.Value, out var claimUserId);
+        var userIdClaim = context.HttpContext.User
+            .FindFirstValue(ClaimTypes.NameIdentifier);
+        Guid.TryParse(userIdClaim, out var claimUserId);
         
         if (context.RouteData.Values.TryGetValue("UserId", out var routeUserIdObj)
             && Guid.TryParse(routeUserIdObj?.ToString(), out var userId))
