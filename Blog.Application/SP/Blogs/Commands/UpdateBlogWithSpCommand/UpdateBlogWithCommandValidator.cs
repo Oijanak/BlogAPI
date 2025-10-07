@@ -19,6 +19,10 @@ public class UpdateBlogWithCommandValidator:AbstractValidator<UpdateBlogWithSpCo
             .MustAsync(async (authorId, cancellationToken) =>
                 await _blogDbContext.Authors.FindAsync(authorId) != null)
             .WithMessage("Author not found").WithErrorCode("404");;
+        RuleFor(x => x.Blog.StartDate).NotEmpty().WithMessage("Start Date is required");
+        RuleFor(x => x.Blog.EndDate).NotEmpty().WithMessage("End Date is required");
+        RuleFor(x => x)
+            .Must(x => x.Blog.StartDate < x.Blog.EndDate);
     }
     
 }

@@ -25,15 +25,16 @@ public class CreateBlogWithDapperCommandHandler:IRequestHandler<CreateBlogWithDa
         var author = await _dbConnection.QueryFirstAsync<AuthorDto>("select * from [Authors] where AuthorId=@AuthorId",
             new { request.AuthorId });
         Guard.Against.Null(author, nameof(author),"Author with Id not found");
-        var blogs = await _dbConnection.QueryAsync<BlogDTO, AuthorDto, BlogDTO>(
-            "spCreateBlogWithAuthor",
-            (blog, author) =>
+        var blogs = await _dbConnection.QueryAsync<BlogDTO, UserDto,AuthorDto, BlogDTO>(
+            "spCreateBlog",
+            (blog,createdBy, author) =>
             {
+                blog.CreatedBy = createdBy;
                 blog.Author = author;
                 return blog;
             },
-            new{request.AuthorId,request.BlogTitle,request.BlogContent,CreatedBy=currentUserId},
-            splitOn: "AuthorId",   
+            new{request.AuthorId,request.BlogTitle,request.BlogContent,request.StartDate,request.EndDate,CreatedBy=currentUserId},
+            splitOn: "Id,AuthorId",   
             commandType: CommandType.StoredProcedure
         );
         var blog = blogs.FirstOrDefault();

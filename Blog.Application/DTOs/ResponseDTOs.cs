@@ -21,6 +21,4 @@ public class ApiResponse<T>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? totalSize { get; set; }
 
-
-
 }

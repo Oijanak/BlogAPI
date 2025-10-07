@@ -1,16 +1,48 @@
-CREATE OR ALTER PROCEDURE spCreateBlogWithAuthor
+CREATE OR ALTER PROCEDURE spCreateBlog
     @AuthorId UNIQUEIDENTIFIER,
-    @BlogTitle NVARCHAR(200),
+    @BlogTitle NVARCHAR(255),
     @BlogContent NVARCHAR(MAX),
-    @CreatedBy NVARCHAR(255)
-    AS
+    @StartDate DATE,
+    @EndDate DATE,
+    @CreatedBy UNIQUEIDENTIFIER
+AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE @NewBlogId UNIQUEIDENTIFIER = NEWID();
+    DECLARE @BlogId UNIQUEIDENTIFIER = NEWID();
+    DECLARE @CurrentDate DATE = CAST(GETUTCDATE() AS DATE);
+    DECLARE @ActiveStatus INT;
 
-INSERT INTO [Blogs] (BlogId, BlogTitle, BlogContent, AuthorId, CreatedAt, UpdatedAt,CreatedBy)
-VALUES (@NewBlogId, @BlogTitle, @BlogContent, @AuthorId, GETUTCDATE(), GETUTCDATE(),@CreatedBy);
+    IF (@StartDate <= @CurrentDate AND @EndDate >= @CurrentDate)
+        SET @ActiveStatus = 1;
+ELSE
+        SET @ActiveStatus = 0;
+
+INSERT INTO Blogs (
+    BlogId,
+    BlogTitle,
+    BlogContent,
+    AuthorId,
+    StartDate,
+    EndDate,
+    ActiveStatus,
+    ApproveStatus,
+    CreatedBy,
+    CreatedAt
+)
+VALUES (
+           @BlogId,
+           @BlogTitle,
+           @BlogContent,
+           @AuthorId,
+           @StartDate,
+           @EndDate,
+           @ActiveStatus,
+           0, 
+           @CreatedBy,
+           GETUTCDATE()
+       );
+
 
 SELECT
     b.BlogId,
@@ -18,7 +50,15 @@ SELECT
     b.BlogContent,
     b.CreatedAt,
     b.UpdatedAt,
-    b.CreatedBy,
+    b.StartDate,
+    b.EndDate,
+    b.ApproveStatus,
+    b.ActiveStatus,
+    -- User who created it
+    cu.Id as Id,
+    cu.Name as Name,
+    cu.Email AS Email,
+    -- Author info
     a.AuthorId,
     a.AuthorName,
     a.AuthorEmail,
@@ -26,5 +66,6 @@ SELECT
     a.CreatedBy
 FROM Blogs b
          INNER JOIN Authors a ON b.AuthorId = a.AuthorId
-WHERE b.BlogId = @NewBlogId;
-END;
+         INNER JOIN AspNetUsers cu ON b.CreatedBy = cu.Id
+WHERE b.BlogId = @BlogId;
+END

@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BlogApi.Application.SP.Blogs.Commands.UpdateBlogWithSpCommand;
 
-public class UpdateBlogWithSpCommandHandler:IRequestHandler<UpdateBlogWithSpCommand,ApiResponse<BlogDTO>>
+public class UpdateBlogWithSpCommandHandler:IRequestHandler<UpdateBlogWithSpCommand,ApiResponse<string>>
 {
     private readonly IBlogDbContext _blogDbContext;
     private readonly ICurrentUserService _currentUserService;
@@ -19,27 +19,15 @@ public class UpdateBlogWithSpCommandHandler:IRequestHandler<UpdateBlogWithSpComm
         _blogDbContext = blogDbContext;
         _currentUserService = currentUserService;
     }
-    public async Task<ApiResponse<BlogDTO>> Handle(UpdateBlogWithSpCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<string>> Handle(UpdateBlogWithSpCommand request, CancellationToken cancellationToken)
     {
             var currentUserId = _currentUserService.UserId;
-            var blogs = await _blogDbContext.Blogs
-                .FromSqlInterpolated($"EXEC spUpdateBlog {request.BlogId}, {request.Blog.BlogTitle}, {request.Blog.BlogContent}, {request.Blog.AuthorId},{currentUserId}")
-                .AsNoTracking()
-                .ToListAsync();
-            ArgumentNullException.ThrowIfNull(blogs, nameof(blogs));
-            var updatedBlog=blogs.FirstOrDefault();
+             await _blogDbContext.Database
+                .ExecuteSqlInterpolatedAsync($"EXEC spUpdateBlog {request.BlogId}, {request.Blog.BlogTitle}, {request.Blog.BlogContent},{request.Blog.StartDate},{request.Blog.EndDate}, {request.Blog.AuthorId},{currentUserId}")
+                ;
         
-            var blogDto = new BlogDTO
+            return new ApiResponse<string>
             {
-                BlogId = updatedBlog.BlogId,
-                BlogTitle = updatedBlog.BlogTitle,
-                BlogContent = updatedBlog.BlogContent,
-                CreatedAt = updatedBlog.CreatedAt,
-                UpdatedAt = updatedBlog.UpdatedAt,
-            };
-            return new ApiResponse<BlogDTO>
-            {
-                Data = blogDto,
                 Message = "Blog updated successfully",
             };
     }
