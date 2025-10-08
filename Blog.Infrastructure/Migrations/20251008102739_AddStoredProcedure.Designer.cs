@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogApi.Infrastructure.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    [Migration("20251008100514_AlterGetAllBlogsSpWithMultipleNew")]
-    partial class AlterGetAllBlogsSpWithMultipleNew
+    [Migration("20251008102739_AddStoredProcedure")]
+    partial class AddStoredProcedure
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

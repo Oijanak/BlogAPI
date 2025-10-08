@@ -6,8 +6,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BlogApi.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AlterGetAllBlogsSpNew : Migration
+    public partial class AddStoredProcedure : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -23,7 +24,6 @@ namespace BlogApi.Infrastructure.Migrations
                     migrationBuilder.Sql(sql);
                 }
             }
-
         }
 
         /// <inheritdoc />

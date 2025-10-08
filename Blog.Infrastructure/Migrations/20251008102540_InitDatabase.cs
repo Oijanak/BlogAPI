@@ -32,7 +32,7 @@ namespace BlogApi.Infrastructure.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RefreshTokenExpires = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RefreshTokenExpires = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -196,8 +196,13 @@ namespace BlogApi.Infrastructure.Migrations
                     BlogId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     BlogTitle = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     BlogContent = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApproveStatus = table.Column<int>(type: "int", nullable: false),
+                    ActiveStatus = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    ApprovedBy = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     AuthorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "nvarchar(450)", nullable: true)
@@ -205,6 +210,12 @@ namespace BlogApi.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Blogs", x => x.BlogId);
+                    table.ForeignKey(
+                        name: "FK_Blogs_AspNetUsers_ApprovedBy",
+                        column: x => x.ApprovedBy,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Blogs_AspNetUsers_CreatedBy",
                         column: x => x.CreatedBy,
@@ -279,6 +290,11 @@ namespace BlogApi.Infrastructure.Migrations
                 name: "IX_Authors_UpdatedBy",
                 table: "Authors",
                 column: "UpdatedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Blogs_ApprovedBy",
+                table: "Blogs",
+                column: "ApprovedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Blogs_AuthorId",
