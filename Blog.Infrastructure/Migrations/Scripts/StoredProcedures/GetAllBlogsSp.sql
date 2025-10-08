@@ -56,6 +56,10 @@ BEGIN
                                           (@ApproveStatus IS NULL OR b.ApproveStatus = @ApproveStatus) AND
                                           (@ActiveStatus IS NULL OR b.ActiveStatus = @ActiveStatus)
                                   )
+    SELECT *
+    INTO #TempBlogs
+    FROM FilteredBlogs;
+
      SELECT
          fb.BlogId,
          fb.BlogTitle,
@@ -79,9 +83,9 @@ BEGIN
          fb.UpdatedByEmail as Email,
          fb.ApprovedById as Id,
          fb.ApprovedByName as Name,
-         fb.ApprovedByEmail as Email,
-         COUNT(*) OVER() AS TotalCount
-     FROM FilteredBlogs fb
+         fb.ApprovedByEmail as Email
+         
+     FROM #TempBlogs fb
      ORDER BY
          CASE WHEN LOWER(@SortBy) = 'author' AND LOWER(@SortOrder) = 'asc' THEN fb.AuthorName END ASC,
          CASE WHEN LOWER(@SortBy) = 'author' AND LOWER(@SortOrder) = 'desc' THEN fb.AuthorName END DESC,
@@ -96,5 +100,6 @@ BEGIN
          CASE WHEN @SortBy IS NULL OR @SortBy = '' THEN fb.CreatedAt END DESC
      OFFSET @Offset ROWS
      FETCH NEXT @Limit ROWS ONLY;
+    SELECT COUNT(*) AS TotalCount FROM #TempBlogs;
 END;
 
