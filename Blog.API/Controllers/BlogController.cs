@@ -8,6 +8,7 @@ using System.Net;
 using BlogApi.Application.Dapper.Blogs.Commands.CreateBlogWithDapperCommand;
 using BlogApi.Application.Dapper.Blogs.Commands.DeleteBlogWithDapperCommand;
 using BlogApi.Application.Dapper.Blogs.Commands.UpdateBlogWithDapperCommand;
+using BlogApi.Application.Dapper.Blogs.Queries;
 using BlogApi.Application.Features.Blogs.Commands.ApproveStatusCommand;
 using BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 using BlogApi.Application.Features.Blogs.Commands.DeleteBlogCommand;
@@ -96,6 +97,12 @@ public class BlogController : ControllerBase
     {
         return StatusCode(StatusCodes.Status201Created,await _sender.Send(createBlogWithDapperCommand));
     }
+    [HttpPost("dapper/query")]
+    public async Task<IActionResult> GetBlogsWithDapper(GetAllBlogsQuery getAllBlogsQuery)
+    {
+        return Ok(await _sender.Send(getAllBlogsQuery));
+    }
+    
     [Authorize]
     [HttpPut("dapper/{BlogId:guid}")]
     public async Task<IActionResult> UpdateBlogWithDapper(UpdateBlogWithDappersCommand updateBlogWithDappersCommand)
