@@ -25,7 +25,8 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         {
             Name = "user",
             Email = "user02@example.com",
-            Password = "User123!"
+            Password = "User123!",
+            Role = "Maker"
         };
 
         _client.PostAsJsonAsync("/api/Auth/register", user).GetAwaiter().GetResult();
@@ -45,8 +46,8 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
             BlogTitle = "Test Blog",
             BlogContent = "This is a test blog.",
             AuthorId = author.AuthorId,
-            StartDate = new DateTime(2025,09,25),
-            EndDate = new DateTime(2025,09,27)
+            StartDate = DateTime.UtcNow,
+            EndDate = DateTime.UtcNow.AddDays(2)
         };
 
         var response = await _client.PostAsJsonAsync("/api/blogs", blog);
@@ -187,8 +188,8 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
 
         var response = await _client.PostAsJsonAsync("/api/Auth/login", loginRequest);
 
-        var json = await response.Content.ReadFromJsonAsync<TokenResponse>();
-        return json.AccessToken;
+        var json = await response.Content.ReadFromJsonAsync<Result<TokenResponse>>();
+        return json.Data.AccessToken;
     }
     
     

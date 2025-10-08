@@ -4,12 +4,13 @@ namespace BlogApi.Application.DTOs;
 
 public class Result<T>
 {
-    public bool IsSuccess { get; }
+    public bool IsSuccess { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Error { get; }
-    public int StatusCode { get; }
+    public string? Error { get; set; }
+    public int StatusCode { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public T? Data{ get; }
+    public T? Data{ get; set; }
+    public Result(){}
 
     private Result(bool isSuccess, string? error, int statusCode, T? value)
     {

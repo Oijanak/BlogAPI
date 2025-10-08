@@ -221,8 +221,10 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
 
         var response = await _client.PostAsJsonAsync("/api/Auth/login", loginRequest);
 
-        var json = await response.Content.ReadFromJsonAsync<TokenResponse>();
-        return json.AccessToken;
+        var json = await response.Content.ReadFromJsonAsync<Result<TokenResponse>>( new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var content = await response.Content.ReadAsStringAsync();
+        Console.WriteLine("Raw Response: " + content);
+        return json.Data.AccessToken;
     }
 
     
