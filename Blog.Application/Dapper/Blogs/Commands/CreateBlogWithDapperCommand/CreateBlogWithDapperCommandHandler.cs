@@ -22,22 +22,28 @@ public class CreateBlogWithDapperCommandHandler:IRequestHandler<CreateBlogWithDa
     public async Task<ApiResponse<BlogDTO>> Handle(CreateBlogWithDapperCommand request, CancellationToken cancellationToken)
     {
         var currentUserId=_currentUserService.UserId;
+        var categoryIds = string.Join(',',request.Categories);
         var author = await _dbConnection.QueryFirstAsync<AuthorDto>("select * from [Authors] where AuthorId=@AuthorId",
             new { request.AuthorId });
         Guard.Against.Null(author, nameof(author),"Author with Id not found");
-        var blogs = await _dbConnection.QueryAsync<BlogDTO, UserDto,AuthorDto, BlogDTO>(
+        var result = await _dbConnection.QueryMultipleAsync(
             "spCreateBlog",
-            (blog,createdBy, author) =>
-            {
-                blog.CreatedBy = createdBy;
-                blog.Author = author;
-                return blog;
-            },
-            new{request.AuthorId,request.BlogTitle,request.BlogContent,request.StartDate,request.EndDate,CreatedBy=currentUserId},
-            splitOn: "Id,AuthorId",   
+            new{request.AuthorId,request.BlogTitle,request.BlogContent,request.StartDate,request.EndDate,CreatedBy=currentUserId,categoryIds},
             commandType: CommandType.StoredProcedure
         );
-        var blog = blogs.FirstOrDefault();
+        
+        var blogs = result.Read<BlogDTO, AuthorDto, UserDto,BlogDTO>(
+            (blog, authors, createdBy) =>
+            {
+                blog.Author = authors;
+                blog.CreatedBy = createdBy;
+                return blog;
+            },
+            splitOn: "Id,AuthorId"
+        ).ToList();
+        var blog=blogs.FirstOrDefault();
+        var categories = (await result.ReadAsync<CategoryDto>()).ToList();
+        blog.Categories = categories;
         return new ApiResponse<BlogDTO>
         {
             Data = blog,

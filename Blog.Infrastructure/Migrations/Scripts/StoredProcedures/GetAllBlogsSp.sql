@@ -100,6 +100,9 @@ BEGIN
          CASE WHEN @SortBy IS NULL OR @SortBy = '' THEN fb.CreatedAt END DESC
      OFFSET @Offset ROWS
      FETCH NEXT @Limit ROWS ONLY;
+
+            
+
     SELECT COUNT(*) AS TotalCount FROM #TempBlogs;
 END;
 

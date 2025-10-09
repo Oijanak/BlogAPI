@@ -28,6 +28,8 @@ public class BlogDTO
     public UserDto? UpdatedBy { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public AuthorDto Author { get; set; } 
+    
+    public List<CategoryDto> Categories { get; set; }
 
 }
 
@@ -38,5 +40,7 @@ public class UpdateBlogRequest
     public string BlogContent { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
+    
+    public List<Guid> Categories { get; set; }=new List<Guid>();
     
 }

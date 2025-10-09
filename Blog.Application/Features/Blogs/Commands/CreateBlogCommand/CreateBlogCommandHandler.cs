@@ -24,6 +24,9 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
     {
         Author author=await _blogDbContext.Authors.FindAsync(request.AuthorId);
         Guard.Against.Null(author,nameof(author),"Author cannot be null");
+        var categories = await _blogDbContext.Categories
+            .Where(c => request.Categories.Contains(c.CategoryId))
+            .ToListAsync(cancellationToken);
         Blog blog = new Blog
         {
             BlogTitle = request.BlogTitle,
@@ -31,6 +34,7 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
             Author = author,
             StartDate = request.StartDate,
             EndDate = request.EndDate,
+            Categories = categories,
         };
         
         var currentDate = DateTime.UtcNow.Date; 
@@ -64,7 +68,8 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
                ActiveStatus = blog.ActiveStatus,
                ApproveStatus = blog.ApproveStatus,
 
-               Author = new AuthorDto(blog.Author)
+               Author = new AuthorDto(blog.Author),
+               Categories = categories.Select(c=>new CategoryDto{CategotyId = c.CategoryId,CategoryName = c.CategoryName}).ToList(),
            },
            Message = "Blog created successfully"
        };

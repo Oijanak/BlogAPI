@@ -21,9 +21,10 @@ public class CreateBlogWithSpCommandHandler:IRequestHandler<CreateBlogWithSpComm
     public async Task<ApiResponse<string>> Handle(CreateBlogWithSpCommand request, CancellationToken cancellationToken)
     {
         var currentUserId = _currentUserService.UserId;
+        var categoryIds = string.Join(",", request.Categories);
         Guard.Against.NullOrEmpty(currentUserId, nameof(currentUserId),"current user ID is null or empty");
         await _blogDbContext.Database
-            .ExecuteSqlInterpolatedAsync($"EXEC spCreateBlog {request.AuthorId}, {request.BlogTitle}, {request.BlogContent},{request.StartDate},{request.EndDate},{currentUserId}")
+            .ExecuteSqlInterpolatedAsync($"EXEC spCreateBlog {request.AuthorId}, {request.BlogTitle}, {request.BlogContent},{request.StartDate},{request.EndDate},{currentUserId},{categoryIds}");
             ;
         return new ApiResponse<string>
         {

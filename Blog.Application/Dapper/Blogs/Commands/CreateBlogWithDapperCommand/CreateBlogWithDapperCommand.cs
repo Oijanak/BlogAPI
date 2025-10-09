@@ -12,4 +12,6 @@ public class CreateBlogWithDapperCommand:IRequest<ApiResponse<BlogDTO>>
     public DateTime StartDate { get; set; }
     
     public DateTime EndDate { get; set; }
+    
+    public List<Guid> Categories { get; set; }
 }

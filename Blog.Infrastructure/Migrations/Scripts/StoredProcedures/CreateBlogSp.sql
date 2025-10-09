@@ -4,7 +4,8 @@ CREATE OR ALTER PROCEDURE spCreateBlog
     @BlogContent NVARCHAR(MAX),
     @StartDate DATE,
     @EndDate DATE,
-    @CreatedBy UNIQUEIDENTIFIER
+    @CreatedBy UNIQUEIDENTIFIER,
+    @CategoryIds NVARCHAR(MAX)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -44,6 +45,10 @@ VALUES (
        );
 
 
+INSERT INTO BlogCategories (BlogsBlogId, CategoriesCategoryId)
+SELECT @BlogId, CAST(value AS UNIQUEIDENTIFIER)
+FROM STRING_SPLIT(@CategoryIds, ',');
+
 SELECT
     b.BlogId,
     b.BlogTitle,
@@ -64,8 +69,18 @@ SELECT
     a.AuthorEmail,
     a.Age,
     a.CreatedBy
+      
 FROM Blogs b
          INNER JOIN Authors a ON b.AuthorId = a.AuthorId
          INNER JOIN AspNetUsers cu ON b.CreatedBy = cu.Id
 WHERE b.BlogId = @BlogId;
+
+SELECT
+    c.CategoryId,
+    c.CategoryName
+FROM BlogCategories bc
+         INNER JOIN Categories c ON bc.CategoriesCategoryId = c.CategoryId
+WHERE bc.BlogsBlogId = @BlogId;
+    
+
 END

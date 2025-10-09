@@ -23,6 +23,7 @@ public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,ApiResponse<BlogDT
             .Include(b => b.CreatedByUser)
             .Include(b => b.UpdatedByUser)
             .Include(b => b.ApprovedByUser)
+            .Include(b=>b.Categories)
             .FirstOrDefaultAsync(b => b.BlogId == request.BlogId, cancellationToken);
         var blogResult = new BlogDTO()
         {
@@ -38,7 +39,9 @@ public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,ApiResponse<BlogDT
             EndDate = blog.EndDate,
             ApproveStatus = blog.ApproveStatus,
             ActiveStatus = blog.ActiveStatus,
-            Author = blog.Author != null ? new AuthorDto(blog.Author) : null
+            Author = blog.Author != null ? new AuthorDto(blog.Author) : null,
+            Categories = blog.Categories.Select(c=>new CategoryDto{CategotyId= c.CategoryId,CategoryName = c.CategoryName}).ToList()
+            
         };
         return new ApiResponse<BlogDTO>
         {

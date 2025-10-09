@@ -13,4 +13,6 @@ public class CreateBlogWithSpCommand:IRequest<ApiResponse<string>>
     
     public DateTime EndDate { get; set; }
     
+    public List<Guid> Categories{get;set;}=new List<Guid>();
+    
 }

@@ -21,6 +21,7 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiRespon
             .Include(blog => blog.Author)
             .Include(blog => blog.CreatedByUser)
             .Include(blog => blog.UpdatedByUser)
+            .Include(blog=>blog.Categories)
             .Include(blog => blog.ApprovedByUser)
             .AsQueryable();
         
@@ -90,7 +91,8 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiRespon
             EndDate = blog.EndDate,
             ActiveStatus = blog.ActiveStatus,
             ApproveStatus = blog.ApproveStatus,
-            Author = blog.Author != null ? new AuthorDto(blog.Author) : null
+            Author = blog.Author != null ? new AuthorDto(blog.Author) : null,
+            Categories = blog.Categories.Select(c=>new CategoryDto{CategotyId= c.CategoryId,CategoryName = c.CategoryName}).ToList()
         }).ToList();
         return new ApiResponse<IEnumerable<BlogDTO>>
         {

@@ -10,6 +10,8 @@ public interface IBlogDbContext
     DbSet<User> Users { get; }
     DbSet<Blog> Blogs { get;  }
     
+    DbSet<Category> Categories { get; }
+    
     DatabaseFacade Database { get; } 
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

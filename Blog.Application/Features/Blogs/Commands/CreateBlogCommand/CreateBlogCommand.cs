@@ -12,5 +12,7 @@ public class CreateBlogCommand:IRequest<ApiResponse<BlogDTO>>
     public DateTime StartDate { get; set; }
     
     public DateTime EndDate { get; set; }
-    
+
+    public List<Guid> Categories { get; set; } = new List<Guid>();
+
 }

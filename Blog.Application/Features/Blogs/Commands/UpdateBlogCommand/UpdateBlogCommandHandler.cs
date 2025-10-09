@@ -23,6 +23,9 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
     {
         Author author=await _blogDbContext.Authors.FindAsync(request.Blog.AuthorId);
         Guard.Against.Null(author,nameof(author),"Blog cannot be null");
+        var categories = await _blogDbContext.Categories
+            .Where(c => request.Blog.Categories.Contains(c.CategoryId))
+            .ToListAsync(cancellationToken);
         Blog existingBlog = await _blogDbContext.Blogs
             .Include(b => b.CreatedByUser)
             .Include(b => b.UpdatedByUser)
@@ -32,6 +35,7 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
         existingBlog.BlogContent = request.Blog.BlogContent;
         existingBlog.StartDate=request.Blog.StartDate;
         existingBlog.EndDate=request.Blog.EndDate;
+        existingBlog.Categories = categories;
         var currentDate = DateTime.UtcNow.Date;
         if (request.Blog.StartDate.Date <= currentDate && request.Blog.EndDate.Date >= currentDate)
         {
@@ -58,6 +62,7 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
              ActiveStatus = existingBlog.ActiveStatus,
              ApproveStatus = existingBlog.ApproveStatus,
              Author = new AuthorDto(existingBlog.Author),
+             Categories = categories.Select(c=>new CategoryDto{CategotyId = c.CategoryId,CategoryName = c.CategoryName}).ToList()
          };
          return new ApiResponse<BlogDTO>
          {

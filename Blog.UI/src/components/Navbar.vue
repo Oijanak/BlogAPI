@@ -21,7 +21,7 @@ function handleLogout() {
     <router-link v-if="!isLoggedIn" to="/login">Login</router-link>
     
     <div v-if="isLoggedIn" class="user-info">
-      {{ user.email +" || "+user.role }}
+      {{ user?.email +" || "+user?.role }}
     </div>
 
     <button v-if="isLoggedIn" @click="handleLogout" class="logout-btn">

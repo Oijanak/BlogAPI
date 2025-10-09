@@ -33,6 +33,8 @@ namespace BlogApi.Domain.Models
         
         public Guid AuthorId { get; set; }
         
+        public ICollection<Category> Categories { get; set; } = new List<Category>();
+        
 
     }
 }

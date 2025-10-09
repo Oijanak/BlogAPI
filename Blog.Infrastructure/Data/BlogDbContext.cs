@@ -20,11 +20,13 @@ public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
     
     public DbSet<Author> Authors { get; set; }
 
+    public DbSet<Category> Categories { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfiguration(new BlogConfig());
         modelBuilder.ApplyConfiguration(new AuthorConfig());
+        modelBuilder.ApplyConfiguration(new CategoryConfig());
     }
     
     public override int SaveChanges()
