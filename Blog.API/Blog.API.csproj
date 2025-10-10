@@ -34,6 +34,10 @@
         <Link>.dockerignore</Link>
       </Content>
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="Uploads\Blogs\" />
+    </ItemGroup>
 
 
 </Project>

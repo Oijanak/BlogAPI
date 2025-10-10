@@ -14,10 +14,12 @@ namespace BlogApi.Application.Features.Blogs.Commands.UpdateBlogCommand;
 public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiResponse<BlogDTO>>
 {
     private readonly IBlogDbContext _blogDbContext;
+    private readonly IFileService _fileService;
 
-    public UpdateBlogCommandHandler(IBlogDbContext blogDbContext)
+    public UpdateBlogCommandHandler(IBlogDbContext blogDbContext, IFileService fileService)
     {
         _blogDbContext = blogDbContext;
+        _fileService=fileService;
     }
     public async Task<ApiResponse<BlogDTO>> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
     {
@@ -36,6 +38,7 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
         existingBlog.StartDate=request.Blog.StartDate;
         existingBlog.EndDate=request.Blog.EndDate;
         existingBlog.Categories = categories;
+        existingBlog.Documents = await _fileService.UpdateFilesAsync(request.BlogId,request.Blog.Documents);
         var currentDate = DateTime.UtcNow.Date;
         if (request.Blog.StartDate.Date <= currentDate && request.Blog.EndDate.Date >= currentDate)
         {
@@ -46,7 +49,7 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
             existingBlog.ActiveStatus = ActiveStatus.Inactive;
         }
         existingBlog.Author = author;
-         _blogDbContext.Blogs.Update(existingBlog);
+        
          await _blogDbContext.SaveChangesAsync(cancellationToken);
          var blogDto= new BlogDTO()
          {
@@ -62,7 +65,8 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
              ActiveStatus = existingBlog.ActiveStatus,
              ApproveStatus = existingBlog.ApproveStatus,
              Author = new AuthorDto(existingBlog.Author),
-             Categories = categories.Select(c=>new CategoryDto{CategotyId = c.CategoryId,CategoryName = c.CategoryName}).ToList()
+             Categories = categories.Select(c=>new CategoryDto{CategotyId = c.CategoryId,CategoryName = c.CategoryName}).ToList(),
+             BlogDocuments = existingBlog.Documents.Select(d=>new BlogDocumentDto{BlogDocumentId = d.BlogDocumentId,DocumentName = d.DocumentName,DocumentType = d.DocumentType}).ToList()
          };
          return new ApiResponse<BlogDTO>
          {

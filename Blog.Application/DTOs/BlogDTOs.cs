@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Domain.Enum;
 using BlogApi.Domain.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace BlogApi.Application.DTOs;
 
@@ -30,6 +31,8 @@ public class BlogDTO
     public AuthorDto Author { get; set; } 
     
     public List<CategoryDto> Categories { get; set; }
+    
+    public List<BlogDocumentDto> BlogDocuments { get; set; }
 
 }
 
@@ -42,5 +45,7 @@ public class UpdateBlogRequest
     public DateTime EndDate { get; set; }
     
     public List<Guid> Categories { get; set; }=new List<Guid>();
+    
+    public List<IFormFile> Documents { get; set; }=new List<IFormFile>();
     
 }

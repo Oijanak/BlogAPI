@@ -11,10 +11,13 @@ namespace BlogApi.Application.Features.Blogs.Commands.DeleteBlogCommand;
 public class DeleteBlogCommandHandler:IRequestHandler<DeleteBlogCommand,ApiResponse<string>>
 {
     private readonly IBlogDbContext _blogDbContext;
+    private readonly IFileService _fileService;
 
-    public DeleteBlogCommandHandler(IBlogDbContext blogDbContext)
+    public DeleteBlogCommandHandler(IBlogDbContext blogDbContext, IFileService fileService)
     {
       _blogDbContext = blogDbContext;
+      _fileService = fileService;
+
     }
     public async Task<ApiResponse<string>> Handle(DeleteBlogCommand request, CancellationToken cancellationToken)
     {
@@ -22,6 +25,7 @@ public class DeleteBlogCommandHandler:IRequestHandler<DeleteBlogCommand,ApiRespo
         Guard.Against.Null(existingBlog,nameof(existingBlog),"Blog cannot be null");
         _blogDbContext.Blogs.Remove(existingBlog);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
+        await _fileService.DeleteFilesAsync(request.BlogId);
         return new ApiResponse<string>
         {
             Message = "Blog deleted successfully",

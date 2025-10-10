@@ -13,6 +13,7 @@ using BlogApi.Application.Features.Blogs.Commands.ApproveStatusCommand;
 using BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 using BlogApi.Application.Features.Blogs.Commands.DeleteBlogCommand;
 using BlogApi.Application.Features.Blogs.Commands.UpdateBlogCommand;
+using BlogApi.Application.Features.Blogs.Queries.GetBlogDocumentQuery;
 using BlogApi.Application.Features.Blogs.Queries.GetBlogListQuery;
 using BlogApi.Application.Features.Blogs.Queries.GetBlogQuery;
 using BlogApi.Application.SP.Blogs.Commands;
@@ -34,7 +35,8 @@ public class BlogController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles="Maker")]
-    public async Task<IActionResult> CreateBlog(CreateBlogCommand blogBlogCommand)
+    
+    public async Task<IActionResult> CreateBlog([FromForm]CreateBlogCommand blogBlogCommand)
     {
         return StatusCode(StatusCodes.Status201Created,await _sender.Send(blogBlogCommand));
     }
@@ -71,6 +73,13 @@ public class BlogController : ControllerBase
     {
         return Ok(await _sender.Send(deleteBlogCommand));
     }
+
+    [HttpGet("document/{BlogDocumentId:guid}")]
+    public async Task<IActionResult> GetDocument(GetBlogDocumentQuery getBlogDocumentQuery)
+    {
+      return await _sender.Send(getBlogDocumentQuery);   
+    }
+    
     [Authorize]
     [HttpPost("sp")]
     public async Task<IActionResult> CreateBlogWithSp(CreateBlogWithSpCommand createBlogWithSpCommand)

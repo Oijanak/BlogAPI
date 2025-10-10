@@ -7,7 +7,7 @@ namespace BlogApi.Application.SP.Authors.Commands.DeleteAuthorWithSpCommand;
 public class DeleteAuthorWithSpCommand:IRequest<ApiResponse<string>>
 {
     [FromRoute]
-    public Guid AuthorId { get; }
+    public Guid AuthorId { get; set; }
     public DeleteAuthorWithSpCommand(Guid authorId)
     {
         AuthorId = authorId;

@@ -19,6 +19,8 @@ public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
     public DbSet<Blog> Blogs { get; set; }
     
     public DbSet<Author> Authors { get; set; }
+    
+    public DbSet<BlogDocument> BlogDocument { get; set; }
 
     public DbSet<Category> Categories { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)

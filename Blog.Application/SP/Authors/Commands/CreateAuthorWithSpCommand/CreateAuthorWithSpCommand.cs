@@ -6,9 +6,9 @@ namespace BlogApi.Application.SP.Authors.Commands.CreateAuthorWithSpCommand;
 
 public class CreateAuthorWithSpCommand:IRequest<ApiResponse<AuthorDto>>
 {
-    public string AuthorEmail { get;}
-    public string AuthorName { get; }
-    public int Age { get; }
+    public string AuthorEmail { get; set; }
+    public string AuthorName { get; set; }
+    public int Age { get; set; }
 
     public CreateAuthorWithSpCommand(string authorEmail, string authorName, int age)
     {

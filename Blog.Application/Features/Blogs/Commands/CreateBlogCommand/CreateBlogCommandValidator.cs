@@ -20,6 +20,13 @@ public class CreateBlogCommandValidator: AbstractValidator<CreateBlogCommand>
         RuleFor(x => x)
             .Must(x => x.StartDate < x.EndDate)
             .WithMessage("Start Date must be earlier than End Date");
+        RuleForEach(x => x.Documents).ChildRules(file =>
+        {
+            file.RuleFor(f => f.Length)
+                .LessThanOrEqualTo(5 * 1024 * 1024) 
+                .WithMessage(f => $"File '{f.FileName}' exceeds the 5 MB limit.");
+            
+        });
         
     }
     

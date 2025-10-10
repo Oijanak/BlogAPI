@@ -14,10 +14,12 @@ namespace BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiResponse<BlogDTO>>
 {
     private readonly IBlogDbContext _blogDbContext;
+    private readonly IFileService _fileService;
 
-    public CreateBlogCommandHandler(IBlogDbContext blogDbContext)
+    public CreateBlogCommandHandler(IBlogDbContext blogDbContext,IFileService fileService)
     {
         _blogDbContext = blogDbContext;
+        _fileService = fileService;
     }
     
     public async Task<ApiResponse<BlogDTO>> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
@@ -27,6 +29,7 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
         var categories = await _blogDbContext.Categories
             .Where(c => request.Categories.Contains(c.CategoryId))
             .ToListAsync(cancellationToken);
+        var documents = await _fileService.UploadFilesAsync(request.Documents);
         Blog blog = new Blog
         {
             BlogTitle = request.BlogTitle,
@@ -35,6 +38,7 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
             StartDate = request.StartDate,
             EndDate = request.EndDate,
             Categories = categories,
+            Documents = documents,
         };
         
         var currentDate = DateTime.UtcNow.Date; 
@@ -67,9 +71,9 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
                EndDate = blog.EndDate,
                ActiveStatus = blog.ActiveStatus,
                ApproveStatus = blog.ApproveStatus,
-
                Author = new AuthorDto(blog.Author),
                Categories = categories.Select(c=>new CategoryDto{CategotyId = c.CategoryId,CategoryName = c.CategoryName}).ToList(),
+               BlogDocuments = blog.Documents.Select(d=>new BlogDocumentDto{BlogDocumentId = d.BlogDocumentId,DocumentName = d.DocumentName,DocumentType = d.DocumentType}).ToList()
            },
            Message = "Blog created successfully"
        };

@@ -8,7 +8,7 @@ namespace BlogApi.Application.SP.Authors.Commands.UpdateAuthorWithSpCommand;
 public class UpdateAuthorWithSpCommand:IRequest<ApiResponse<AuthorDto>>
 {
     [FromRoute]
-    public Guid AuthorId { get; }
+    public Guid AuthorId { get; set; }
     [FromBody]
     public AuthorRequest Author { get; set; }
     

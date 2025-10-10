@@ -12,6 +12,8 @@ public interface IBlogDbContext
     
     DbSet<Category> Categories { get; }
     
+    DbSet<BlogDocument> BlogDocument{ get; }
+    
     DatabaseFacade Database { get; } 
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

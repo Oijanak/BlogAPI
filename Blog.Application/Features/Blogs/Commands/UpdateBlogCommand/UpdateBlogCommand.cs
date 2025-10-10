@@ -8,7 +8,7 @@ public class UpdateBlogCommand:IRequest<ApiResponse<BlogDTO>>
 {
     [FromRoute]
     public Guid BlogId { get; set; }
-    [FromBody]
+    [FromForm]
     public UpdateBlogRequest Blog { get; set; }
     
 }
