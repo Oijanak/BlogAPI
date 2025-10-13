@@ -23,12 +23,16 @@ public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
     public DbSet<BlogDocument> BlogDocument { get; set; }
 
     public DbSet<Category> Categories { get; set; }
+    
+    public DbSet<Comment> Comments { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfiguration(new BlogConfig());
         modelBuilder.ApplyConfiguration(new AuthorConfig());
         modelBuilder.ApplyConfiguration(new CategoryConfig());
+        modelBuilder.ApplyConfiguration(new BlogDocumentConfig());
+        modelBuilder.ApplyConfiguration(new CommentConfig());
     }
     
     public override int SaveChanges()

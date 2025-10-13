@@ -10,4 +10,5 @@ public class Author:BaseEntity
     public string AuthorEmail { get; set; } = string.Empty;
     public int Age{get;set;}
     public ICollection<Blog> Blogs { get; } = new List<Blog>();
+    
 }

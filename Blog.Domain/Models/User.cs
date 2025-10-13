@@ -12,5 +12,7 @@ namespace BlogApi.Domain.Models
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpires { get; set; }
 
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
     }
 }

@@ -13,6 +13,7 @@ using BlogApi.Application.Features.Blogs.Commands.ApproveStatusCommand;
 using BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 using BlogApi.Application.Features.Blogs.Commands.DeleteBlogCommand;
 using BlogApi.Application.Features.Blogs.Commands.UpdateBlogCommand;
+using BlogApi.Application.Features.Blogs.Queries.GetAllBlogCommentsQuery;
 using BlogApi.Application.Features.Blogs.Queries.GetBlogDocumentQuery;
 using BlogApi.Application.Features.Blogs.Queries.GetBlogListQuery;
 using BlogApi.Application.Features.Blogs.Queries.GetBlogQuery;
@@ -78,6 +79,12 @@ public class BlogController : ControllerBase
     public async Task<IActionResult> GetDocument(GetBlogDocumentQuery getBlogDocumentQuery)
     {
       return await _sender.Send(getBlogDocumentQuery);   
+    }
+
+    [HttpGet("{BlogId}/comments")]
+    public async Task<IActionResult> GetBlogComments(GetAllBlogCommentsQuery getAllBlogCommentsQuery)
+    {
+        return Ok(await _sender.Send(getAllBlogCommentsQuery));
     }
     
     [Authorize]

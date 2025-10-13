@@ -36,5 +36,7 @@ namespace BlogApi.Domain.Models
         public ICollection<Category> Categories { get; set; } = new List<Category>();
         
         public ICollection<BlogDocument> Documents { get; set; } = new List<BlogDocument>();
+        
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
