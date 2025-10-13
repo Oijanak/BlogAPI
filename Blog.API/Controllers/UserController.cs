@@ -1,6 +1,8 @@
 using BlogApi.Application.DTOs;
+using BlogApi.Application.Features.AuthorFollower.Queries.GetFollowingAuthorsQuery;
 using BlogApi.Application.Features.Users.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogApi.API.Controllers;
@@ -18,5 +20,13 @@ public class UserController:ControllerBase
     public async Task<IActionResult> GetAllUsers()
     {
         return Ok(await _sender.Send(new GetAllUsersQuery()));
+    }
+
+    [HttpGet("following")]
+    [Authorize]
+    public async Task<IActionResult> GetFollowingUsers()
+    {
+        var response = await _sender.Send(new GetFollowingAuthorsQuery());
+        return StatusCode(response.StatusCode, response);
     }
 }

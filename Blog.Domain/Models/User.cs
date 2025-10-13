@@ -13,6 +13,8 @@ namespace BlogApi.Domain.Models
         public DateTime? RefreshTokenExpires { get; set; }
 
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        
+        public ICollection<AuthorFollower> FollowingAuthors { get; set; } = new List<AuthorFollower>();
 
     }
 }

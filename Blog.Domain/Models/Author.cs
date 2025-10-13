@@ -11,4 +11,5 @@ public class Author:BaseEntity
     public int Age{get;set;}
     public ICollection<Blog> Blogs { get; } = new List<Blog>();
     
+    public ICollection<AuthorFollower> Followers { get; } = new List<AuthorFollower>();
 }

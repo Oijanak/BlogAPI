@@ -23,9 +23,10 @@ public class DeleteBlogCommandHandler:IRequestHandler<DeleteBlogCommand,ApiRespo
     {
         Blog existingBlog = await _blogDbContext.Blogs.FindAsync(request.BlogId);
         Guard.Against.Null(existingBlog,nameof(existingBlog),"Blog cannot be null");
+        await _fileService.DeleteFilesAsync(request.BlogId);
         _blogDbContext.Blogs.Remove(existingBlog);
         await _blogDbContext.SaveChangesAsync(cancellationToken);
-        await _fileService.DeleteFilesAsync(request.BlogId);
+        
         return new ApiResponse<string>
         {
             Message = "Blog deleted successfully",

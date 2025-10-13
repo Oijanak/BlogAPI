@@ -2,6 +2,9 @@ using Blog.API.Filters;
 using BlogApi.Application.Dapper.Authors.CreateAuthorWithDapperCommand;
 using BlogApi.Application.Dapper.Authors.UpdateAuthorWithDapperCommand;
 using BlogApi.Application.DTOs;
+using BlogApi.Application.Features.AuthorFollower.Commands.UnfollowAuthorCommand;
+using BlogApi.Application.Features.AuthorFollower.FollowAuthorCommand;
+using BlogApi.Application.Features.AuthorFollower.Queries.GetFollowersQuery;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Features.Authors.Commands.DeleteAuthorCommand;
 using BlogApi.Application.Features.Authors.Commands.UpdateAuthorCommand;
@@ -31,11 +34,27 @@ public class AuthorController:ControllerBase
     {
         return StatusCode(StatusCodes.Status201Created,await _sender.Send(createAuthorCommand));
     }
+
+    [HttpPost("follow/{AuthorId:guid}")]
+    [Authorize]
+    public async Task<IActionResult> FollowAuthor(FollowAuthorCommand followAuthorCommand)
+    {
+        var response = await _sender.Send(followAuthorCommand);
+        return StatusCode(response.StatusCode, response);
+    }
     [HttpPut("{AuthorId:guid}")]
     [Authorize]
     public async Task<IActionResult> UpdateAuthor(UpdateAuthorCommand updateAuthorCommand)
     {
         return Ok(await _sender.Send(updateAuthorCommand));
+    }
+
+    [HttpDelete("unfollow/{AuthorId:guid}")]
+    [Authorize]
+    public async Task<IActionResult> UnfollowAuthor(UnfollowAuthorCommand unfollowAuthorCommand)
+    {
+        var response = await _sender.Send(unfollowAuthorCommand);
+        return StatusCode(response.StatusCode, response);
     }
 
     [HttpDelete("{AuthorId:guid}")]
@@ -66,6 +85,13 @@ public class AuthorController:ControllerBase
     public async Task<IActionResult> GetAuthorsByAgeBetween(GetAuthorsWithAgeQuery getAuthorsWithAgeQuery)
     {
        return Ok(await _sender.Send(getAuthorsWithAgeQuery));
+    }
+
+    [HttpGet("followers/{AuthorId:guid}")]
+    public async Task<IActionResult> GetAuthorsFollowers(GetFollowersQuery getFollowersQuery)
+    {
+        var response = await _sender.Send(getFollowersQuery);
+        return StatusCode(response.StatusCode, response);
     }
     
     [Authorize]

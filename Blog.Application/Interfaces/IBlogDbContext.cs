@@ -16,6 +16,8 @@ public interface IBlogDbContext
     
     DbSet<Comment> Comments { get; }
     
+    DbSet<AuthorFollower> AuthorFollowers { get; }
+    
     DatabaseFacade Database { get; } 
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
