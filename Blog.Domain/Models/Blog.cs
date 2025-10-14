@@ -38,5 +38,7 @@ namespace BlogApi.Domain.Models
         public ICollection<BlogDocument> Documents { get; set; } = new List<BlogDocument>();
         
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        
+        public ICollection<BlogFavorite> FavoritedBy { get; set; } = new List<BlogFavorite>();
     }
 }

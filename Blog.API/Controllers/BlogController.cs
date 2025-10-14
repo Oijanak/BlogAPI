@@ -9,6 +9,8 @@ using BlogApi.Application.Dapper.Blogs.Commands.CreateBlogWithDapperCommand;
 using BlogApi.Application.Dapper.Blogs.Commands.DeleteBlogWithDapperCommand;
 using BlogApi.Application.Dapper.Blogs.Commands.UpdateBlogWithDapperCommand;
 using BlogApi.Application.Dapper.Blogs.Queries;
+using BlogApi.Application.Features.BlogFavorite.FavoriteBlogCommand;
+using BlogApi.Application.Features.BlogFavorite.UnfavoriteBlogCommand;
 using BlogApi.Application.Features.Blogs.Commands.ApproveStatusCommand;
 using BlogApi.Application.Features.Blogs.Commands.CreateBlogCommand;
 using BlogApi.Application.Features.Blogs.Commands.DeleteBlogCommand;
@@ -85,6 +87,23 @@ public class BlogController : ControllerBase
     public async Task<IActionResult> GetBlogComments(GetAllBlogCommentsQuery getAllBlogCommentsQuery)
     {
         return Ok(await _sender.Send(getAllBlogCommentsQuery));
+    }
+
+
+    [HttpPost("favorite/{BlogId:guid}")]
+    [Authorize]
+    public async Task<IActionResult> FavoriteBlog(FavoriteBlogCommand favoriteBlogCommand)
+    {
+        var response = await _sender.Send(favoriteBlogCommand);
+        return StatusCode(response.StatusCode, response);
+    }
+
+    [HttpDelete("unfavorite/{BlogId:guid}")]
+    [Authorize]
+    public async Task<IActionResult> UnFavoriteBlog(UnfavoriteBlogCommand unfavoriteBlogCommand)
+    {
+        var response = await _sender.Send(unfavoriteBlogCommand);
+        return StatusCode(response.StatusCode, response);
     }
     
     [Authorize]

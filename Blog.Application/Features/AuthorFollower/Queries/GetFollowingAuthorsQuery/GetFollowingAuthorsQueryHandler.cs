@@ -26,6 +26,7 @@ public class GetFollowingAuthorsQueryHandler:IRequestHandler<GetFollowingAuthors
                 AuthorName = x.Author.AuthorName,
                 AuthorEmail = x.Author.AuthorEmail,
                 Age = x.Author.Age,
+                CreatedBy = x.Author.CreatedBy,
             })
             .ToListAsync(cancellationToken);
         return Result<IEnumerable<AuthorDto>>.Success(authors);

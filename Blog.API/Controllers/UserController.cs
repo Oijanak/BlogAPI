@@ -1,5 +1,6 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.AuthorFollower.Queries.GetFollowingAuthorsQuery;
+using BlogApi.Application.Features.BlogFavorite.Queries.GetFavoriteBlogsQuery;
 using BlogApi.Application.Features.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -27,6 +28,14 @@ public class UserController:ControllerBase
     public async Task<IActionResult> GetFollowingUsers()
     {
         var response = await _sender.Send(new GetFollowingAuthorsQuery());
+        return StatusCode(response.StatusCode, response);
+    }
+
+    [HttpGet("favorites")]
+    [Authorize]
+    public async Task<IActionResult> GetFavorites()
+    {
+        var response = await _sender.Send(new GetFavoriteBlogsQuery());
         return StatusCode(response.StatusCode, response);
     }
 }

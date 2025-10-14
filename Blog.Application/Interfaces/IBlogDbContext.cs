@@ -18,6 +18,8 @@ public interface IBlogDbContext
     
     DbSet<AuthorFollower> AuthorFollowers { get; }
     
+    DbSet<BlogFavorite>  BlogFavorites { get; }
+    
     DatabaseFacade Database { get; } 
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

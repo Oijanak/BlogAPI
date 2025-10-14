@@ -15,6 +15,7 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
 
     public AuthorControllerIntegrationTests(BlogApiWebFactory factory)
     {
+      
         _factory = factory;
         _client = _factory.CreateClient();
         var user = new 

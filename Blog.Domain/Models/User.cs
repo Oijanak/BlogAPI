@@ -16,5 +16,6 @@ namespace BlogApi.Domain.Models
         
         public ICollection<AuthorFollower> FollowingAuthors { get; set; } = new List<AuthorFollower>();
 
+        public ICollection<BlogFavorite> FavoriteBlogs { get; set; } = new List<BlogFavorite>();
     }
 }

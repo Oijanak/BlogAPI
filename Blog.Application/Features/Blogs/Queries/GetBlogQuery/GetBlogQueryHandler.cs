@@ -40,8 +40,8 @@ public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,ApiResponse<BlogDT
             ApproveStatus = blog.ApproveStatus,
             ActiveStatus = blog.ActiveStatus,
             Author = blog.Author != null ? new AuthorDto(blog.Author) : null,
-            Categories = blog.Categories.Select(c=>new CategoryDto{CategotyId= c.CategoryId,CategoryName = c.CategoryName}).ToList()
-            
+            Categories = blog.Categories.Select(c=>new CategoryDto{CategotyId= c.CategoryId,CategoryName = c.CategoryName}).ToList(),
+            BlogDocuments = blog.Documents.Select(d=>new BlogDocumentDto{BlogDocumentId = d.BlogDocumentId,DocumentName = d.DocumentName,DocumentType = d.DocumentType}).ToList()
         };
         return new ApiResponse<BlogDTO>
         {
