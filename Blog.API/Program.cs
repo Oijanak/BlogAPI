@@ -8,6 +8,8 @@ using BlogApi.Application.Interfaces;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.DTOs.Validators;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
+using BlogApi.Application.Features.Blogs.Authorization;
+using BlogApi.Application.Features.Comments.Authorization;
 using BlogApi.Application.Services;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
@@ -15,6 +17,7 @@ using BlogApi.Infrastructure.Services;
 using FluentValidation;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -101,6 +104,8 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ITokenCleanupService, TokenCleanupService>();
 builder.Services.AddScoped<IUpdateBlogActiveStatusService, UpdateBlogActiveStatusService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IAuthorizationHandler, CommentOwnerAuthorizationHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, BlogOwnerAuthorizationHandler>();
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 var jwtKey = builder.Configuration["Jwt:Key"];
@@ -126,8 +131,13 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
     });
-
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CommentOwnerPolicy", policy =>
+        policy.Requirements.Add(new CommentOwnerRequirement()));
+    options.AddPolicy("BlogOwnerPolicy", policy =>
+        policy.Requirements.Add(new BlogOwnerAuthorizationRequirement()));
+});;
 var app = builder.Build();
 
 app.UseStatusCodePages(async context =>

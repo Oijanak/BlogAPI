@@ -25,16 +25,18 @@ public class CommentController:ControllerBase
     }
 
     [HttpPut("{CommentId}")]
-    [Authorize]
+    [Authorize(Policy = "CommentOwnerPolicy")]
     public async Task<IActionResult> UpdateComment(UpdateCommentCommand updateCommentCommand)
     {
         return Ok(await _sender.Send(updateCommentCommand));
     }
-
+    
+    
     [HttpDelete("{CommentId}")]
-    [Authorize]
+    [Authorize(Policy="CommentOwnerPolicy")]
     public async Task<IActionResult> DeleteComment(DeleteCommentCommand deleteCommentCommand)
     {
-        return Ok(await _sender.Send(deleteCommentCommand));
+        var response = await _sender.Send(deleteCommentCommand);
+        return StatusCode(response.StatusCode, response);
     }
 }

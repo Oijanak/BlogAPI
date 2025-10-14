@@ -58,7 +58,7 @@ public class BlogController : ControllerBase
     }
 
     [HttpPut("{BlogId:guid}")]
-    [Authorize]
+    [Authorize(Policy = "BlogOwnerPolicy")]
     public async Task<IActionResult> UpdateBlog(UpdateBlogCommand updateBlogCommand)
     {
        return Ok(await _sender.Send(updateBlogCommand));
@@ -72,6 +72,7 @@ public class BlogController : ControllerBase
     }
 
     [HttpDelete("{BlogId:guid}")]
+    [Authorize(Policy = "BlogOwnerPolicy")]
     public async Task<IActionResult> DeleteBlog(DeleteBlogCommand deleteBlogCommand)
     {
         return Ok(await _sender.Send(deleteBlogCommand));

@@ -31,12 +31,14 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
         Blog existingBlog = await _blogDbContext.Blogs
             .Include(b => b.CreatedByUser)
             .Include(b => b.UpdatedByUser)
+            .Include(b=>b.Categories)
             .FirstOrDefaultAsync(b => b.BlogId == request.BlogId, cancellationToken);
         Guard.Against.Null(existingBlog,nameof(existingBlog));
         existingBlog.BlogTitle = request.Blog.BlogTitle;
         existingBlog.BlogContent = request.Blog.BlogContent;
         existingBlog.StartDate=request.Blog.StartDate;
         existingBlog.EndDate=request.Blog.EndDate;
+        existingBlog.Categories.Clear();
         existingBlog.Categories = categories;
         existingBlog.Documents = await _fileService.UpdateFilesAsync(request.BlogId,request.Blog.Documents);
         var currentDate = DateTime.UtcNow.Date;

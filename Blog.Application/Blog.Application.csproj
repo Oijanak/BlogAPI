@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Folder Include="Features\BlogFavorite\Command\" />
+    <Folder Include="Features\Comments\Commands\" />
   </ItemGroup>
 
   <PropertyGroup>
