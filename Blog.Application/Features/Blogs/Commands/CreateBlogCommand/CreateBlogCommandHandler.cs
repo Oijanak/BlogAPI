@@ -3,6 +3,7 @@ using Ardalis.GuardClauses;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
+using BlogApi.Application.Features.Blogs.Notifications.BlogCreatedNotification;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Enum;
 using BlogApi.Domain.Models;
@@ -15,11 +16,14 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
 {
     private readonly IBlogDbContext _blogDbContext;
     private readonly IFileService _fileService;
+    private readonly IMediator _mediator;
+    
 
-    public CreateBlogCommandHandler(IBlogDbContext blogDbContext,IFileService fileService)
+    public CreateBlogCommandHandler(IBlogDbContext blogDbContext,IFileService fileService,IMediator mediator)
     {
         _blogDbContext = blogDbContext;
         _fileService = fileService;
+        _mediator = mediator;
     }
     
     public async Task<ApiResponse<BlogDTO>> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
@@ -54,6 +58,7 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
         
        await _blogDbContext.Blogs.AddAsync(blog, cancellationToken);
        await _blogDbContext.SaveChangesAsync(cancellationToken);
+       await _mediator.Publish(new BlogCreatedNotification{Blog = blog});
        return new ApiResponse<BlogDTO>
        {
            Data = new BlogDTO()

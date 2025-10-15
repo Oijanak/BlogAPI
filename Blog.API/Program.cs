@@ -104,6 +104,8 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ITokenCleanupService, TokenCleanupService>();
 builder.Services.AddScoped<IUpdateBlogActiveStatusService, UpdateBlogActiveStatusService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAuthorizationHandler, CommentOwnerAuthorizationHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, BlogOwnerAuthorizationHandler>();
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
