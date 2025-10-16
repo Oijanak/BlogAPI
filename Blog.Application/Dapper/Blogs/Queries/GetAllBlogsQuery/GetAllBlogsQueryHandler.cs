@@ -33,8 +33,7 @@ public class GetAllBlogsQueryHandler:IRequestHandler<GetAllBlogsQuery,ApiRespons
             },
             commandType: CommandType.StoredProcedure
         );
-
-        // 1️⃣ Read blogs with author and user info
+        
         var blogs = result.Read<BlogDTO, AuthorDto, UserDto, UserDto, UserDto, BlogDTO>(
             (blog, author, createdBy, updatedBy, approveBy) =>
             {
@@ -51,8 +50,7 @@ public class GetAllBlogsQueryHandler:IRequestHandler<GetAllBlogsQuery,ApiRespons
         var documents = result.Read<BlogDocument>().ToList();
 
         var categoriesRaw = result.Read<(Guid CategoryId, string CategoryName, Guid BlogsBlogId)>().ToList();
-
-        // 4️⃣ Assign documents and categories to blogs
+        
         foreach (var blog in blogs)
         {
             blog.BlogDocuments = documents.Where(d => d.BlogId == blog.BlogId).Select(d=>new BlogDocumentDto{BlogDocumentId = d.BlogDocumentId,DocumentName = d.DocumentName,DocumentType = d.DocumentType}).ToList();
@@ -65,8 +63,7 @@ public class GetAllBlogsQueryHandler:IRequestHandler<GetAllBlogsQuery,ApiRespons
                 })
                 .ToList();
         }
-
-        // 5️⃣ Read total count
+        
         var totalCount = result.ReadSingle<int>();
 
         return new ApiResponse<IEnumerable<BlogDTO>>()

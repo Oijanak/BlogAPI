@@ -1,9 +1,11 @@
+using BlogApi.Application.DTOs;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace BlogApi.Infrastructure.Services;
 
@@ -11,11 +13,13 @@ public class FileService:IFileService
 {
     private readonly IWebHostEnvironment _environment;
     private readonly IBlogDbContext _blogDbContext;
+    private readonly string _uploadFolder;
 
-    public FileService(IWebHostEnvironment environment,IBlogDbContext blogDbContext)
+    public FileService(IWebHostEnvironment environment,IBlogDbContext blogDbContext,IOptions<FileStorageOptions> options)
     {
         _environment = environment;
         _blogDbContext = blogDbContext;
+        _uploadFolder = Path.Combine(_environment.ContentRootPath, options.Value.UploadFolder);
     }
 
     public async Task<List<BlogDocument>> UploadFilesAsync(IEnumerable<IFormFile> files)
@@ -23,17 +27,17 @@ public class FileService:IFileService
         if (files == null || !files.Any())
             return new List<BlogDocument>();
         
-        string uploadFolder = Path.Combine(_environment.ContentRootPath, "Uploads", "Blogs");
+       
 
-        if (!Directory.Exists(uploadFolder))
-            Directory.CreateDirectory(uploadFolder);
+        if (!Directory.Exists(_uploadFolder))
+            Directory.CreateDirectory(_uploadFolder);
 
         var uploadedDocuments = new List<BlogDocument>();
 
         foreach (var file in files)
         {
             string uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            string filePath = Path.Combine(uploadFolder, uniqueFileName);
+            string filePath = Path.Combine(_uploadFolder, uniqueFileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {

@@ -1,7 +1,11 @@
+using System.Data;
 using BlogApi.Application.Interfaces;
 using BlogApi.Infrastructure.Data;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Blog.API.IntegrationTest;
 
@@ -15,18 +19,38 @@ public class BlogApiWebFactory
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureServices(services =>
+        builder.ConfigureAppConfiguration((context, config) =>
         {
-            var dbContextDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == 
-                     typeof(IDbContextOptionsConfiguration<BlogDbContext>));
-            if(dbContextDescriptor!=null)
-                services.Remove(dbContextDescriptor);
+            config
+                .AddJsonFile("appsettings.Test.json", optional: false);
+        });
+
+        builder.ConfigureTestServices(services =>
+        {
+            services.RemoveAll(typeof(DbContextOptions<BlogDbContext>));
             
-            services.AddDbContext<IBlogDbContext,BlogDbContext>(options =>
+            var sp = services.BuildServiceProvider();
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            var testConnection = configuration.GetConnectionString("TestConnection");
+            
+            services.AddDbContext<BlogDbContext>(options =>
             {
-                options.UseInMemoryDatabase("TestDb");
+                options.UseSqlServer(testConnection);
             });
+            services.RemoveAll<IDbConnection>();
+            services.AddScoped<IDbConnection>(sp =>
+            {
+                return new SqlConnection(testConnection);
+            
+            });
+            
+            using var scope = services.BuildServiceProvider().CreateScope();
+            var scopedProvider = scope.ServiceProvider;
+            var dbContext = scopedProvider.GetRequiredService<BlogDbContext>();
+
+            
+            dbContext.Database.EnsureDeleted(); 
+            dbContext.Database.Migrate();
             
         });
         

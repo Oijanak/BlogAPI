@@ -24,6 +24,7 @@ public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,ApiResponse<BlogDT
             .Include(b => b.UpdatedByUser)
             .Include(b => b.ApprovedByUser)
             .Include(b=>b.Categories)
+            .Include(b=>b.Documents)
             .FirstOrDefaultAsync(b => b.BlogId == request.BlogId, cancellationToken);
         var blogResult = new BlogDTO()
         {

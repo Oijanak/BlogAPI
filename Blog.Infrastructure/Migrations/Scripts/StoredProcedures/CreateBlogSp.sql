@@ -5,8 +5,9 @@ CREATE OR ALTER PROCEDURE spCreateBlog
     @StartDate DATE,
     @EndDate DATE,
     @CreatedBy UNIQUEIDENTIFIER,
-    @CategoryIds NVARCHAR(MAX),
-    @DocumentIds NVARCHAR(MAX)
+    @CategoryIds NVARCHAR(MAX)
+    
+  
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -46,9 +47,12 @@ VALUES (
        );
 
 
+IF (@CategoryIds IS NOT NULL AND LTRIM(RTRIM(@CategoryIds)) <> '')
+BEGIN
 INSERT INTO BlogCategories (BlogsBlogId, CategoriesCategoryId)
 SELECT @BlogId, CAST(value AS UNIQUEIDENTIFIER)
 FROM STRING_SPLIT(@CategoryIds, ',');
+END
 
 
 

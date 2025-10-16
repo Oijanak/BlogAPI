@@ -104,6 +104,9 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ITokenCleanupService, TokenCleanupService>();
 builder.Services.AddScoped<IUpdateBlogActiveStatusService, UpdateBlogActiveStatusService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.Configure<FileStorageOptions>(
+    builder.Configuration.GetSection("FileStorage"));
+
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAuthorizationHandler, CommentOwnerAuthorizationHandler>();
@@ -137,6 +140,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("CommentOwnerPolicy", policy =>
         policy.Requirements.Add(new CommentOwnerRequirement()));
+    
     options.AddPolicy("BlogOwnerPolicy", policy =>
         policy.Requirements.Add(new BlogOwnerAuthorizationRequirement()));
 });;

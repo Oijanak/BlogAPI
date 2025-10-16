@@ -14,7 +14,7 @@ public class CreateBlogWithDapperCommand:IRequest<ApiResponse<BlogDTO>>
     
     public DateTime EndDate { get; set; }
     
-    public List<Guid> Categories { get; set; }
+    public List<Guid>? Categories { get; set; }
     
-    public List<IFormFile> Files { get; set; }
+    public List<IFormFile>? Files { get; set; }
 }
