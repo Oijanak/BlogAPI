@@ -109,7 +109,7 @@ public class BlogController : ControllerBase
     
     [Authorize]
     [HttpPost("sp")]
-    public async Task<IActionResult> CreateBlogWithSp(CreateBlogWithSpCommand createBlogWithSpCommand)
+    public async Task<IActionResult> CreateBlogWithSp([FromForm]CreateBlogWithSpCommand createBlogWithSpCommand)
     {
         return StatusCode(StatusCodes.Status201Created,await _sender.Send(createBlogWithSpCommand));
     }
@@ -129,7 +129,7 @@ public class BlogController : ControllerBase
 
     [Authorize]
     [HttpPost("dapper")]
-    public async Task<IActionResult> CreateBlogWithDapper(CreateBlogWithDapperCommand createBlogWithDapperCommand)
+    public async Task<IActionResult> CreateBlogWithDapper([FromForm]CreateBlogWithDapperCommand createBlogWithDapperCommand)
     {
         return StatusCode(StatusCodes.Status201Created,await _sender.Send(createBlogWithDapperCommand));
     }
