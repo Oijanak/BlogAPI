@@ -21,7 +21,7 @@ public class UpdateCommentCommandHandler:IRequestHandler<UpdateCommentCommand, A
             .Include(c => c.User)
             .FirstOrDefaultAsync(c => c.CommentId == request.CommentId, cancellationToken);
         
-        existingComment.Content = request.Content;
+        existingComment.Content = request.UpdateCommentRequest.Content;
         existingComment.UpdatedAt = DateTime.UtcNow;
         await _blogDbContext.SaveChangesAsync(cancellationToken);
         return new ApiResponse<CommentDto>

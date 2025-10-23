@@ -24,6 +24,10 @@ public class BlogOwnerAuthorizationHandler:AuthorizationHandler<BlogOwnerAuthori
         var routeData = httpContext.GetRouteData();
         var blogId = Guid.Parse(routeData.Values["BlogId"]!.ToString()!);
         var blog= await _dbContext.Blogs.FindAsync(blogId);
+        if (blog == null)
+        {
+            context.Succeed(requirement);
+        }
         if (blog != null && blog.CreatedBy == _currentUserService.UserId)
         {
             context.Succeed(requirement);

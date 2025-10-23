@@ -14,7 +14,7 @@ public class UpdateCommentCommandValidator:AbstractValidator<UpdateCommentComman
             .MustAsync(async (commentId, cancellationToken) =>
                 await _blogDbContext.Comments.FindAsync(commentId) != null)
             .WithMessage("Comment not found").WithErrorCode("404");;
-        RuleFor(x=>x.Content).NotEmpty().WithMessage("Content is required").
+        RuleFor(x=>x.UpdateCommentRequest.Content).NotEmpty().WithMessage("Content is required").
             MaximumLength(500).WithMessage("Content should be of length 500 characters");
     }
 }
