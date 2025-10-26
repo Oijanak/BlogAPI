@@ -8,4 +8,6 @@ public class CreateCommentCommand:IRequest<ApiResponse<CommentDto>>
     public Guid BlogId { get; set; }
     public string Content { get; set; }
     
+    public Guid? ParentCommentId { get; set; }
+    
 }

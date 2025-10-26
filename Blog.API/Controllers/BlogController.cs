@@ -19,6 +19,7 @@ using BlogApi.Application.Features.Blogs.Queries.GetAllBlogCommentsQuery;
 using BlogApi.Application.Features.Blogs.Queries.GetBlogDocumentQuery;
 using BlogApi.Application.Features.Blogs.Queries.GetBlogListQuery;
 using BlogApi.Application.Features.Blogs.Queries.GetBlogQuery;
+using BlogApi.Application.Features.Rss;
 using BlogApi.Application.SP.Blogs.Commands;
 using BlogApi.Application.SP.Blogs.Commands.DeleteBlogWithSpCommand;
 using BlogApi.Application.SP.Blogs.Commands.UpdateBlogWithSpCommand;
@@ -48,6 +49,14 @@ public class BlogController : ControllerBase
     public async Task<IActionResult> GetAllBlogs(GetBlogListQuery getBlogListQuery)
     {
         return Ok(await _sender.Send(getBlogListQuery));
+       
+    }
+    
+    [HttpGet("rss")]
+    public async Task<IActionResult> GetRssFeed()
+    {
+        var xml = await _sender.Send(new GetRssFeedQuery());
+        return Content(xml, "application/rss+xml; charset=utf-8");
        
     }
 

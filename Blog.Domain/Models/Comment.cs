@@ -17,4 +17,10 @@ public class Comment
     public Blog Blog { get; set; } = null!;
 
     public User User { get; set; } = null!;
+    
+    public Guid? ParentCommentId { get; set; }
+    public Comment? ParentComment { get; set; }
+    
+    public ICollection<Comment> Replies { get; set; } = new List<Comment>();
+
 }

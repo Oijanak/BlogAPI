@@ -28,7 +28,8 @@ public class GetAllBlogsCommentsQueryHandler:IRequestHandler<GetAllBlogCommentsQ
                     Id =  comment.User.Id,
                     Email = comment.User.Email,
                     Name = comment.User.Name
-                }
+                },
+              
 
             }).ToListAsync();
         return new ApiResponse<IEnumerable<CommentDto>>

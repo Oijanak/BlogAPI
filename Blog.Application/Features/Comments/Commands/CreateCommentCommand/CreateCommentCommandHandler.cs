@@ -31,8 +31,10 @@ public class CreateCommentCommandHandler:IRequestHandler<CreateCommentCommand, A
         {
             Content = request.Content,
             BlogId = request.BlogId,
-            UserId = _currentUserService.UserId
+            UserId = _currentUserService.UserId,
+            ParentCommentId = request.ParentCommentId,
         };
+        
         _blogDbContext.Comments.Add(comment);
         await _blogDbContext.SaveChangesAsync();
         return new ApiResponse<CommentDto>
@@ -43,8 +45,7 @@ public class CreateCommentCommandHandler:IRequestHandler<CreateCommentCommand, A
                 Content = comment.Content,
                 CreatedAt = comment.CreatedAt,
                 UpdatedAt = comment.UpdatedAt,
-                User = user
-
+                User = user,
             },
             Message = "Comment created successfully"
         };
