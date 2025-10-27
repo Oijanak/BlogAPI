@@ -94,6 +94,8 @@ public class BlogController : ControllerBase
     }
 
     [HttpGet("{BlogId}/comments")]
+    [Authorize]
+    [AllowAnonymous]
     public async Task<IActionResult> GetBlogComments(GetAllBlogCommentsQuery getAllBlogCommentsQuery)
     {
         return Ok(await _sender.Send(getAllBlogCommentsQuery));

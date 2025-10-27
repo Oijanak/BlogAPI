@@ -15,7 +15,7 @@ public class AuthOperationFilter : IOperationFilter
              .Any())
         || context.MethodInfo.GetCustomAttributes(true)
              .OfType<AuthorizeAttribute>()
-             .Any();
+             .Any() ;
 
     if (hasAuthorize)
     {

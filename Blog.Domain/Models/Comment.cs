@@ -22,5 +22,7 @@ public class Comment
     public Comment? ParentComment { get; set; }
     
     public ICollection<Comment> Replies { get; set; } = new List<Comment>();
+    
+    public ICollection<CommentReaction> Reactions { get; set; } = new List<CommentReaction>();
 
 }

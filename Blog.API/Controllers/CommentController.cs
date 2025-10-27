@@ -1,3 +1,4 @@
+using BlogApi.Application.Features.Comments.Commands.ReactToCommentCommand;
 using BlogApi.Application.Features.Comments.CreateCommentCommand;
 using BlogApi.Application.Features.Comments.DeleteCommentCommand;
 using BlogApi.Application.Features.Comments.UpdateCommentCommand;
@@ -37,6 +38,15 @@ public class CommentController:ControllerBase
     public async Task<IActionResult> DeleteComment(DeleteCommentCommand deleteCommentCommand)
     {
         var response = await _sender.Send(deleteCommentCommand);
+        return StatusCode(response.StatusCode, response);
+    }
+
+    [HttpPut("{CommentId}/react")]
+    [Authorize]
+    
+    public async Task<IActionResult> ReactToCommment(ReactToCommentCommand reactToCommentCommand)
+    {
+        var response = await _sender.Send(reactToCommentCommand);
         return StatusCode(response.StatusCode, response);
     }
 }

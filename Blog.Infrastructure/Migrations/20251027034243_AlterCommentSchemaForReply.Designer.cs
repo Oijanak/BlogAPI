@@ -4,6 +4,7 @@ using BlogApi.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogApi.Infrastructure.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    partial class BlogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251027034243_AlterCommentSchemaForReply")]
+    partial class AlterCommentSchemaForReply
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -267,33 +270,6 @@ namespace BlogApi.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("BlogApi.Domain.Models.CommentReaction", b =>
-                {
-                    b.Property<Guid>("ReactionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CommentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsLike")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ReactionId");
-
-                    b.HasIndex("CommentId", "UserId")
-                        .IsUnique();
-
-                    b.ToTable("CommentReactions");
                 });
 
             modelBuilder.Entity("BlogApi.Domain.Models.User", b =>
@@ -645,7 +621,7 @@ namespace BlogApi.Infrastructure.Migrations
                     b.HasOne("BlogApi.Domain.Models.Comment", "ParentComment")
                         .WithMany("Replies")
                         .HasForeignKey("ParentCommentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("BlogApi.Domain.Models.User", "User")
                         .WithMany("Comments")
@@ -658,17 +634,6 @@ namespace BlogApi.Infrastructure.Migrations
                     b.Navigation("ParentComment");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("BlogApi.Domain.Models.CommentReaction", b =>
-                {
-                    b.HasOne("BlogApi.Domain.Models.Comment", "Comment")
-                        .WithMany("Reactions")
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Comment");
                 });
 
             modelBuilder.Entity("BlogCategory", b =>
@@ -755,8 +720,6 @@ namespace BlogApi.Infrastructure.Migrations
 
             modelBuilder.Entity("BlogApi.Domain.Models.Comment", b =>
                 {
-                    b.Navigation("Reactions");
-
                     b.Navigation("Replies");
                 });
 

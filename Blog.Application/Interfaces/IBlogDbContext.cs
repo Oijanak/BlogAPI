@@ -20,6 +20,8 @@ public interface IBlogDbContext
     
     DbSet<BlogFavorite>  BlogFavorites { get; }
     
+    DbSet<CommentReaction> CommentReactions { get; }
+    
     DatabaseFacade Database { get; } 
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

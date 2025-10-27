@@ -10,6 +10,7 @@ public class Result<T>
     public int StatusCode { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public T? Data{ get; set; }
+    
     public Result(){}
 
     private Result(bool isSuccess, string? error, int statusCode, T? value)

@@ -1,0 +1,42 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace BlogApi.Infrastructure.Migrations
+{
+    /// <inheritdoc />
+    public partial class ChangeDeleteRestrict : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Comments_Comments_ParentCommentId",
+                table: "Comments");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Comments_Comments_ParentCommentId",
+                table: "Comments",
+                column: "ParentCommentId",
+                principalTable: "Comments",
+                principalColumn: "CommentId",
+                onDelete: ReferentialAction.Restrict);
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Comments_Comments_ParentCommentId",
+                table: "Comments");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Comments_Comments_ParentCommentId",
+                table: "Comments",
+                column: "ParentCommentId",
+                principalTable: "Comments",
+                principalColumn: "CommentId",
+                onDelete: ReferentialAction.Cascade);
+        }
+    }
+}

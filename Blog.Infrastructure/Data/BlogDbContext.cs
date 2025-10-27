@@ -26,6 +26,8 @@ public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
     
     public DbSet<Comment> Comments { get; set; }
     
+    public DbSet<CommentReaction> CommentReactions { get; set; }
+    
     public DbSet<AuthorFollower> AuthorFollowers { get; set; }
     
     public DbSet<BlogFavorite> BlogFavorites { get; set; }
@@ -39,6 +41,7 @@ public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
         modelBuilder.ApplyConfiguration(new CommentConfig());
         modelBuilder.ApplyConfiguration(new AuthorFollowerConfig());
         modelBuilder.ApplyConfiguration(new BlogFavoriteConfig());
+        modelBuilder.ApplyConfiguration(new CommentReactionConfig());
     }
     
     public override int SaveChanges()
