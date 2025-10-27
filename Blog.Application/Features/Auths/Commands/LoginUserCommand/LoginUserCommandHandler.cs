@@ -13,11 +13,13 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
 {
     private readonly UserManager<User> _userManager;
     private readonly ITokenService _tokenService;
+    private readonly SignInManager<User> _signInManager;
 
-    public LoginUserCommandHandler(UserManager<User> userManager, ITokenService tokenService)
+    public LoginUserCommandHandler(UserManager<User> userManager,SignInManager<User> signInManager, ITokenService tokenService)
     {
         _userManager = userManager;
         _tokenService = tokenService;
+        _signInManager = signInManager;
     }
 
     public async Task<Result<TokenResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
@@ -26,10 +28,16 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
         if (user == null)
             return Result<TokenResponse>.Failure("Invalid email or password", (int)HttpStatusCode.Unauthorized);
 
-        var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
-        if (!isPasswordValid)
-            return Result<TokenResponse>.Failure("Invalid email or password", (int)HttpStatusCode.Unauthorized);
+        var result = await _signInManager.PasswordSignInAsync(user, request.Password, false, lockoutOnFailure: true);
 
+        if (result.IsLockedOut)
+            return Result<TokenResponse>.Failure("Account locked due to multiple failed attempts.", (int)HttpStatusCode.Locked);
+
+        if (result.IsNotAllowed)
+            return Result<TokenResponse>.Failure("Please confirm your email before logging in.", (int)HttpStatusCode.Forbidden);
+
+        if (!result.Succeeded)
+            return Result<TokenResponse>.Failure("Invalid email or password", (int)HttpStatusCode.Unauthorized);
         var userRoles = await _userManager.GetRolesAsync(user);
         var authClaims = new List<Claim>
         {

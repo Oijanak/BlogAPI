@@ -45,10 +45,17 @@ Guard.Against.NullOrEmpty(connectionString,nameof(connectionString));
 builder.Services.AddDbContext<IBlogDbContext,BlogDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+    {
+        options.SignIn.RequireConfirmedEmail = true; 
+    })
     .AddEntityFrameworkStores<BlogDbContext>()
     .AddDefaultTokenProviders();
    
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromMinutes(30); 
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorCommandValidator>();
 builder.Services.AddFluentValidationAutoValidation();

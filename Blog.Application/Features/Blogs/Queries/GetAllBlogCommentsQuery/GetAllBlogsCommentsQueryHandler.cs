@@ -33,6 +33,8 @@ public class GetAllBlogsCommentsQueryHandler:IRequestHandler<GetAllBlogCommentsQ
                     Name = c.User.Name,
                     Email = c.User.Email
                 },
+                CreatedAt = c.CreatedAt,
+                
                 LikesCount = c.Reactions.Count(r => r.IsLike),
                 DislikesCount = c.Reactions.Count(r => !r.IsLike),
                 CurrentUserReaction = c.Reactions
@@ -49,6 +51,7 @@ public class GetAllBlogsCommentsQueryHandler:IRequestHandler<GetAllBlogCommentsQ
                         Name = r.User.Name,
                         Email = r.User.Email
                     },
+                    CreatedAt = c.CreatedAt,
                     LikesCount = r.Reactions.Count(re => re.IsLike),
                     DislikesCount = r.Reactions.Count(re => !re.IsLike),
                     CurrentUserReaction = r.Reactions
