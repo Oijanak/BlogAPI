@@ -34,7 +34,7 @@ public class GetRssFeedQueryHandler : IRequestHandler<GetRssFeedQuery, string>
         var items = blogs.Select(b => new SyndicationItem(
             b.BlogTitle,
             b.BlogContent.Length > 300 ? b.BlogContent[..300] + "..." : b.BlogContent,
-            new Uri($"https://localhost:5058/blogs/{b.BlogId}"),
+            new Uri($"http://localhost:5058/api/blogs/{b.BlogId}"),
             b.BlogId.ToString(),
             b.CreatedAt
         )).ToList();

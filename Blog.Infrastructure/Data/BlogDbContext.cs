@@ -70,7 +70,7 @@ public class BlogDbContext : IdentityDbContext<User>,IBlogDbContext
                 {
                     entry.Property("CreatedAt").CurrentValue = DateTime.UtcNow;
                 }
-                
+                if(currentUserId!=null)
                 entry.Property("CreatedBy").CurrentValue = currentUserId; 
                 
             }
