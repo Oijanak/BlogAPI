@@ -46,6 +46,8 @@ public class BlogController : ControllerBase
     }
 
     [HttpPost("getAll")]
+    [Authorize]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllBlogs(GetBlogListQuery getBlogListQuery)
     {
         return Ok(await _sender.Send(getBlogListQuery));
@@ -61,6 +63,8 @@ public class BlogController : ControllerBase
     }
 
     [HttpGet("{BlogId:guid}")]
+    [Authorize]
+    [AllowAnonymous]
     public async Task<IActionResult> GetBlogById(GetBlogQuery blogQuery)
     {
         return Ok(await _sender.Send(blogQuery));

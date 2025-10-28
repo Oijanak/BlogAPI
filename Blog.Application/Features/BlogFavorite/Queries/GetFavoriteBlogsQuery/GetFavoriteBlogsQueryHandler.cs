@@ -37,8 +37,8 @@ public class GetFavoriteBlogsQueryHandler:IRequestHandler<GetFavoriteBlogsQuery,
                 ActiveStatus = f.Blog.ActiveStatus,
                 Author = f.Blog.Author != null ? new AuthorDto(f.Blog.Author) : null,
                 Categories = f.Blog.Categories.Select(c=>new CategoryDto{CategotyId= c.CategoryId,CategoryName = c.CategoryName}).ToList(),
-                BlogDocuments = f.Blog.Documents.Select(d=>new BlogDocumentDto{BlogDocumentId = d.BlogDocumentId,DocumentName = d.DocumentName,DocumentType = d.DocumentType}).ToList()
-                
+                BlogDocuments = f.Blog.Documents.Select(d=>new BlogDocumentDto{BlogDocumentId = d.BlogDocumentId,DocumentName = d.DocumentName,DocumentType = d.DocumentType}).ToList(),
+                isFavorited = true
             })
             .ToListAsync(cancellationToken);
         return Result<IEnumerable<BlogDTO>>.Success(blogs);

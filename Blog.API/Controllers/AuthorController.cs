@@ -64,11 +64,15 @@ public class AuthorController:ControllerBase
     }
 
     [HttpGet("{AuthorId:guid}")]
+    [Authorize]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAuthorById(GetAuthorByIdQuery getAuthorByIdQuery)
     {
         return Ok(await _sender.Send(getAuthorByIdQuery));
     }
     [HttpGet]
+    [Authorize]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAuthors()
     {
         return Ok(await _sender.Send(new GetAuthorListQuery()));

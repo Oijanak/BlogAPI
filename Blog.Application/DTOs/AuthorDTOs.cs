@@ -19,6 +19,8 @@ public class AuthorDto
     public string? UpdatedBy { get; set; }
     
     public string CreatedBy { get; set; }
+    
+    public bool? isFollowed { get; set; }
     public AuthorDto(){}
     public AuthorDto(Author author)
     {

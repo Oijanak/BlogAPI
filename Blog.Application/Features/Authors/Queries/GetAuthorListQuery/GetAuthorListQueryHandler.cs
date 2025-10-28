@@ -11,18 +11,31 @@ namespace BlogApi.Application.Features.Authors.Queries.GetAuthorListQuery;
 public class GetAuthorListQueryHandler:IRequestHandler<GetAuthorListQuery,ApiResponse<IEnumerable<AuthorDto>>>
 {
     private readonly IBlogDbContext _blogDbContext;
+    private readonly ICurrentUserService _currentUserService;
 
-    public GetAuthorListQueryHandler(IBlogDbContext blogDbContext)
+    public GetAuthorListQueryHandler(IBlogDbContext blogDbContext,ICurrentUserService currentUserService)
     {
         _blogDbContext = blogDbContext;
+        _currentUserService = currentUserService;
     }
     public async Task<ApiResponse<IEnumerable<AuthorDto>>> Handle(GetAuthorListQuery request, CancellationToken cancellationToken)
     {
-        IEnumerable<AuthorDto> result= await _blogDbContext.Authors.Select(author => new AuthorDto(author)).ToListAsync();
+        var userId = _currentUserService.UserId;
+       var result = await _blogDbContext.Authors
+           .Select(author => new AuthorDto
+           {
+               AuthorId = author.AuthorId,
+               AuthorName = author.AuthorName,
+               AuthorEmail = author.AuthorEmail,
+               Age = author.Age,
+               CreatedBy = author.CreatedBy,
+               isFollowed = userId!=null?author.Followers.Any(f => f.UserId == userId):null
+           })
+           .ToListAsync();
         return new ApiResponse<IEnumerable<AuthorDto>>
         {
             Data = result,
-            Message = "Authors fecthed successfully"
+            Message = "Authors fectched successfully"
         };
     }
 }

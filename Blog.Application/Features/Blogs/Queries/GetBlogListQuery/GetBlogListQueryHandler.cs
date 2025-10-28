@@ -9,22 +9,28 @@ namespace BlogApi.Application.Features.Blogs.Queries.GetBlogListQuery;
 public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiResponse<IEnumerable<BlogDTO>>>
 {
     private readonly IBlogDbContext _blogDbContext;
+    private readonly ICurrentUserService _currentUserService;
 
-    public GetBlogListQueryHandler(IBlogDbContext blogDbContext)
+    public GetBlogListQueryHandler(IBlogDbContext blogDbContext, ICurrentUserService currentUserService)
     {
         _blogDbContext = blogDbContext;
+        _currentUserService = currentUserService;
     }
     
     public async Task<ApiResponse<IEnumerable<BlogDTO>>> Handle(GetBlogListQuery request, CancellationToken cancellationToken)
     {
         var query = _blogDbContext.Blogs
             .Include(blog => blog.Author)
+            .ThenInclude(author=>author.Followers)
             .Include(blog => blog.CreatedByUser)
             .Include(blog=>blog.Documents)
             .Include(blog => blog.UpdatedByUser)
             .Include(blog=>blog.Categories)
             .Include(blog => blog.ApprovedByUser)
+            .Include(b=>b.FavoritedBy)
             .AsSplitQuery();;
+
+        var userId = _currentUserService.UserId;
         
         if (request.StartDate.HasValue)
         {
@@ -92,10 +98,19 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiRespon
             EndDate = blog.EndDate,
             ActiveStatus = blog.ActiveStatus,
             ApproveStatus = blog.ApproveStatus,
-            Author = blog.Author != null ? new AuthorDto(blog.Author) : null,
+            Author = blog.Author != null ? new AuthorDto()
+            {
+                AuthorId = blog.Author.AuthorId,
+                AuthorName = blog.Author.AuthorName,
+                AuthorEmail = blog.Author.AuthorEmail,
+                CreatedBy = blog.Author.CreatedBy,
+                Age = blog.Author.Age,
+                isFollowed = userId!=null?blog.Author.Followers.Any(f=>f.UserId==userId):null
+            } : null,
             Categories = blog.Categories.Select(c=>new CategoryDto{CategotyId= c.CategoryId,CategoryName = c.CategoryName}).ToList(),
-            BlogDocuments = blog.Documents.Select(d=>new BlogDocumentDto{BlogDocumentId = d.BlogDocumentId,DocumentName = d.DocumentName,DocumentType = d.DocumentType}).ToList()
-            
+            BlogDocuments = blog.Documents.Select(d=>new BlogDocumentDto{BlogDocumentId = d.BlogDocumentId,DocumentName = d.DocumentName,DocumentType = d.DocumentType}).ToList(),
+            isFavorited = userId!=null?blog.FavoritedBy
+                .Any(bf => bf.UserId == userId):null
         }).ToList();
         return new ApiResponse<IEnumerable<BlogDTO>>
         {

@@ -30,6 +30,8 @@ public class BlogDTO
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public AuthorDto Author { get; set; } 
     
+    public bool? isFavorited { get; set; }
+    
     public List<CategoryDto> Categories { get; set; }
     
     public List<BlogDocumentDto> BlogDocuments { get; set; }
