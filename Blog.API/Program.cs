@@ -153,6 +153,11 @@ builder.Services.AddAuthorization(options =>
 });;
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<IBlogDbContext>();
+    await FakeBlogSeeder.SeedAsync(context);
+}
 app.UseStatusCodePages(async context =>
 {
     var response = context.HttpContext.Response;
@@ -196,7 +201,7 @@ RecurringJob.AddOrUpdate<ITokenCleanupService>(
 RecurringJob.AddOrUpdate<IUpdateBlogActiveStatusService>(
     "update-blog-active-status",
     service => service.UpdateBlogActiveStatusAsync(),
-    Cron.Hourly
+    Cron.Daily
 );
 app.Run();
 
