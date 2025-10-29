@@ -22,15 +22,6 @@ public class CommentControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     {
         _factory = factory;
         _client = factory.CreateClient();
-        var user = new 
-        {
-            Name = "comment user",
-            Email = "comment_user@example.com",
-            Password = "User123!",
-            Role = "Maker"
-        };
-
-        _client.PostAsJsonAsync("/api/Auth/register", user).GetAwaiter().GetResult();
         var token =  GetJwtTokenAsync().GetAwaiter().GetResult();
         _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
@@ -48,6 +39,8 @@ public class CommentControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         };
         var response = await _client.PostAsJsonAsync("/api/comments", command);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var content = await response.Content.ReadAsStringAsync();
+        var x = 10;
         var result = await response.Content.ReadFromJsonAsync<ApiResponse<CommentDto>>();
         result.Should().NotBeNull();
         result!.Message.Should().Be("Comment created successfully");
@@ -156,7 +149,7 @@ public class CommentControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     {
         var loginRequest = new
         {
-            Email = "comment_user@example.com",
+            Email = "userauth@example.com",
             Password = "User123!"
         };
 

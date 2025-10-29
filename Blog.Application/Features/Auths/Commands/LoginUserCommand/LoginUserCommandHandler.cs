@@ -34,7 +34,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
             return Result<TokenResponse>.Failure("Account locked due to multiple failed attempts.", (int)HttpStatusCode.Locked);
 
         if (result.IsNotAllowed)
-            return Result<TokenResponse>.Failure("Please confirm your email before logging in.", (int)HttpStatusCode.Forbidden);
+            return Result<TokenResponse>.Failure("Please confirm your email before logging in.", (int)HttpStatusCode.Unauthorized);
 
         if (!result.Succeeded)
             return Result<TokenResponse>.Failure("Invalid email or password", (int)HttpStatusCode.Unauthorized);

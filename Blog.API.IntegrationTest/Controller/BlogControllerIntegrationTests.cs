@@ -214,13 +214,14 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>,IDi
     {
         var loginRequest = new
         {
-            Email = "user02@example.com",
+            Email = "userauth@example.com",
             Password = "User123!"
         };
 
         var response = await _client.PostAsJsonAsync("/api/Auth/login", loginRequest);
-
+        var content =await response.Content.ReadAsStringAsync();
         var json = await response.Content.ReadFromJsonAsync<Result<TokenResponse>>();
+        
         return json.Data.AccessToken;
     }
     
@@ -274,16 +275,8 @@ public class BlogControllerIntegrationTests:IClassFixture<BlogApiWebFactory>,IDi
     [Fact]
     public async Task UpdateBlog_AsUnauthorizedUser_ShouldReturn_Forbidden()
     {
-         var newUser = new
-         {
-             Name = "Blog Creator",
-             Email = "blogger@example.com",
-             Password = "Blogger123!",
-             Role = "Maker"
-         };
-         await _client.PostAsJsonAsync("/api/Auth/register", newUser);
-    
-    var loginResponse = await _client.PostAsJsonAsync("/api/Auth/login", new { Email = newUser.Email, Password = newUser.Password });
+    var loginResponse = await _client.PostAsJsonAsync("/api/Auth/login", new { Email = "blogger@example.com", Password =  "Blogger123!"});
+    var content = await loginResponse.Content.ReadAsStringAsync();
     var loginResult = await loginResponse.Content.ReadFromJsonAsync<Result<TokenResponse>>();
     var token = loginResult.Data.AccessToken;
 

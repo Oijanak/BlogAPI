@@ -18,14 +18,7 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
       
         _factory = factory;
         _client = _factory.CreateClient();
-        var user = new 
-        {
-            Name = "user",
-            Email = "user@example.com",
-            Password = "User123!"
-        };
-
-        _client.PostAsJsonAsync("/api/Auth/register", user).GetAwaiter().GetResult();
+      
     }
     
     [Fact]
@@ -216,7 +209,7 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     {
         var loginRequest = new
         {
-            Email = "user@example.com",
+            Email = "userauth@example.com",
             Password = "User123!"
         };
 
@@ -224,7 +217,6 @@ public class AuthorControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
 
         var json = await response.Content.ReadFromJsonAsync<Result<TokenResponse>>( new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         var content = await response.Content.ReadAsStringAsync();
-        Console.WriteLine("Raw Response: " + content);
         return json.Data.AccessToken;
     }
 

@@ -29,6 +29,25 @@ public class CreateCommentCommandValidator:AbstractValidator<CreateCommentComman
             })
             .WithMessage("Parent comment not found.")
             .WithErrorCode("404");
+        
+        RuleFor(c => c)
+            .MustAsync(BeValidParentComment)
+            .WithMessage("Parent comment must belong to the same blog");
+    }
+
+    private async Task<bool> BeValidParentComment(CreateCommentCommand command, CancellationToken token)
+    {
+        if (!command.ParentCommentId.HasValue)
+            return true; 
+
+        var parent = await _blogDbContext.Comments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.CommentId == command.ParentCommentId.Value, token);
+
+        if (parent == null)
+            return false;
+
+        return parent.BlogId == command.BlogId;
     }
 
 }

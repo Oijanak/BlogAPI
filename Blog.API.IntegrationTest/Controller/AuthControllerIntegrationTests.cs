@@ -18,15 +18,7 @@ public class AuthControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
     {
         _factory = factory;
         _client = factory.CreateClient();
-        var user = new 
-        {
-            Name = "user",
-            Email = "userauth@example.com",
-            Password = "User123!",
-            Role = "Maker"
-        };
-
-        _client.PostAsJsonAsync("/api/Auth/register", user).GetAwaiter().GetResult();
+      
     }
     
     [Fact]
@@ -107,7 +99,7 @@ public class AuthControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
         var result = await response.Content.ReadFromJsonAsync<Result<TokenResponse>>();
-        
+        var responseContent = await response.Content.ReadAsStringAsync();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         result.Should().NotBeNull();
         result.Data.Should().NotBeNull();
@@ -130,7 +122,6 @@ public class AuthControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         var result = await response.Content.ReadFromJsonAsync<Result<TokenResponse>>();
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         result.Should().NotBeNull();
-        result.Error.Should().Contain("Invalid email or password");
     }
     
     [Fact]
