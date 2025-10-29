@@ -51,3 +51,11 @@ public class UpdateBlogRequest
     public List<IFormFile> Documents { get; set; }=new List<IFormFile>();
     
 }
+public class BlogReportDto
+{
+    public Guid BlogId { get; set; }
+    public string BlogTitle { get; set; } = string.Empty;
+    public string AuthorName { get; set; } = string.Empty;
+    public int FavoritesCount { get; set; }
+    public int CommentsCount { get; set; }
+}

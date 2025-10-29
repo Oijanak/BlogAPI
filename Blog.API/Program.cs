@@ -24,6 +24,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using QuestPDF.Infrastructure;
 using Serilog;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
@@ -111,6 +112,8 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ITokenCleanupService, TokenCleanupService>();
 builder.Services.AddScoped<IUpdateBlogActiveStatusService, UpdateBlogActiveStatusService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IExcelService,ExcelService>();
+builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.Configure<FileStorageOptions>(
     builder.Configuration.GetSection("FileStorage"));
 
@@ -151,6 +154,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("BlogOwnerPolicy", policy =>
         policy.Requirements.Add(new BlogOwnerAuthorizationRequirement()));
 });;
+QuestPDF.Settings.License = LicenseType.Community;
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

@@ -19,6 +19,8 @@ using BlogApi.Application.Features.Blogs.Queries.GetAllBlogCommentsQuery;
 using BlogApi.Application.Features.Blogs.Queries.GetBlogDocumentQuery;
 using BlogApi.Application.Features.Blogs.Queries.GetBlogListQuery;
 using BlogApi.Application.Features.Blogs.Queries.GetBlogQuery;
+using BlogApi.Application.Features.Blogs.Queries.GetBlogReportPdfQuery;
+using BlogApi.Application.Features.Blogs.Queries.GetBlogReportQuery;
 using BlogApi.Application.Features.Rss;
 using BlogApi.Application.SP.Blogs.Commands;
 using BlogApi.Application.SP.Blogs.Commands.DeleteBlogWithSpCommand;
@@ -120,6 +122,20 @@ public class BlogController : ControllerBase
     {
         var response = await _sender.Send(unfavoriteBlogCommand);
         return StatusCode(response.StatusCode, response);
+    }
+
+    [HttpGet("export/excel/blog-report")]
+    public async Task<IActionResult> ExportBlogReportExcel()
+    {
+        var result= await _sender.Send(new GetBlogReportExcelQuery());
+        return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "BlogReport.xlsx");
+    }
+    
+    [HttpGet("export/pdf/blog-report")]
+    public async Task<IActionResult> ExportBlogReportPdf()
+    {
+        var result= await _sender.Send(new GetBlogReportPdfQuery());
+        return File(result, "application/pdf", "BlogReport.pdf");
     }
     
     [Authorize]
