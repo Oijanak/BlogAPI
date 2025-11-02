@@ -28,7 +28,7 @@ public class UpdateBlogWithDappersCommandHandler:IRequestHandler<UpdateBlogWithD
         var author = await _dbConnection.QueryFirstOrDefaultAsync<AuthorDto>("select * from [Authors] where AuthorId=@AuthorId",
             new { request.Blog.AuthorId });
         Guard.Against.Null(author, nameof(author),"Author with Id not found");
-        var blogs=await _dbConnection.QueryAsync<BlogDTO,UserDto,UserDto,AuthorDto,BlogDTO>(
+        var blogs=await _dbConnection.QueryAsync<BlogDTO,CreatedByUserDto,UpdatedByUserDto,AuthorDto,BlogDTO>(
             "spUpdateBlog",
             (blog, createdBy, updatedBy, author) =>
             {

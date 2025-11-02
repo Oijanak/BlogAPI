@@ -37,7 +37,7 @@ public class CreateBlogWithDapperCommandHandler:IRequestHandler<CreateBlogWithDa
             commandType: CommandType.StoredProcedure
         );
         
-        var blogs = result.Read<BlogDTO, UserDto, AuthorDto,BlogDTO>(
+        var blogs = result.Read<BlogDTO, CreatedByUserDto, AuthorDto,BlogDTO>(
             (blog, createdBy, authors) =>
             {
                 blog.CreatedBy = createdBy;

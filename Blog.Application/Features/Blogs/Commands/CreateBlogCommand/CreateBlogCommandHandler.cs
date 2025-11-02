@@ -70,7 +70,7 @@ public class CreateBlogCommandHandler:IRequestHandler<CreateBlogCommand,ApiRespo
                UpdatedAt = blog.UpdatedAt,
                CreatedBy = await _blogDbContext.Users
                             .Where(u => u.Id == blog.CreatedBy)
-                            .Select(u => new UserDto(u))
+                            .Select(u => new CreatedByUserDto(u))
                             .FirstOrDefaultAsync(),
                StartDate = blog.StartDate,
                EndDate = blog.EndDate,

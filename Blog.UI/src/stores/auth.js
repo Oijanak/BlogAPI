@@ -17,7 +17,7 @@ export const useAuthStore = defineStore('auth', {
         
       const decoded = jwtDecode(state.accessToken);
       const role=decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
-      const email=decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]
+        const email = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]
       return {role,email}; 
     } catch (err) {
       return null;

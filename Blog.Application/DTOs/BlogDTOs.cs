@@ -15,7 +15,7 @@ public class BlogDTO
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt{ get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public UserDto? ApprovedBy { get; set; } 
+    public ApprovedByUserDto? ApprovedBy { get; set; } 
     
     public ApproveStatus ApproveStatus { get; set; }
     
@@ -24,9 +24,9 @@ public class BlogDTO
     public DateTime StartDate { get; set; }
     
     public  DateTime EndDate { get; set; }
-    public UserDto CreatedBy { get; set; }
+    public CreatedByUserDto CreatedBy { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public UserDto? UpdatedBy { get; set; }
+    public UpdatedByUserDto? UpdatedBy { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public AuthorDto Author { get; set; } 
     

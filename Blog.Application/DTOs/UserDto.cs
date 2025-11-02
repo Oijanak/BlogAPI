@@ -18,3 +18,48 @@ public class UserDto
         Email = user.Email;
     }
 }
+public class CreatedByUserDto
+{
+    public string CreatedById { get; set; }
+    public string CreatedByName { get; set; }
+    public string CreatedByEmail { get; set; }
+
+    public CreatedByUserDto() { }
+
+    public CreatedByUserDto(User user)
+    {
+        CreatedById = user.Id;
+        CreatedByName = user.Name;
+        CreatedByEmail = user.Email;
+    }
+
+}
+
+public class UpdatedByUserDto
+{
+    public string UpdatedById { get; set; }
+    public string UpdatedByName { get; set; }
+    public string UpdatedByEmail { get; set; }
+    public UpdatedByUserDto() { }
+
+    public UpdatedByUserDto(User user) {
+        UpdatedById=user.Id;
+        UpdatedByName=user.Name;
+        UpdatedByEmail = user.Email;
+    }
+
+}
+public class ApprovedByUserDto
+{
+    public string ApprovedById { get; set; }
+    public string ApprovedByName { get; set; }
+    public string ApprovedByEmail { get; set; }
+
+    public ApprovedByUserDto() { }
+    public ApprovedByUserDto(User user)
+    {
+        ApprovedById = user.Id;
+        ApprovedByEmail = user.Email;
+        ApprovedByName = user.Name;
+    }
+}

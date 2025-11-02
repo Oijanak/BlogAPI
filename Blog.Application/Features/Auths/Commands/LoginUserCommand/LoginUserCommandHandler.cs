@@ -41,8 +41,8 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
         var userRoles = await _userManager.GetRolesAsync(user);
         var authClaims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Name, user.UserName ?? string.Empty),
+            new(ClaimTypes.PrimarySid, user.Id.ToString()),
+            new(ClaimTypes.Email, user.Email ?? string.Empty),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

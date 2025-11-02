@@ -34,7 +34,7 @@ public class GetAllBlogsQueryHandler:IRequestHandler<GetAllBlogsQuery,ApiRespons
             commandType: CommandType.StoredProcedure
         );
         
-        var blogs = result.Read<BlogDTO, AuthorDto, UserDto, UserDto, UserDto, BlogDTO>(
+        var blogs = result.Read<BlogDTO,AuthorDto, CreatedByUserDto, UpdatedByUserDto, ApprovedByUserDto, BlogDTO>(
             (blog, author, createdBy, updatedBy, approveBy) =>
             {
                 blog.Author = author;
@@ -43,7 +43,7 @@ public class GetAllBlogsQueryHandler:IRequestHandler<GetAllBlogsQuery,ApiRespons
                 blog.ApprovedBy = approveBy;
                 return blog;
             },
-            splitOn: "AuthorId,Id,Id,Id"
+            splitOn: "AuthorId,CreatedById,UpdatedById,ApprovedById"
         ).ToList();
 
      
