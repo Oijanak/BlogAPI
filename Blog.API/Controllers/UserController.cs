@@ -1,6 +1,7 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.AuthorFollower.Queries.GetFollowingAuthorsQuery;
 using BlogApi.Application.Features.BlogFavorite.Queries.GetFavoriteBlogsQuery;
+using BlogApi.Application.Features.Users.Commands.AddUserRoles;
 using BlogApi.Application.Features.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -37,5 +38,13 @@ public class UserController:ControllerBase
     {
         var response = await _sender.Send(new GetFavoriteBlogsQuery());
         return StatusCode(response.StatusCode, response);
+    }
+    
+    [HttpPost("roles")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> AddUserRole([FromBody] AddUserRoleCommand command)
+    {
+        var result = await _sender.Send(command);
+        return StatusCode(result.StatusCode, result);
     }
 }

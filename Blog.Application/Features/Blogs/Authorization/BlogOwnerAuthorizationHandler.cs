@@ -1,4 +1,5 @@
 using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -25,6 +26,11 @@ public class BlogOwnerAuthorizationHandler:AuthorizationHandler<BlogOwnerAuthori
         var blogId = Guid.Parse(routeData.Values["BlogId"]!.ToString()!);
         var blog= await _dbContext.Blogs.FindAsync(blogId);
         if (blog == null)
+        {
+            context.Succeed(requirement);
+        }
+        if (blog!=null && (context.User.IsInRole(Role.Admin.ToString()) ||
+                              context.User.IsInRole(Role.Checker.ToString())))
         {
             context.Succeed(requirement);
         }

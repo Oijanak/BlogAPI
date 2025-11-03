@@ -2,6 +2,7 @@ using System.Web;
 using Azure.Core;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Enum;
 using BlogApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -30,7 +31,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
         if (existingUser != null)
             return Result<string>.Failure("User with this email already exists.");
 
-        string roleName = request.role.ToString();
+        string roleName = Role.Maker.ToString();
 
         if (!await _roleManager.RoleExistsAsync(roleName))
         {
@@ -38,7 +39,6 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
             if (!roleResult.Succeeded)
                 return Result<string>.Failure("Failed to create role.");
         }
-
         var user = new User
         {
             UserName = request.Email,

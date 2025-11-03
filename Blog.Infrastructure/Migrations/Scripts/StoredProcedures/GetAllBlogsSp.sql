@@ -17,7 +17,7 @@ BEGIN
 
     DECLARE @Offset INT = (@Page - 1) * @Limit;
 
-    -- Step 1: Filter blogs with joins for author and users
+
 WITH FilteredBlogs AS
          (
              SELECT
@@ -45,8 +45,8 @@ WITH FilteredBlogs AS
                  auu.Name as ApprovedByName,
                  auu.Email as ApprovedByEmail
              FROM Blogs b
-                      LEFT JOIN Authors a ON b.AuthorId = a.AuthorId
-                      LEFT JOIN AspNetUsers cu ON b.CreatedBy = cu.Id
+                      INNER JOIN Authors a ON b.AuthorId = a.AuthorId
+                      INNER JOIN AspNetUsers cu ON b.CreatedBy = cu.Id
                       LEFT JOIN AspNetUsers uu ON b.UpdatedBy = uu.Id
                       LEFT JOIN AspNetUsers auu ON b.ApprovedBy = auu.Id
              WHERE
@@ -58,7 +58,6 @@ WITH FilteredBlogs AS
                  (@ActiveStatus IS NULL OR b.ActiveStatus = @ActiveStatus)
          )
 
--- Step 2: Paginate blogs
     
 SELECT *
 INTO #TempBlogs
@@ -105,18 +104,17 @@ ORDER BY
 OFFSET @Offset ROWS
     FETCH NEXT @Limit ROWS ONLY;
 
--- 4️⃣ Return BlogDocuments
+
 SELECT bd.*
 FROM BlogDocument bd
          INNER JOIN #TempBlogs tb ON bd.BlogId = tb.BlogId;
 
--- 5️⃣ Return Categories
 SELECT c.CategoryId, c.CategoryName, bc.BlogsBlogId
 FROM Categories c
          INNER JOIN BlogCategories bc ON c.CategoryId = bc.CategoriesCategoryId
          INNER JOIN #TempBlogs tb ON bc.BlogsBlogId = tb.BlogId;
 
--- 6️⃣ Return total count
+
 SELECT COUNT(*) AS TotalCount
 FROM #TempBlogs;
 END;

@@ -8,7 +8,9 @@ namespace BlogApi.Application.Features.Authors.Queries.GetBlogsByAuthorIdQuery;
 public class GetBlogsByAuthorIdQuery:IRequest<ApiResponse<IEnumerable<BlogDTO>>>
 {
     [FromRoute]
-    public Guid AuthorId { get; }
+    public Guid AuthorId { get; set; }
+    
+    public GetBlogsByAuthorIdQuery(){}
 
     public GetBlogsByAuthorIdQuery(Guid authorId)
     {

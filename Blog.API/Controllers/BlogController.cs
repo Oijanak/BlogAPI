@@ -80,7 +80,7 @@ public class BlogController : ControllerBase
     }
 
     [HttpPatch("{BlogId:guid}/approve")]
-    [Authorize(Roles = "Checker")]
+    [Authorize(Roles = "Checker,Admin")]
     public async Task<IActionResult> ApproveBlog(ApproveStatusCommand approveStatusCommand)
     {
         return Ok(await _sender.Send(approveStatusCommand));

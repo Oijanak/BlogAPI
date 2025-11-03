@@ -28,8 +28,8 @@ public class AuthControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         var request = new RegisterUserCommand(
             Name: "Test User",
             Email: $"testuser_{Guid.NewGuid()}@example.com", 
-            Password: "StrongP@ssw0rd!",
-            role: Role.Maker
+            Password: "StrongP@ssw0rd!"
+           
         );
         var response = await _client.PostAsJsonAsync("/api/auth/register", request);
         var responseBody = await response.Content.ReadFromJsonAsync<Result<string>>();
@@ -74,7 +74,7 @@ public class AuthControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         Role role)
     {
         
-        var request = new RegisterUserCommand(name, email, password, role);
+        var request = new RegisterUserCommand(name, email, password);
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/auth/register", request);

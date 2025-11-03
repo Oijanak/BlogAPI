@@ -13,6 +13,7 @@ using BlogApi.Application.Features.Comments.Authorization;
 using BlogApi.Application.Services;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
+using BlogApi.Infrastructure.DbSeeder;
 using BlogApi.Infrastructure.Services;
 using FluentValidation;
 using Hangfire;
@@ -159,6 +160,8 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    var services = scope.ServiceProvider;
+    await SeedData.SeedRolesAndAdminAsync(services);
     var context = scope.ServiceProvider.GetRequiredService<IBlogDbContext>();
     await FakeBlogSeeder.SeedAsync(context);
 }

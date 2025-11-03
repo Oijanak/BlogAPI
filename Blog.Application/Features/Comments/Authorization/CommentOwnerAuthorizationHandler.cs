@@ -1,4 +1,5 @@
 using BlogApi.Application.Interfaces;
+using BlogApi.Domain.Enum;
 using BlogApi.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +34,12 @@ public class CommentOwnerAuthorizationHandler:AuthorizationHandler<CommentOwnerR
         {
             context.Succeed(requirement);
         }
+        if (comment!=null && (context.User.IsInRole(Role.Admin.ToString()) ||
+            context.User.IsInRole(Role.Checker.ToString())))
+        {
+            context.Succeed(requirement);
+        }
+
         
         if (comment != null && comment.UserId == _currentUserService.UserId)
         {
