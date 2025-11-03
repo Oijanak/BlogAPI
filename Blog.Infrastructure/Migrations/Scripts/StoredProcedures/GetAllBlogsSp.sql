@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE spGetBlogList
+CREATE   PROCEDURE spGetBlogList
 (
     @StartDate DATE = NULL,
     @EndDate DATE = NULL,
@@ -17,54 +17,6 @@ BEGIN
 
     DECLARE @Offset INT = (@Page - 1) * @Limit;
 
-<<<<<<< Updated upstream
-
-WITH FilteredBlogs AS
-         (
-             SELECT
-                 b.BlogId,
-                 b.BlogTitle,
-                 b.BlogContent,
-                 b.CreatedAt,
-                 b.UpdatedAt,
-                 b.StartDate,
-                 b.EndDate,
-                 b.ActiveStatus,
-                 b.ApproveStatus,
-                 a.AuthorId,
-                 a.AuthorName,
-                 a.AuthorEmail,
-                 a.Age,
-                 a.CreatedBy,
-                 cu.Id as CreatedById,
-                 cu.Name as CreatedByName,
-                 cu.Email as CreatedByEmail,
-                 uu.Id as UpdatedById,
-                 uu.Name as UpdatedByName,
-                 uu.Email as UpdatedBYEmail,
-                 auu.Id as ApprovedById,
-                 auu.Name as ApprovedByName,
-                 auu.Email as ApprovedByEmail
-             FROM Blogs b
-                      INNER JOIN Authors a ON b.AuthorId = a.AuthorId
-                      INNER JOIN AspNetUsers cu ON b.CreatedBy = cu.Id
-                      LEFT JOIN AspNetUsers uu ON b.UpdatedBy = uu.Id
-                      LEFT JOIN AspNetUsers auu ON b.ApprovedBy = auu.Id
-             WHERE
-                 (@StartDate IS NULL OR CAST(b.StartDate AS DATE) = @StartDate) AND
-                 (@EndDate IS NULL OR CAST(b.EndDate AS DATE) = @EndDate) AND
-                 (@CreatedBy IS NULL OR b.CreatedBy = @CreatedBy) AND
-                 (@ApprovedBy IS NULL OR b.ApprovedBy = @ApprovedBy) AND
-                 (@ApproveStatus IS NULL OR b.ApproveStatus = @ApproveStatus) AND
-                 (@ActiveStatus IS NULL OR b.ActiveStatus = @ActiveStatus)
-         )
-
-    
-SELECT *
-INTO #TempBlogs
-FROM FilteredBlogs;
-=======
->>>>>>> Stashed changes
 
     SELECT
         b.BlogId,
@@ -138,21 +90,6 @@ OFFSET @Offset ROWS
 FETCH NEXT @Limit ROWS ONLY;
 
 
-<<<<<<< Updated upstream
-
-SELECT bd.*
-FROM BlogDocument bd
-         INNER JOIN #TempBlogs tb ON bd.BlogId = tb.BlogId;
-
-SELECT c.CategoryId, c.CategoryName, bc.BlogsBlogId
-FROM Categories c
-         INNER JOIN BlogCategories bc ON c.CategoryId = bc.CategoriesCategoryId
-         INNER JOIN #TempBlogs tb ON bc.BlogsBlogId = tb.BlogId;
-
-
-SELECT COUNT(*) AS TotalCount
-FROM #TempBlogs;
-=======
     SELECT bd.BlogDocumentId,bd.DocumentName,bd.DocumentType,bd.DocumentPath,bd.DocumentSize,bd.BlogId
     FROM BlogDocument bd
     INNER JOIN #TempBlogs tb ON bd.BlogId = tb.BlogId;
@@ -164,5 +101,4 @@ FROM #TempBlogs;
 
   
     SELECT COUNT(BlogId) AS TotalCount FROM #TempBlogs;
->>>>>>> Stashed changes
 END;
