@@ -1,4 +1,4 @@
-CREATE   PROCEDURE spGetBlogList
+CREATE OR ALTER PROCEDURE spGetBlogList
 (
     @StartDate DATE = NULL,
     @EndDate DATE = NULL,

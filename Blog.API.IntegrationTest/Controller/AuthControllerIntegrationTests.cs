@@ -1,11 +1,13 @@
-using System.Net;
-using System.Net.Http.Json;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Auths.Commands.LoginUserCommand;
 using BlogApi.Application.Features.Auths.Commands.RefreshTokenCommand;
 using BlogApi.Application.Features.Auths.Commands.RegisterUserCommand;
 using BlogApi.Domain.Enum;
 using FluentAssertions;
+using Newtonsoft.Json.Linq;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace Blog.API.IntegrationTest.Controller;
 
@@ -136,7 +138,7 @@ public class AuthControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         var loginResponse = await _client.PostAsJsonAsync("/api/Auth/login", loginRequest);
 
         var tokenResult = await loginResponse.Content.ReadFromJsonAsync<Result<TokenResponse>>();
-      
+        
         var refreshCommand = new RefreshTokenCommand
         {
             AccessToken = tokenResult.Data.AccessToken,
@@ -145,6 +147,7 @@ public class AuthControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
 
       
         var response = await _client.PostAsJsonAsync("/api/auth/refresh", refreshCommand);
+        var content = await response.Content.ReadAsStringAsync();
         var result = await response.Content.ReadFromJsonAsync<Result<TokenResponse>>();
 
       

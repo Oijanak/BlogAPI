@@ -1,10 +1,11 @@
-using System.Net;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Security.Claims;
 
 namespace BlogApi.Application.Features.Auths.Commands.RefreshTokenCommand;
 
@@ -22,7 +23,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
     public async Task<Result<TokenResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         var principal = _tokenService.GetPrincipalFromExpiredToken(request.AccessToken);
-        var username = principal?.Identity?.Name;
+        var username = principal?.Claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value; ;
 
         if (string.IsNullOrEmpty(username))
             return Result<TokenResponse>.Failure("Invalid access token", (int)HttpStatusCode.Unauthorized);
