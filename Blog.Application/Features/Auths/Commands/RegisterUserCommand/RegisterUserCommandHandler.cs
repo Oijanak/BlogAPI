@@ -31,7 +31,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
         if (existingUser != null)
             return Result<string>.Failure("User with this email already exists.");
 
-        string roleName = Role.Maker.ToString();
+        string roleName = Role.User.ToString();
 
         if (!await _roleManager.RoleExistsAsync(roleName))
         {

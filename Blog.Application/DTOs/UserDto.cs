@@ -1,5 +1,6 @@
 using BlogApi.Domain.Models;
-
+using BlogApi.Domain.Enum;
+using System.Text.Json.Serialization;
 namespace BlogApi.Application.DTOs;
 
 public class UserDto
@@ -7,6 +8,8 @@ public class UserDto
     public string Id { get; set; }
     public string Name { get; set; }
     public string Email { get; set; }
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
+    public List<string>? Roles { get; set; }
     public UserDto()
     {
 

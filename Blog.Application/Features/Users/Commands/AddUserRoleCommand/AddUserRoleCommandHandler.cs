@@ -29,7 +29,7 @@ public class AddUserRoleCommandHandler
                 var roleName = role.ToString();
 
                 if (!await _roleManager.RoleExistsAsync(roleName))
-                    throw new Exception($"Role '{roleName}' does not exist");
+                    return Result<string>.Failure($"Role {roleName} doesn't exists");
 
                 if (!await _userManager.IsInRoleAsync(user, roleName))
                 {

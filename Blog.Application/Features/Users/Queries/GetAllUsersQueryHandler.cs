@@ -1,6 +1,7 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Users.Queries;
 using BlogApi.Domain.Models;
+using DocumentFormat.OpenXml.Spreadsheet;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,18 +19,25 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, ApiResp
     {
         var users = await _userManager.Users
             .AsNoTracking()
-            .Select(u => new UserDto
-            {
-                Id = u.Id,
-                Email = u.Email,
-                Name=u.Name
-            })
             .ToListAsync(cancellationToken);
+
+        var userDtos=new List<UserDto>();
+        foreach (var user in users)
+        {
+            var roles = (await _userManager.GetRolesAsync(user)).ToList();
+            userDtos.Add(new UserDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Name = user.Name,
+                Roles = roles
+            });
+        }
 
         return new ApiResponse<IEnumerable<UserDto>>
         {
             Message = "Users fetched successfully",
-            Data = users
+            Data = userDtos
         };
     }
 }
