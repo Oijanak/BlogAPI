@@ -1,4 +1,3 @@
-using System.Net;
 using Ardalis.GuardClauses;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Exceptions;
@@ -6,8 +5,11 @@ using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Enum;
 using BlogApi.Domain.Models;
+using BlogApi.Infrastructure.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Net;
 
 namespace BlogApi.Application.Features.Blogs.Commands.UpdateBlogCommand;
 
@@ -15,11 +17,13 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
 {
     private readonly IBlogDbContext _blogDbContext;
     private readonly IFileService _fileService;
+    private readonly IDistributedCache _distributedCache;
 
-    public UpdateBlogCommandHandler(IBlogDbContext blogDbContext, IFileService fileService)
+    public UpdateBlogCommandHandler(IBlogDbContext blogDbContext, IFileService fileService,IDistributedCache distributedCache)
     {
         _blogDbContext = blogDbContext;
-        _fileService=fileService;
+        _fileService = fileService;
+        _distributedCache = distributedCache;
     }
     public async Task<ApiResponse<BlogDTO>> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
     {
@@ -53,7 +57,8 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
         existingBlog.Author = author;
         
          await _blogDbContext.SaveChangesAsync(cancellationToken);
-         var blogDto= new BlogDTO()
+       
+        var blogDto= new BlogDTO()
          {
              BlogId = existingBlog.BlogId,
              BlogTitle = existingBlog.BlogTitle,
@@ -70,7 +75,9 @@ public class UpdateBlogCommandHandler:IRequestHandler<UpdateBlogCommand,ApiRespo
              Categories = categories.Select(c=>new CategoryDto{CategotyId = c.CategoryId,CategoryName = c.CategoryName}).ToList(),
              BlogDocuments = existingBlog.Documents.Select(d=>new BlogDocumentDto{BlogDocumentId = d.BlogDocumentId,DocumentName = d.DocumentName,DocumentType = d.DocumentType}).ToList()
          };
-         return new ApiResponse<BlogDTO>
+        await _distributedCache.SetAsync<BlogDTO>($"blog:{request.BlogId}",blogDto);
+
+        return new ApiResponse<BlogDTO>
          {
              Data = blogDto,
              Message = "Blog updated successfully"

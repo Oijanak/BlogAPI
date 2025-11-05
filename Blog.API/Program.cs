@@ -128,6 +128,11 @@ var jwtKey = builder.Configuration["Jwt:Key"];
 Guard.Against.NullOrEmpty(jwtIssuer, nameof(jwtIssuer));
 Guard.Against.NullOrEmpty(jwtAudience, nameof(jwtAudience));
 Guard.Against.NullOrEmpty(jwtKey, nameof(jwtKey));
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "BlogInstance"; 
+});
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
