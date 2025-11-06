@@ -131,7 +131,8 @@ Guard.Against.NullOrEmpty(jwtKey, nameof(jwtKey));
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
-    options.InstanceName = "BlogInstance"; 
+    options.InstanceName = "BlogInstance";
+   
 });
 builder.Services.AddAuthentication(options =>
     {

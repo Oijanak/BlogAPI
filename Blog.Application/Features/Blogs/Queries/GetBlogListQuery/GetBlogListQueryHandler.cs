@@ -1,8 +1,10 @@
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Interfaces;
+using BlogApi.Infrastructure.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace BlogApi.Application.Features.Blogs.Queries.GetBlogListQuery;
 
@@ -10,11 +12,13 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiRespon
 {
     private readonly IBlogDbContext _blogDbContext;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IDistributedCache _distributedCache;
 
-    public GetBlogListQueryHandler(IBlogDbContext blogDbContext, ICurrentUserService currentUserService)
+    public GetBlogListQueryHandler(IBlogDbContext blogDbContext, ICurrentUserService currentUserService,IDistributedCache distributedCache)
     {
         _blogDbContext = blogDbContext;
         _currentUserService = currentUserService;
+        _distributedCache = distributedCache;
     }
     
     public async Task<ApiResponse<IEnumerable<BlogDTO>>> Handle(GetBlogListQuery request, CancellationToken cancellationToken)
@@ -77,41 +81,52 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiRespon
 }
         
         var totalCount = await query.CountAsync(cancellationToken);
-
+        var cacheKey = $"blogs:Page:{request.Page}:limit:{request.Limit}";
         int skip = (request.Page - 1) * request.Limit;
-        var blogsEntities = await query
+
+        var blogDTOs = await _distributedCache.GetOrSetAsync<IEnumerable<BlogDTO>>(cacheKey,
+            async () =>
+            {
+                var blogsEntities = await query
             .Skip(skip)
             .Take(request.Limit)
             .ToListAsync(cancellationToken);
+                return blogsEntities.Select(blog => new BlogDTO
+                {
+                    BlogId = blog.BlogId,
+                    BlogTitle = blog.BlogTitle,
+                    BlogContent = blog.BlogContent,
+                    CreatedAt = blog.CreatedAt,
+                    UpdatedAt = blog.UpdatedAt,
+                    CreatedBy = blog.CreatedByUser != null ? new CreatedByUserDto(blog.CreatedByUser) : null,
+                    UpdatedBy = blog.UpdatedByUser != null ? new UpdatedByUserDto(blog.UpdatedByUser) : null,
+                    ApprovedBy = blog.ApprovedByUser != null ? new ApprovedByUserDto(blog.ApprovedByUser) : null,
+                    StartDate = blog.StartDate,
+                    EndDate = blog.EndDate,
+                    ActiveStatus = blog.ActiveStatus,
+                    ApproveStatus = blog.ApproveStatus,
+                    Author = blog.Author != null ? new AuthorDto()
+                    {
+                        AuthorId = blog.Author.AuthorId,
+                        AuthorName = blog.Author.AuthorName,
+                        AuthorEmail = blog.Author.AuthorEmail,
+                        CreatedBy = blog.Author.CreatedBy,
+                        Age = blog.Author.Age,
+                        isFollowed = userId != null ? blog.Author.Followers.Any(f => f.UserId == userId) : null
+                    } : null,
+                    Categories = blog.Categories.Select(c => new CategoryDto { CategotyId = c.CategoryId, CategoryName = c.CategoryName }).ToList(),
+                    BlogDocuments = blog.Documents.Select(d => new BlogDocumentDto { BlogDocumentId = d.BlogDocumentId, DocumentName = d.DocumentName, DocumentType = d.DocumentType }).ToList(),
+                    isFavorited = userId != null ? blog.FavoritedBy
+                 .Any(bf => bf.UserId == userId) : null
+                }).ToList();
 
-        var blogDTOs = blogsEntities.Select(blog => new BlogDTO
-        {
-            BlogId = blog.BlogId,
-            BlogTitle = blog.BlogTitle,
-            BlogContent = blog.BlogContent,
-            CreatedAt = blog.CreatedAt,
-            UpdatedAt = blog.UpdatedAt,
-            CreatedBy = blog.CreatedByUser != null ? new CreatedByUserDto(blog.CreatedByUser) : null,
-            UpdatedBy = blog.UpdatedByUser != null ? new UpdatedByUserDto(blog.UpdatedByUser) : null,
-            ApprovedBy = blog.ApprovedByUser != null ? new ApprovedByUserDto(blog.ApprovedByUser) : null,
-            StartDate = blog.StartDate,
-            EndDate = blog.EndDate,
-            ActiveStatus = blog.ActiveStatus,
-            ApproveStatus = blog.ApproveStatus,
-            Author = blog.Author != null ? new AuthorDto()
+            }, new DistributedCacheEntryOptions
             {
-                AuthorId = blog.Author.AuthorId,
-                AuthorName = blog.Author.AuthorName,
-                AuthorEmail = blog.Author.AuthorEmail,
-                CreatedBy = blog.Author.CreatedBy,
-                Age = blog.Author.Age,
-                isFollowed = userId!=null?blog.Author.Followers.Any(f=>f.UserId==userId):null
-            } : null,
-            Categories = blog.Categories.Select(c=>new CategoryDto{CategotyId= c.CategoryId,CategoryName = c.CategoryName}).ToList(),
-            BlogDocuments = blog.Documents.Select(d=>new BlogDocumentDto{BlogDocumentId = d.BlogDocumentId,DocumentName = d.DocumentName,DocumentType = d.DocumentType}).ToList(),
-            isFavorited = userId!=null?blog.FavoritedBy
-                .Any(bf => bf.UserId == userId):null
-        }).ToList();
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10),
+                SlidingExpiration=TimeSpan.FromMinutes(5)
+            });
+
+        
         return new ApiResponse<IEnumerable<BlogDTO>>
         {
             totalSize = totalCount,
