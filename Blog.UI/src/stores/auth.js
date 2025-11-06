@@ -30,6 +30,10 @@ export const useAuthStore = defineStore('auth', {
             await axios.post(`${API_URL}/register`, payload)
         },
 
+        async confirmEmail(payload) {
+            await axios.post(`${API_URL}/confirm-email`,payload)
+        },
+
         async login(payload) {
             const res = await axios.post(`${API_URL}/login`, payload)
             this.accessToken = res.data.data.accessToken

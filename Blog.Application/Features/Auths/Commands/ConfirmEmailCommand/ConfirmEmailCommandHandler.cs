@@ -21,7 +21,7 @@ public class ConfirmEmailCommandHandler:IRequestHandler<ConfirmEmailCommand, Res
             return Result<string>.Success("Email Already  Confirmed");
         var result = await _userManager.ConfirmEmailAsync(user, request.Token);
         if (!result.Succeeded)
-        return Result<string>.Failure("Email confirmation failed");
+        return Result<string>.Failure(result.Errors.First().Description);
         return Result<string>.Success("Email confirmation successfully");
     }
 }

@@ -8,13 +8,6 @@
         <input v-model="email" type="email" placeholder="Email" required />
         <input v-model="password" type="password" placeholder="Password" required />
 
-       
-        <select  v-model="role" required >
-          <option disabled value="">Select Role</option>
-          <option value="Maker">Maker</option>
-          <option value="Checker">Checker</option>
-        </select>
-
         <button type="submit">Register</button>
       </form>
 
@@ -45,14 +38,13 @@ const handleRegister = async () => {
     await auth.register({
       name: name.value,
       email: email.value,
-      password: password.value,
-      role: role.value, 
+      password: password.value
     });
     successMessage.value = "Registered successfully";
     name.value = "";
     email.value = "";
     password.value = "";
-    role.value = "";
+   
   } catch (err) {
     
     if (err.response?.data?.error) {

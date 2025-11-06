@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 import Blog from "@/components/Blog.vue";
+import ConfirmEmail from "@/components/ConfirmEmail.vue";
 import {useAuthStore} from "@/stores/auth.js";
 
 
@@ -11,6 +12,7 @@ const routes = [
     { path: '/', component: Register },
     { path: '/register', component: Register },
     { path: '/login', component: Login },
+    { path: '/confirm-email', component: ConfirmEmail },
     { path: '/blogs', component: Blog,meta:{requiresAuth:true} },
 ]
 const router = createRouter({

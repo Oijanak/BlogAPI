@@ -62,14 +62,24 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
        
                
                var subject = "Confirm your email";
-               var body = $@"
-                   <h2>Welcome, {user.Name}!</h2>
-                   <p>Thank you for registering.:</p>
-                    <p><b>UserId :</b><pre>{user.Id}</pre></p>
-                   <p><b>Token :</b><pre>{token}</pre></p>
-                    <p>This token will expire in {tokenExpirationMinutes} minutes.</p>";
-       
-               await _emailService.SendEmailAsync(user.Email,user.Name, subject, body);
+        var confirmationLink = $"http://localhost:5173/confirm-email?userId={user.Id}&token={encodedToken}";
+
+        var body = $@"
+    <h2>Welcome, {user.Name}!</h2>
+    <p>Thank you for registering.</p>
+    <p>Please confirm your email by clicking the link below:</p>
+    <p>
+        <a href='{confirmationLink}' 
+           style='display:inline-block; padding:10px 20px; color:white; background-color:#007bff; 
+                  text-decoration:none; border-radius:5px;'>
+           Confirm Email
+        </a>
+    </p>
+    <p>If the button doesn't work, copy and paste this link into your browser:</p>
+    <p><a href='{confirmationLink}'>{confirmationLink}</a></p>
+    <p>This link will expire in {tokenExpirationMinutes} minutes.</p>";
+
+        await _emailService.SendEmailAsync(user.Email,user.Name, subject, body);
         return Result<string>.Success($"User registered successfully with role: {roleName}.Please confirm your email");
     }
 }

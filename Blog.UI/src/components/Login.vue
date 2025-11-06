@@ -43,11 +43,9 @@ const handleLogin = async () => {
     }, 1000); 
   } catch (err) {
     console.log(err.response.data);
-    if (err.response?.data?.Message) {
-      errorMessage.value = err.response.data.Message;
-    } else {
-      errorMessage.value = "Invalid credentials. Please try again.";
-    }
+    if (err.response?.data?.error) {
+      errorMessage.value = err.response.data.error;
+    } 
   }
 };
 </script>
