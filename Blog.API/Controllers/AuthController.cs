@@ -5,6 +5,7 @@ using BlogApi.Application.Features.Auths.Commands.LoginUserCommand;
 using BlogApi.Application.Features.Auths.Commands.LoginWithGoolgeCommand;
 using BlogApi.Application.Features.Auths.Commands.RefreshTokenCommand;
 using BlogApi.Application.Features.Auths.Commands.RegisterUserCommand;
+using BlogApi.Application.Features.Auths.Commands.ResendConfirmationEmailCommand;
 using BlogApi.Application.Features.Auths.Commands.ResetPasswordCommand;
 using MediatR;
 
@@ -49,6 +50,13 @@ public class AuthController:ControllerBase
     public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand request)
     {
         var result = await _sender.Send(request);
+        return StatusCode(result.StatusCode, result);
+    }
+
+    [HttpPost("resend-confirmation-email")]
+    public async Task<IActionResult> ResendConfirmationEmail(ResendConfirmationEmailCommand resendConfirmationEmailCommand)
+    {
+        var result = await _sender.Send(resendConfirmationEmailCommand);
         return StatusCode(result.StatusCode, result);
     }
     
