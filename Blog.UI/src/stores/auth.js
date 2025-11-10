@@ -44,10 +44,10 @@ export const useAuthStore = defineStore('auth', {
 
          async loginWithGoogle(payload) {
             const res = await axios.post(`${API_URL}/google`, payload)
-            this.accessToken = res.data.accessToken
-            this.refreshToken = res.data.refreshToken
-            localStorage.setItem('accessToken', res.data.accessToken)
-            localStorage.setItem('refreshToken', res.data.refreshToken)
+            this.accessToken = res.data.data.accessToken
+            this.refreshToken = res.data.data.refreshToken
+            localStorage.setItem('accessToken', res.data.data.accessToken)
+            localStorage.setItem('refreshToken', res.data.data.refreshToken)
         }
         ,
 
