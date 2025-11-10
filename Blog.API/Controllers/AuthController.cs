@@ -1,3 +1,4 @@
+using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Auths.Commands.ConfirmEmailCommand;
 using BlogApi.Application.Features.Auths.Commands.ForgetPasswordCommand;
 using BlogApi.Application.Features.Auths.Commands.LoginUserCommand;
@@ -8,26 +9,37 @@ using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using Google.Apis.Auth;
 using MediatR;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using BlogApi.Application.DTOs;
+using static Google.Apis.Auth.GoogleJsonWebSignature;
 namespace BlogApi.API.Controllers;
-[Route("api/[controller]")]
+[Route("api/auth")]
 [ApiController]
 public class AuthController:ControllerBase
 {
     private readonly ISender _sender;
     private readonly UserManager<User> _userManager;
     private readonly ITokenService _tokenService;
+    private readonly SignInManager<User> _signInManager;
+    private readonly LinkGenerator _linkGenerator;
+    private readonly IConfiguration _config;
 
-    public AuthController(ISender sender,UserManager<User> userManager,ITokenService tokenService)
+
+    public AuthController(ISender sender,UserManager<User> userManager,ITokenService tokenService,SignInManager<User> signInManager,LinkGenerator linkGenerator, IConfiguration config)
     {
         _sender = sender;
         _userManager = userManager;
         _tokenService = tokenService;
+        _signInManager = signInManager;
+        _linkGenerator = linkGenerator;
+        _config = config;
+        
     }
 
     [HttpPost("register")]
@@ -74,18 +86,24 @@ public class AuthController:ControllerBase
         return StatusCode(result.StatusCode, result);
     }
 
-    [HttpPost("google-login")]
-    public async Task<IActionResult> GoogleLogin([FromBody] string idToken)
-    {
-        // Validate ID token
-        var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
 
-        // Create or get user
+    [HttpPost("google")]
+    public async Task<IActionResult> GoogleLogin(GoogleSignIn model)
+    {
+        Payload payload = new();
+
+        
+            payload = await ValidateAsync(model.IdToken, new ValidationSettings
+            {
+                Audience = new[] { _config["Google:ClientId"] }
+            });
+
         var user = await _userManager.FindByEmailAsync(payload.Email);
         if (user == null)
         {
             user = new User
             {
+                Name = payload.Name,
                 UserName = payload.Email,
                 Email = payload.Email,
                 EmailConfirmed = true
@@ -94,7 +112,7 @@ public class AuthController:ControllerBase
             await _userManager.AddToRoleAsync(user, "User");
         }
 
-       
+
         var userRoles = await _userManager.GetRolesAsync(user);
         var authClaims = new List<Claim>
         {
@@ -122,4 +140,10 @@ public class AuthController:ControllerBase
         return Ok(response);
     }
 
+
+}
+public class GoogleSignIn
+{
+    [Required]
+    public string IdToken { get; set; }
 }

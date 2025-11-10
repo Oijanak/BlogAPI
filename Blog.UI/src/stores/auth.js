@@ -41,14 +41,15 @@ export const useAuthStore = defineStore('auth', {
             localStorage.setItem('accessToken', res.data.accessToken)
             localStorage.setItem('refreshToken', res.data.refreshToken)
         },
-        async loginWithGoogle(idToken) {
-            const res = await axios.post(`${API_URL}/google-login`, idToken, {
-                headers: { "Content-Type": "application/json" }
-            });
-            this.token = res.data;
-            localStorage.setItem("accessToken", this.token.accessToken);
-            localStorage.setItem("refeshToken", this.token.refreshToken);
-        },
+
+         async loginWithGoogle(payload) {
+            const res = await axios.post(`${API_URL}/google`, payload)
+            this.accessToken = res.data.accessToken
+            this.refreshToken = res.data.refreshToken
+            localStorage.setItem('accessToken', res.data.accessToken)
+            localStorage.setItem('refreshToken', res.data.refreshToken)
+        }
+        ,
 
         async refresh() {
             const res = await axios.post(`${API_URL}/refresh`, { accessToken:this.accessToken,refreshToken: this.refreshToken })

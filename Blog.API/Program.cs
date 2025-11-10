@@ -1,15 +1,13 @@
-using System.Data;
-using System.Text;
 using Ardalis.GuardClauses;
 using Blog.API.Filters;
 using BlogApi.API.Controllers.Middlewares;
 using BlogApi.Application;
-using BlogApi.Application.Interfaces;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.DTOs.Validators;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Features.Blogs.Authorization;
 using BlogApi.Application.Features.Comments.Authorization;
+using BlogApi.Application.Interfaces;
 using BlogApi.Application.Services;
 using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
@@ -28,6 +26,8 @@ using Microsoft.OpenApi.Models;
 using QuestPDF.Infrastructure;
 using Serilog;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
+using System.Data;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -134,6 +134,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "BlogInstance";
    
 });
+
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -148,11 +149,13 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer =jwtIssuer,
+            ValidIssuer = jwtIssuer,
             ValidAudience = jwtAudience,
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
     });
+
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("CommentOwnerPolicy", policy =>
