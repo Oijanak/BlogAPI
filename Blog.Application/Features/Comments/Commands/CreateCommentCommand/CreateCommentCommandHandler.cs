@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Comments.CreateCommentCommand;
 
-public class CreateCommentCommandHandler:IRequestHandler<CreateCommentCommand, ApiResponse<CommentDto>>
+public class CreateCommentCommandHandler:IRequestHandler<CreateCommentCommand, ApiResponse<CommentDtos>>
 {
     private readonly IBlogDbContext  _blogDbContext;
     private readonly ICurrentUserService _currentUserService;
@@ -16,11 +16,11 @@ public class CreateCommentCommandHandler:IRequestHandler<CreateCommentCommand, A
         _blogDbContext = blogDbContext;
         _currentUserService = currentUserService;
     }
-    public async Task<ApiResponse<CommentDto>> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<CommentDtos>> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
     {
         var user = await _blogDbContext.Users
             .Where(u => u.Id == _currentUserService.UserId)
-            .Select(u => new UserDto
+            .Select(u => new UserDtos
             {
                 Id = u.Id,
                 Email = u.Email,
@@ -37,9 +37,9 @@ public class CreateCommentCommandHandler:IRequestHandler<CreateCommentCommand, A
         
         _blogDbContext.Comments.Add(comment);
         await _blogDbContext.SaveChangesAsync();
-        return new ApiResponse<CommentDto>
+        return new ApiResponse<CommentDtos>
         {
-            Data = new CommentDto
+            Data = new CommentDtos
             {
                 CommentId = comment.CommentId,
                 Content = comment.Content,

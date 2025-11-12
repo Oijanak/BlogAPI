@@ -1,4 +1,4 @@
-namespace BlogApi.Application.DTOs;
+namespace BlogApi.Application.Options;
 
 public class FileStorageOptions
 {

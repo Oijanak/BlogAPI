@@ -7,31 +7,32 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using BlogApi.Application.Exceptions;
+using Microsoft.Extensions.Options;
+using BlogApi.Application.Options;
 
 namespace BlogApi.Infrastructure.Services
 {
     public class JwtTokenService : ITokenService
     {
-        private readonly IConfiguration _config;
+        private readonly JwtSettings _jwtSettings;
 
-        public JwtTokenService(IConfiguration config)
+        public JwtTokenService(IOptions<JwtSettings> jwtSettings)
         {
-            _config = config;
+            _jwtSettings = jwtSettings.Value;
         }
 
         public string GenerateToken(IEnumerable<Claim> claims)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? throw new InvalidOperationException("Jwt Key is not found")) );
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey ?? throw new InvalidOperationException("Jwt Key is not found")) );
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             
           
 
             var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(
-                    double.Parse(_config["Jwt:ExpireMinutes"] ?? "5")),
+                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
                 signingCredentials: creds
             );
 
@@ -52,12 +53,12 @@ namespace BlogApi.Infrastructure.Services
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidAudience = _config["Jwt:Audience"],
-                ValidIssuer = _config["Jwt:Issuer"],
+                ValidAudience = _jwtSettings.Audience,
+                ValidIssuer = _jwtSettings.Issuer,
                 ValidateLifetime = false, 
                 ClockSkew = TimeSpan.Zero,
                 IssuerSigningKey = new SymmetricSecurityKey
-                    (Encoding.UTF8.GetBytes(_config["Jwt:Key"]))
+                    (Encoding.UTF8.GetBytes(_jwtSettings.SecretKey))
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();

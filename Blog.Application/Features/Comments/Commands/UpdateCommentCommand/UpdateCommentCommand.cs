@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlogApi.Application.Features.Comments.UpdateCommentCommand;
 
-public class UpdateCommentCommand:IRequest<ApiResponse<CommentDto>>
+public class UpdateCommentCommand:IRequest<ApiResponse<CommentDtos>>
 {
     [FromRoute]
     public Guid CommentId { get; set; }

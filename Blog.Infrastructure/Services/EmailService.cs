@@ -1,4 +1,4 @@
-using BlogApi.Application.DTOs;
+using BlogApi.Application.Options;
 using BlogApi.Application.Interfaces;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -11,9 +11,9 @@ public class EmailService : IEmailService
 {
     private readonly EmailSettings _settings;
 
-    public EmailService(IOptions<EmailSettings> options)
+    public EmailService(IOptionsMonitor<EmailSettings> options)
     {
-        _settings = options.Value;
+        _settings = options.CurrentValue;
     }
 
     public async Task SendEmailAsync(string toEmail, string toName, string subject, string htmlContent)

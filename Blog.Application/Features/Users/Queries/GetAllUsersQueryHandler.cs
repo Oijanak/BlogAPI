@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, ApiResponse<IEnumerable<UserDto>>>
+public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, ApiResponse<IEnumerable<UserDtos>>>
 {
     private readonly UserManager<User> _userManager;
 
@@ -15,17 +15,17 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, ApiResp
         _userManager = userManager;
     }
 
-    public async Task<ApiResponse<IEnumerable<UserDto>>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<IEnumerable<UserDtos>>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
     {
         var users = await _userManager.Users
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        var userDtos=new List<UserDto>();
+        var userDtos=new List<UserDtos>();
         foreach (var user in users)
         {
             var roles = (await _userManager.GetRolesAsync(user)).ToList();
-            userDtos.Add(new UserDto
+            userDtos.Add(new UserDtos
             {
                 Id = user.Id,
                 Email = user.Email,
@@ -34,7 +34,7 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, ApiResp
             });
         }
 
-        return new ApiResponse<IEnumerable<UserDto>>
+        return new ApiResponse<IEnumerable<UserDtos>>
         {
             Message = "Users fetched successfully",
             Data = userDtos

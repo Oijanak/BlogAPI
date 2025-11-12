@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlogApi.Application.Features.AuthorFollower.Queries.GetFollowersQuery;
 
-public class GetFollowersQuery:IRequest<Result<IEnumerable<UserDto>>>
+public class GetFollowersQuery:IRequest<Result<IEnumerable<UserDtos>>>
 {
    [FromRoute]
    public Guid AuthorId { get; set; } 

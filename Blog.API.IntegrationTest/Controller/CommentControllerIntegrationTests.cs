@@ -41,7 +41,7 @@ public class CommentControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         var content = await response.Content.ReadAsStringAsync();
         var x = 10;
-        var result = await response.Content.ReadFromJsonAsync<ApiResponse<CommentDto>>();
+        var result = await response.Content.ReadFromJsonAsync<ApiResponse<CommentDtos>>();
         result.Should().NotBeNull();
         result!.Message.Should().Be("Comment created successfully");
         result.Data.Should().NotBeNull();
@@ -61,7 +61,7 @@ public class CommentControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         };
         var createResponse = await _client.PostAsJsonAsync("/api/comments", command);
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
-        var createdComment = await createResponse.Content.ReadFromJsonAsync<ApiResponse<CommentDto>>();
+        var createdComment = await createResponse.Content.ReadFromJsonAsync<ApiResponse<CommentDtos>>();
        
         var updateResponse=await _client.PutAsJsonAsync(
             $"/api/comments/{createdComment.Data.CommentId}",  
@@ -70,7 +70,7 @@ public class CommentControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         
         var updateBody = await updateResponse.Content.ReadAsStringAsync();
         
-        var updatedComment = await updateResponse.Content.ReadFromJsonAsync<ApiResponse<CommentDto>>();
+        var updatedComment = await updateResponse.Content.ReadFromJsonAsync<ApiResponse<CommentDtos>>();
         updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         updatedComment.Should().NotBeNull();
         updatedComment.Data.Content.Should().Be("Updated Comment");
@@ -110,7 +110,7 @@ public class CommentControllerIntegrationTests:IClassFixture<BlogApiWebFactory>
         };
         var response = await _client.PostAsJsonAsync("/api/comments", command);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var result = await response.Content.ReadFromJsonAsync<ApiResponse<CommentDto>>();
+        var result = await response.Content.ReadFromJsonAsync<ApiResponse<CommentDtos>>();
         var createdComment = result.Data;
         var deleteResponse = await _client.DeleteAsync($"/api/comments/{createdComment.CommentId}");
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);

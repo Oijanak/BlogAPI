@@ -4,4 +4,4 @@ using MediatR;
 
 namespace BlogApi.Application.Features.Users.Queries;
 
-public record GetAllUsersQuery : IRequest<ApiResponse<IEnumerable<UserDto>>>;
+public record GetAllUsersQuery : IRequest<ApiResponse<IEnumerable<UserDtos>>>;

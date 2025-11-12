@@ -1,10 +1,9 @@
 using Ardalis.GuardClauses;
 using Blog.API.Filters;
+using BlogApi.Application.Options;
 using BlogApi.API.Controllers.Middlewares;
 using BlogApi.Application;
 using BlogApi.Application.DTOs;
-using BlogApi.Application.DTOs.Validators;
-using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;
 using BlogApi.Application.Features.Blogs.Authorization;
 using BlogApi.Application.Features.Comments.Authorization;
 using BlogApi.Application.Interfaces;
@@ -13,7 +12,6 @@ using BlogApi.Domain.Models;
 using BlogApi.Infrastructure.Data;
 using BlogApi.Infrastructure.DbSeeder;
 using BlogApi.Infrastructure.Services;
-using FluentValidation;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +23,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using QuestPDF.Infrastructure;
 using Serilog;
-using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System.Data;
 using System.Text;
 
@@ -53,18 +50,19 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     })
     .AddEntityFrameworkStores<BlogDbContext>()
     .AddDefaultTokenProviders();
-   
+  
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 {
     options.TokenLifespan = TimeSpan.FromMinutes(30); 
 });
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorCommandValidator>();
-builder.Services.AddFluentValidationAutoValidation();
+
 builder.Services.AddHangfire(config =>
 {
     config.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection"));
 });
+
 builder.Services.AddHangfireServer();
 
 builder.Services.AddSwaggerGen(options=>
@@ -118,16 +116,11 @@ builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.Configure<FileStorageOptions>(
     builder.Configuration.GetSection("FileStorage"));
 
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.Key));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(EmailSettings.Key));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAuthorizationHandler, CommentOwnerAuthorizationHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, BlogOwnerAuthorizationHandler>();
-var jwtIssuer = builder.Configuration["Jwt:Issuer"];
-var jwtAudience = builder.Configuration["Jwt:Audience"];
-var jwtKey = builder.Configuration["Jwt:Key"];
-Guard.Against.NullOrEmpty(jwtIssuer, nameof(jwtIssuer));
-Guard.Against.NullOrEmpty(jwtAudience, nameof(jwtAudience));
-Guard.Against.NullOrEmpty(jwtKey, nameof(jwtKey));
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
@@ -135,6 +128,9 @@ builder.Services.AddStackExchangeRedisCache(options =>
    
 });
 
+var jwtSettings = builder.Configuration
+    .GetSection(JwtSettings.Key)
+    .Get<JwtSettings>();
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -142,15 +138,15 @@ builder.Services.AddAuthentication(options =>
     })
     .AddJwtBearer(options =>
     {
-        var key = Encoding.UTF8.GetBytes(jwtKey);
+        var key = Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtIssuer,
-            ValidAudience = jwtAudience,
+            ValidIssuer = jwtSettings.Issuer,
+            ValidAudience = jwtSettings.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
     });
@@ -163,7 +159,7 @@ builder.Services.AddAuthorization(options =>
     
     options.AddPolicy("BlogOwnerPolicy", policy =>
         policy.Requirements.Add(new BlogOwnerAuthorizationRequirement()));
-});;
+});
 QuestPDF.Settings.License = LicenseType.Community;
 var app = builder.Build();
 

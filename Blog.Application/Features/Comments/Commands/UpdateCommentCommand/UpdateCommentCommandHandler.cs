@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Comments.UpdateCommentCommand;
 
-public class UpdateCommentCommandHandler:IRequestHandler<UpdateCommentCommand, ApiResponse<CommentDto>>
+public class UpdateCommentCommandHandler:IRequestHandler<UpdateCommentCommand, ApiResponse<CommentDtos>>
 {
     private readonly IBlogDbContext _blogDbContext;
     private readonly ICurrentUserService _currentUserService;
@@ -15,7 +15,7 @@ public class UpdateCommentCommandHandler:IRequestHandler<UpdateCommentCommand, A
         _blogDbContext = blogDbContext;
         _currentUserService = currentUserService;
     }
-    public async Task<ApiResponse<CommentDto>> Handle(UpdateCommentCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<CommentDtos>> Handle(UpdateCommentCommand request, CancellationToken cancellationToken)
     {
         var existingComment = await _blogDbContext.Comments
             .Include(c => c.User)
@@ -24,15 +24,15 @@ public class UpdateCommentCommandHandler:IRequestHandler<UpdateCommentCommand, A
         existingComment.Content = request.UpdateCommentRequest.Content;
         existingComment.UpdatedAt = DateTime.UtcNow;
         await _blogDbContext.SaveChangesAsync(cancellationToken);
-        return new ApiResponse<CommentDto>
+        return new ApiResponse<CommentDtos>
         {
-            Data = new CommentDto
+            Data = new CommentDtos
             {
                 CommentId = existingComment.CommentId,
                 Content = existingComment.Content,
                 CreatedAt = existingComment.CreatedAt,
                 UpdatedAt = existingComment.UpdatedAt,
-                User = new UserDto
+                User = new UserDtos
                 {
                     Id = existingComment.User.Id,
                     Email = existingComment.User.Email,

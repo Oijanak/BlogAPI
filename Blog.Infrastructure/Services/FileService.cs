@@ -1,4 +1,4 @@
-using BlogApi.Application.DTOs;
+using BlogApi.Application.Options;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Models;
 using Microsoft.AspNetCore.Hosting;

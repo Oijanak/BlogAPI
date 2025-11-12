@@ -34,6 +34,14 @@ export const useAuthStore = defineStore('auth', {
             await axios.post(`${API_URL}/confirm-email`,payload)
         },
 
+        async forgotPassword(payload) {
+            await axios.post(`${API_URL}/forgot-password`, payload)
+        },
+        async resetPassword(payload) {
+            await axios.post(`${API_URL}/reset-password`, payload)
+        }
+        ,
+
         async login(payload) {
             const res = await axios.post(`${API_URL}/login`, payload)
             this.accessToken = res.data.data.accessToken

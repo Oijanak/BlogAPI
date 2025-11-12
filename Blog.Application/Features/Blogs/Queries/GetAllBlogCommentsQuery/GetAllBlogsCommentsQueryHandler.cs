@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Features.Blogs.Queries.GetAllBlogCommentsQuery;
 
-public class GetAllBlogsCommentsQueryHandler:IRequestHandler<GetAllBlogCommentsQuery,ApiResponse<IEnumerable<CommentDto>>>
+public class GetAllBlogsCommentsQueryHandler:IRequestHandler<GetAllBlogCommentsQuery,ApiResponse<IEnumerable<CommentDtos>>>
 {
     private readonly IBlogDbContext _blogDbContext;
     private readonly ICurrentUserService _currentUserService;
@@ -15,7 +15,7 @@ public class GetAllBlogsCommentsQueryHandler:IRequestHandler<GetAllBlogCommentsQ
         _blogDbContext = blogDbContext;
         _currentUserService = currentUserService;
     }
-    public async Task<ApiResponse<IEnumerable<CommentDto>>> Handle(GetAllBlogCommentsQuery request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<IEnumerable<CommentDtos>>> Handle(GetAllBlogCommentsQuery request, CancellationToken cancellationToken)
     {
         var userId=_currentUserService.UserId;
         var comments = await _blogDbContext.Comments
@@ -23,11 +23,11 @@ public class GetAllBlogsCommentsQueryHandler:IRequestHandler<GetAllBlogCommentsQ
             .Include(c => c.User)
             .Include(c => c.Replies)
             .ThenInclude(r => r.User)
-            .Select(c => new CommentDto
+            .Select(c => new CommentDtos
             {
                 CommentId = c.CommentId,
                 Content = c.Content,
-                User = new UserDto
+                User = new UserDtos
                 {
                     Id = c.User.Id,
                     Name = c.User.Name,
@@ -41,11 +41,11 @@ public class GetAllBlogsCommentsQueryHandler:IRequestHandler<GetAllBlogCommentsQ
                     .Where(r => r.UserId == userId)
                     .Select(r => (bool?)r.IsLike)
                     .FirstOrDefault(),
-                Replies = c.Replies.Select(r => new CommentDto
+                Replies = c.Replies.Select(r => new CommentDtos
                 {
                     CommentId = r.CommentId,
                     Content = r.Content,
-                    User = new UserDto
+                    User = new UserDtos
                     {
                         Id = r.User.Id,
                         Name = r.User.Name,
@@ -62,7 +62,7 @@ public class GetAllBlogsCommentsQueryHandler:IRequestHandler<GetAllBlogCommentsQ
                 }).ToList()
             })
             .ToListAsync();
-        return new ApiResponse<IEnumerable<CommentDto>>
+        return new ApiResponse<IEnumerable<CommentDtos>>
         {
             Data = comments,
             Message = "Comments retrieved successfully",

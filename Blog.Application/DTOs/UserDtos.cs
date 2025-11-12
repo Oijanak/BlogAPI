@@ -3,18 +3,18 @@ using BlogApi.Domain.Enum;
 using System.Text.Json.Serialization;
 namespace BlogApi.Application.DTOs;
 
-public class UserDto
+public class UserDtos
 {
     public string Id { get; set; }
     public string Name { get; set; }
     public string Email { get; set; }
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? Roles { get; set; }
-    public UserDto()
+    public UserDtos()
     {
 
     }
-    public UserDto(User user)
+    public UserDtos(User user)
     {
         Id = user.Id;
         Name = user.Name;

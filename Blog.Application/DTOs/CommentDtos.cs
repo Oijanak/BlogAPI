@@ -2,11 +2,11 @@ using System.Text.Json.Serialization;
 
 namespace BlogApi.Application.DTOs;
 
-public class CommentDto
+public class CommentDtos
 {
     public Guid CommentId { get; set; }
     public string Content { get; set; }
-    public UserDto User { get; set; }
+    public UserDtos User { get; set; }
     
     public DateTime CreatedAt { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -17,7 +17,7 @@ public class CommentDto
     public int DislikesCount { get; set; }
     
     public bool? CurrentUserReaction { get; set; } 
-    public List<CommentDto>? Replies { get; set; } = new();
+    public List<CommentDtos>? Replies { get; set; } = new();
 }
 
 public class ReactToCommentDto
