@@ -114,7 +114,7 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IExcelService,ExcelService>();
 builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.Configure<FileStorageOptions>(
-    builder.Configuration.GetSection("FileStorage"));
+    builder.Configuration.GetSection(FileStorageOptions.Key));
 
  builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.Key));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(EmailSettings.Key));

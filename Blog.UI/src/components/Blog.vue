@@ -25,7 +25,7 @@
         <select id="approvedBy" v-model="filters.approvedBy" class="filter-select">
           <option value="">All Users</option>
           <option v-for="user in users" :key="user.id" :value="user.id">
-            {{ user.name }}
+            {{ user.email }}
           </option>
         </select>
       </div>
@@ -35,7 +35,7 @@
         <select id="createdBy" v-model="filters.createdBy" class="filter-select">
           <option value="">All Users</option>
           <option v-for="user in users" :key="user.id" :value="user.id">
-            {{ user.name }}
+            {{ user.email }}
           </option>
         </select>
       </div>
@@ -147,8 +147,8 @@
               </td>
               <td>{{ formatDate(blog.startDate) }}</td>
               <td>{{ formatDate(blog.endDate) }}</td>
-              <td>{{ blog.createdBy?.name || 'N/A' }}</td>
-              <td>{{ blog.approvedBy?.name || 'N/A' }}</td>
+              <td>{{ blog.createdBy?.createdByName || 'N/A' }}</td>
+              <td>{{ blog.approvedBy?.approvedByName || 'N/A' }}</td>
               <td class="actions-cell">
                 <div class="action-buttons">
                   <button @click="openUpdateForm(blog)" title="Edit">
