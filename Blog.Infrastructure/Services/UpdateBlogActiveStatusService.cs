@@ -12,18 +12,16 @@ public class UpdateBlogActiveStatusService : IUpdateBlogActiveStatusService
     }
     public async Task UpdateBlogActiveStatusAsync()
     {
-        var blogs = await _blogDbContext.Blogs.ToListAsync();
-            var now = DateTime.UtcNow;
+        var now = DateTime.UtcNow.Date;
 
-        foreach (var blog in blogs)
-        {
-            if (blog.StartDate.Date <= now.Date && blog.EndDate >= now.Date)
-                blog.ActiveStatus = ActiveStatus.Active;
-            else
-                blog.ActiveStatus = ActiveStatus.Inactive;
 
-            _blogDbContext.Blogs.Update(blog);
-            }
-            await _blogDbContext.SaveChangesAsync();
-        }
+        await _blogDbContext.Blogs
+            .Where(b => b.StartDate.Date <= now && b.EndDate.Date >= now)
+            .ExecuteUpdateAsync(b => b.SetProperty(blog => blog.ActiveStatus, blog => ActiveStatus.Active));
+
+        
+        await _blogDbContext.Blogs
+            .Where(b => b.StartDate.Date > now || b.EndDate.Date < now)
+            .ExecuteUpdateAsync(b => b.SetProperty(blog => blog.ActiveStatus, blog => ActiveStatus.Inactive));
     }
+}

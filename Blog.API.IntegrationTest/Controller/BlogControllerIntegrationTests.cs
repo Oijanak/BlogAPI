@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Blog.Application.Options;
+using BlogApi.Application.Options;
 using BlogApi.Application.Dapper.Blogs.Commands.CreateBlogWithDapperCommand;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.Features.Authors.Commands.CreateAuthorCommand;

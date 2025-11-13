@@ -17,7 +17,7 @@ public class GetBlogReportExcelQueryHandler:IRequestHandler<GetBlogReportExcelQu
     }
     public async Task<byte[]> Handle(GetBlogReportExcelQuery request, CancellationToken cancellationToken)
     {
-        var blogReport = await _blogDbContext.Blogs
+        var blogReport = await _blogDbContext.Blogs.AsNoTracking()
             .Select(b => new BlogReportDto()
             {
                 BlogId = b.BlogId,

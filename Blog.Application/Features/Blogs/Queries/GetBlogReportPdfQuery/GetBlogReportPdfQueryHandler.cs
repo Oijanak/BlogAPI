@@ -16,7 +16,7 @@ public class GetBlogReportPdfQueryHandler:IRequestHandler<GetBlogReportPdfQuery,
     }
     public async Task<byte[]> Handle(GetBlogReportPdfQuery request, CancellationToken cancellationToken)
     {
-        var blogReport = await _blogDbContext.Blogs
+        var blogReport = await _blogDbContext.Blogs.AsNoTracking()
             .Select(b => new BlogReportDto()
             {
                 BlogId = b.BlogId,

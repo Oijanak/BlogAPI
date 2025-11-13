@@ -25,67 +25,70 @@ public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,ApiResponse<BlogDT
     {
 
         var userId = _currentUserService.UserId;
-        var cacheKey=$"blog:{request.BlogId}";
+        var cacheKey = $"blog:{request.BlogId}";
 
         var blogResult = await _distributedCache.GetOrSetAsync<BlogDTO>(cacheKey, async () =>
         {
             var blog = await _blogDbContext.Blogs
-                .Include(b => b.Author)
-                    .ThenInclude(a => a.Followers)
-                .Include(b => b.CreatedByUser)
-                .Include(b => b.UpdatedByUser)
-                .Include(b => b.ApprovedByUser)
-                .Include(b => b.Categories)
-                .Include(b => b.Documents)
-                .Include(b => b.FavoritedBy)
-                .FirstOrDefaultAsync(b => b.BlogId == request.BlogId);
-
-       
-
-            return new BlogDTO()
-            {
-                BlogId = blog.BlogId,
-                BlogTitle = blog.BlogTitle,
-                BlogContent = blog.BlogContent,
-                CreatedAt = blog.CreatedAt,
-                UpdatedAt = blog.UpdatedAt,
-                CreatedBy = blog.CreatedByUser != null ? new CreatedByUserDto(blog.CreatedByUser) : null,
-                UpdatedBy = blog.UpdatedByUser != null ? new UpdatedByUserDto(blog.UpdatedByUser) : null,
-                ApprovedBy = blog.ApprovedByUser != null ? new ApprovedByUserDto(blog.ApprovedByUser) : null,
-                StartDate = blog.StartDate,
-                EndDate = blog.EndDate,
-                ApproveStatus = blog.ApproveStatus,
-                ActiveStatus = blog.ActiveStatus,
-                Author = blog.Author != null ? new AuthorDto()
+                .Where(b => b.BlogId == request.BlogId)
+                .Select(b => new BlogDTO
                 {
-                    AuthorId = blog.Author.AuthorId,
-                    AuthorName = blog.Author.AuthorName,
-                    AuthorEmail = blog.Author.AuthorEmail,
-                    Age = blog.Author.Age,
-                    CreatedBy = blog.Author.CreatedBy,
-                    isFollowed = _currentUserService.UserId != null
-                        ? blog.Author.Followers.Any(f => f.UserId == _currentUserService.UserId)
+                    BlogId = b.BlogId,
+                    BlogTitle = b.BlogTitle,
+                    BlogContent = b.BlogContent,
+                    CreatedAt = b.CreatedAt,
+                    UpdatedAt = b.UpdatedAt,
+                    StartDate = b.StartDate,
+                    EndDate = b.EndDate,
+
+                    Author = new AuthorDto
+                    {
+                        AuthorId = b.Author.AuthorId,
+                        AuthorName = b.Author.AuthorName,
+                        AuthorEmail = b.Author.AuthorEmail,
+                        CreatedBy = b.Author.CreatedBy,
+                        isFollowed = userId != null
+                            ? b.Author.Followers.Any(f => f.UserId == userId)
+                            : null
+                    },
+
+                    Categories = b.Categories
+                        .Select(c => new CategoryDto
+                        {
+                            CategotyId = c.CategoryId,
+                            CategoryName = c.CategoryName
+                        })
+                        .ToList(),
+
+                    BlogDocuments = b.Documents
+                        .Select(d => new BlogDocumentDto
+                        {
+                            BlogDocumentId = d.BlogDocumentId,
+                            DocumentName = d.DocumentName,
+                            DocumentType = d.DocumentType
+                        })
+                        .ToList(),
+
+                    isFavorited = userId != null
+                        ? b.FavoritedBy.Any(f => f.UserId == userId)
                         : null
-                } : null,
-                Categories = blog.Categories
-                    .Select(c => new CategoryDto { CategotyId = c.CategoryId, CategoryName = c.CategoryName })
-                    .ToList(),
-                BlogDocuments = blog.Documents
-                    .Select(d => new BlogDocumentDto { BlogDocumentId = d.BlogDocumentId, DocumentName = d.DocumentName, DocumentType = d.DocumentType })
-                    .ToList(),
-                isFavorited = _currentUserService.UserId != null
-                    ? blog.FavoritedBy.Any(f => f.UserId == _currentUserService.UserId)
-                    : null
-            };
-        }, new DistributedCacheEntryOptions
+                })
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            return blog;
+        },
+        new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10),
             SlidingExpiration = TimeSpan.FromMinutes(2)
         });
+
         return new ApiResponse<BlogDTO>
         {
             Data = blogResult,
             Message = "Blog fetched successfully"
         };
+
     }
 }

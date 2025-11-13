@@ -13,7 +13,14 @@ public class BlogConfig:IEntityTypeConfiguration<Blog>
       builder.Property("BlogId").IsRequired();
       builder.Property("BlogTitle").IsRequired().HasMaxLength(200);
       builder.Property("BlogContent").IsRequired();
-      builder.HasOne<Author>(b=>b.Author).WithMany(u=>u.Blogs).HasForeignKey(b=>b.AuthorId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasIndex(b => b.CreatedAt);
+        
+        builder.HasIndex(b => new { b.ActiveStatus, b.ApproveStatus })
+              .HasDatabaseName("IX_Blogs_ActiveStatus_ApproveStatus");
+
+        builder.HasIndex(b => new { b.StartDate, b.EndDate })
+              .HasDatabaseName("IX_Blogs_StartDate_EndDate");
+        builder.HasOne<Author>(b=>b.Author).WithMany(u=>u.Blogs).HasForeignKey(b=>b.AuthorId).OnDelete(DeleteBehavior.Cascade);
       builder.Property(b => b.CreatedAt)
          .HasDefaultValueSql("GETUTCDATE()");
 

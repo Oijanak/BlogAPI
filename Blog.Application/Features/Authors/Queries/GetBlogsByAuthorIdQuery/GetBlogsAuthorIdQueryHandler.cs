@@ -16,23 +16,22 @@ public class GetBlogsAuthorIdQueryHandler:IRequestHandler<GetBlogsByAuthorIdQuer
     }
     public async Task<ApiResponse<IEnumerable<BlogDTO>>> Handle(GetBlogsByAuthorIdQuery request, CancellationToken cancellationToken)
     {
-        var blogsEntities = await _blogDbContext.Blogs
+        var blogDtos = await _blogDbContext.Blogs
             .Where(blog => blog.AuthorId == request.AuthorId)
-            .Include(blog => blog.Author)
-            .ToListAsync(cancellationToken);
+            .Select(blog => new BlogDTO
+            {
+                BlogId = blog.BlogId,
+                BlogTitle = blog.BlogTitle,
+                BlogContent = blog.BlogContent,
+                CreatedAt = blog.CreatedAt,
+                UpdatedAt = blog.UpdatedAt
 
-        var blogs = blogsEntities.Select(blog => new BlogDTO
-        {
-            BlogId = blog.BlogId,
-            BlogTitle = blog.BlogTitle,
-            BlogContent = blog.BlogContent,
-            CreatedAt = blog.CreatedAt,
-            UpdatedAt = blog.UpdatedAt,
-            Author = new AuthorDto(blog.Author) 
-        }).ToList();
+            }).ToListAsync();
+
+       
         return new ApiResponse<IEnumerable<BlogDTO>>
         {
-            Data = blogs,
+            Data = blogDtos,
             Message = "Authors blogs fetched successfully"
         };
 

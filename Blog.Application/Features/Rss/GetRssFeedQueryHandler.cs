@@ -18,7 +18,8 @@ public class GetRssFeedQueryHandler : IRequestHandler<GetRssFeedQuery, string>
 
     public async Task<string> Handle(GetRssFeedQuery request, CancellationToken cancellationToken)
     {
-        var blogs = await _dbContext.Blogs
+        var blogs = await _dbContext.Blogs.Select(b => new {b.BlogId,b.BlogTitle,b.BlogContent,b.CreatedAt})
+            .AsNoTracking()
             .OrderByDescending(b => b.CreatedAt)
             .Take(20)
             .ToListAsync(cancellationToken);

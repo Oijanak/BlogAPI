@@ -23,13 +23,17 @@ public class GetAuthorByIdQueryHandler:IRequestHandler<GetAuthorByIdQuery,ApiRes
     }
     public async Task<ApiResponse<AuthorDto>> Handle(GetAuthorByIdQuery request, CancellationToken cancellationToken)
     {
-        var author = await _blogDbContext.Authors
-            .Include(a => a.Followers)
-            .FirstOrDefaultAsync(a => a.AuthorId == request.AuthorId);
-        Guard.Against.Null(author,nameof(author),"Author cannot be null");
-        var authorDto = new AuthorDto(author);
         var userId = _currentUserService.UserId;
-        authorDto.isFollowed =userId!=null? author.Followers.Any(af => af.UserId == userId):null;
+        var authorDto = await _blogDbContext.Authors
+             .Where(a => a.AuthorId == request.AuthorId)
+            .Select(a=>new AuthorDto { 
+                AuthorId=a.AuthorId,
+                AuthorName=a.AuthorName,
+                AuthorEmail=a.AuthorEmail,
+                isFollowed= userId != null ? a.Followers.Any(af => af.UserId == userId) : null
+            })
+            .FirstOrDefaultAsync();
+       
         return new ApiResponse<AuthorDto>
         {
             

@@ -20,9 +20,6 @@ public class GetAllBlogsCommentsQueryHandler:IRequestHandler<GetAllBlogCommentsQ
         var userId=_currentUserService.UserId;
         var comments = await _blogDbContext.Comments
             .Where(c => c.BlogId == request.BlogId && c.ParentCommentId == null)
-            .Include(c => c.User)
-            .Include(c => c.Replies)
-            .ThenInclude(r => r.User)
             .Select(c => new CommentDtos
             {
                 CommentId = c.CommentId,
