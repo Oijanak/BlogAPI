@@ -30,7 +30,9 @@ public class GetAuthorByIdQueryHandler:IRequestHandler<GetAuthorByIdQuery,ApiRes
                 AuthorId=a.AuthorId,
                 AuthorName=a.AuthorName,
                 AuthorEmail=a.AuthorEmail,
-                isFollowed= userId != null ? a.Followers.Any(af => af.UserId == userId) : null
+                isFollowed= userId != null ? a.Followers.Any(af => af.UserId == userId) : null,
+                FollowerCount=a.Followers.Count
+
             })
             .FirstOrDefaultAsync();
        

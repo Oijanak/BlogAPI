@@ -78,8 +78,7 @@ public class AuthorController:ControllerBase
         return Ok(await _sender.Send(new GetAuthorListQuery()));
     }
 
-    [HttpGet("{AuthorId:guid}/blogs")]
-    [AgeRequirement]
+    [HttpPost("blogs")]
     public async Task<IActionResult> GetBlogsByAuthorId(GetBlogsByAuthorIdQuery getBlogsByAuthorIdQuery)
     {
         return Ok(await _sender.Send(getBlogsByAuthorIdQuery));

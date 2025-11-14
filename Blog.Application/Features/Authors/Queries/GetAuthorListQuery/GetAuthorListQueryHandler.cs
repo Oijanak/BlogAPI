@@ -29,7 +29,8 @@ public class GetAuthorListQueryHandler:IRequestHandler<GetAuthorListQuery,ApiRes
                AuthorEmail = author.AuthorEmail,
                Age = author.Age,
                CreatedBy = author.CreatedBy,
-               isFollowed = userId!=null?author.Followers.Any(f => f.UserId == userId):null
+               isFollowed = userId!=null?author.Followers.Any(f => f.UserId == userId):null,
+               FollowerCount=author.Followers.Count
            })
            .ToListAsync();
         return new ApiResponse<IEnumerable<AuthorDto>>

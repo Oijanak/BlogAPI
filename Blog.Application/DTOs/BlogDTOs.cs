@@ -72,7 +72,7 @@ public class BlogPublicDto
     public string BlogContent { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public required AuthorDto Author { get; set; }
+    public AuthorDto Author { get; set; }
 
     public bool? isFavorited { get; set; }
 
