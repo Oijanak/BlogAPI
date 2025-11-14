@@ -49,7 +49,8 @@ public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,ApiResponse<BlogDT
                         CreatedBy = b.Author.CreatedBy,
                         isFollowed = userId != null
                             ? b.Author.Followers.Any(f => f.UserId == userId)
-                            : null
+                            : null,
+                        FollowerCount=b.Author.Followers.Count
                     },
 
                     Categories = b.Categories
@@ -71,7 +72,9 @@ public class GetBlogQueryHandler:IRequestHandler<GetBlogQuery,ApiResponse<BlogDT
 
                     isFavorited = userId != null
                         ? b.FavoritedBy.Any(f => f.UserId == userId)
-                        : null
+                        : null,
+                    FavoriteCount = b.FavoritedBy.Count,
+                    CommentCount=b.Comments.Count
                 })
                 .AsNoTracking()
                 .FirstOrDefaultAsync();

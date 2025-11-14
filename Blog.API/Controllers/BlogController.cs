@@ -26,6 +26,7 @@ using BlogApi.Application.SP.Blogs.Commands;
 using BlogApi.Application.SP.Blogs.Commands.DeleteBlogWithSpCommand;
 using BlogApi.Application.SP.Blogs.Commands.UpdateBlogWithSpCommand;
 using MediatR;
+using BlogApi.Application.Features.Blogs.Queries.GetAllPulicBlogsQuery;
 
 namespace BlogApi.API.Controllers;
 
@@ -48,14 +49,22 @@ public class BlogController : ControllerBase
     }
 
     [HttpPost("getAll")]
-    [Authorize]
-    [AllowAnonymous]
+    [Authorize(Roles ="Admin,Checker")]
     public async Task<IActionResult> GetAllBlogs(GetBlogListQuery getBlogListQuery)
     {
         return Ok(await _sender.Send(getBlogListQuery));
        
     }
-    
+
+    [HttpPost("public/getAll")]
+    [Authorize]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAllPublicBlogs(GetAllPublicBlogsQuery getAllPublicBlogsQuery)
+    {
+        return Ok(await _sender.Send(getAllPublicBlogsQuery));
+
+    }
+
     [HttpGet("rss")]
     public async Task<IActionResult> GetRssFeed()
     {

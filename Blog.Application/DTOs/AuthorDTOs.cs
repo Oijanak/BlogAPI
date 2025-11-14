@@ -21,6 +21,8 @@ public class AuthorDto
     public string CreatedBy { get; set; }
     
     public bool? isFollowed { get; set; }
+
+    public int FollowerCount { get; set; }
     public AuthorDto(){}
     public AuthorDto(Author author)
     {

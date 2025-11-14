@@ -19,7 +19,6 @@ public class GetFavoriteBlogsQueryHandler:IRequestHandler<GetFavoriteBlogsQuery,
     {
         var userId = _currentUserService.UserId;
         var blogs= await _blogDbContext.BlogFavorites
-            .Include(x=>x.Blog)
             .Where(f => f.UserId == userId)
             .Select(f => new BlogDTO
             {
@@ -28,14 +27,14 @@ public class GetFavoriteBlogsQueryHandler:IRequestHandler<GetFavoriteBlogsQuery,
                 BlogContent = f.Blog.BlogContent,
                 CreatedAt = f.Blog.CreatedAt,
                 UpdatedAt = f.Blog.UpdatedAt,
-                CreatedBy = f.Blog.CreatedByUser != null ? new CreatedByUserDto(f.Blog.CreatedByUser) : null,
+                CreatedBy = new CreatedByUserDto(f.Blog.CreatedByUser),
                 UpdatedBy = f.Blog.UpdatedByUser != null ? new UpdatedByUserDto(f.Blog.UpdatedByUser) : null,
                 ApprovedBy = f.Blog.ApprovedByUser != null ? new ApprovedByUserDto(f.Blog.ApprovedByUser) : null,
                 StartDate = f.Blog.StartDate,
                 EndDate = f.Blog.EndDate,
                 ApproveStatus = f.Blog.ApproveStatus,
                 ActiveStatus = f.Blog.ActiveStatus,
-                Author = f.Blog.Author != null ? new AuthorDto(f.Blog.Author) : null,
+                Author = new AuthorDto(f.Blog.Author),
                 Categories = f.Blog.Categories.Select(c=>new CategoryDto{CategotyId= c.CategoryId,CategoryName = c.CategoryName}).ToList(),
                 BlogDocuments = f.Blog.Documents.Select(d=>new BlogDocumentDto{BlogDocumentId = d.BlogDocumentId,DocumentName = d.DocumentName,DocumentType = d.DocumentType}).ToList(),
                 isFavorited = true

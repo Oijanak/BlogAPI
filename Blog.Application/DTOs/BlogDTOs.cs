@@ -36,6 +36,10 @@ public class BlogDTO
     
     public List<BlogDocumentDto> BlogDocuments { get; set; }
 
+    public int FavoriteCount { get; set; }
+
+    public int CommentCount { get; set; }
+
 }
 
 public class UpdateBlogRequest
@@ -58,4 +62,25 @@ public class BlogReportDto
     public string AuthorName { get; set; } = string.Empty;
     public int FavoritesCount { get; set; }
     public int CommentsCount { get; set; }
+}
+
+
+public class BlogPublicDto
+{
+    public Guid BlogId { get; set; }
+    public string BlogTitle { get; set; } = string.Empty;
+    public string BlogContent { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public required AuthorDto Author { get; set; }
+
+    public bool? isFavorited { get; set; }
+
+    public List<CategoryDto> Categories { get; set; }
+
+    public List<BlogDocumentDto> BlogDocuments { get; set; }
+
+    public int FavoriteCount { get; set; }
+
+    public int CommentCount { get; set; }
 }

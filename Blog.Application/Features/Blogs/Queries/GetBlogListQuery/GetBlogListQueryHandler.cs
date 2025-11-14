@@ -96,7 +96,8 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiRespon
              {
                  AuthorId = blog.Author.AuthorId,
                  AuthorName = blog.Author.AuthorName,
-                 AuthorEmail = blog.Author.AuthorEmail
+                 AuthorEmail = blog.Author.AuthorEmail,
+                 FollowerCount=blog.Author.Followers.Count(),
              },
              CreatedBy = new CreatedByUserDto
              {
@@ -123,7 +124,10 @@ public class GetBlogListQueryHandler:IRequestHandler<GetBlogListQuery, ApiRespon
                      DocumentName = d.DocumentName,
                      DocumentType = d.DocumentType
                  }).ToList(),
-             isFavorited = userId != null ? blog.FavoritedBy.Any(f => f.UserId == userId) : false
+           
+             isFavorited = userId != null ? blog.FavoritedBy.Any(f => f.UserId == userId) : null,
+             FavoriteCount=blog.FavoritedBy.Count(),
+             CommentCount=blog.Comments.Count(),
          })
          .ToListAsync(cancellationToken);
 
